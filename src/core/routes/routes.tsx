@@ -27,6 +27,7 @@ import { WipePendingBalance } from '@/features/funding/pages/WipePendingBalance'
 import { WalletGenerateByPhone } from '@/features/users/pages/WalletGenerateByPhone';
 import { RegenerateWalletByPhone } from '@/features/users/pages/RegenerateWalletByPhone';
 import { Summary } from '@/features/users/pages/Summary';
+import { UserActions } from '@/features/users/pages/UserActions';
 import { KYCReview } from '@/features/kyc/pages/KYCReview';
 import { KYCDetail } from '@/features/kyc/pages/KYCDetail';
 import { NotificationsManagement } from '@/features/notifications/pages/NotificationsManagement';
@@ -59,6 +60,10 @@ export const router = createBrowserRouter([
           {
             path: 'kyc/:kycId',
             element: <KYCDetail />,
+          },
+          {
+            path: 'user-management/actions',
+            element: <UserActions />,
           },
           {
             path: 'user-management/summary',
