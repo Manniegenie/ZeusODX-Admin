@@ -7,7 +7,17 @@ class AuthService {
 
   async login(credentials: LoginCredentials) {
     try {
-      const response = await axios.post(`${BASE_URL}/adminsignin/signin`, credentials, {
+      // Only include twoFAToken if it has a value
+      const payload: any = {
+        email: credentials.email,
+        passwordPin: credentials.passwordPin,
+      };
+
+      if (credentials.twoFAToken && credentials.twoFAToken.trim() !== '') {
+        payload.twoFAToken = credentials.twoFAToken;
+      }
+
+      const response = await axios.post(`${BASE_URL}/adminsignin/signin`, payload, {
         headers: {
           'Content-Type': 'application/json',
         },

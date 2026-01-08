@@ -16,6 +16,7 @@ export interface AuthState {
 export interface LoginCredentials {
   email: string;
   passwordPin: string;
+  twoFAToken?: string;
 }
 
 export interface RegisterCredentials extends LoginCredentials {

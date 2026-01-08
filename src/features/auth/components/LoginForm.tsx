@@ -92,21 +92,41 @@ export function LoginForm() {
         </div>
 
         {requires2FA && (
-          <div className="relative">
-            <Shield className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-purple-500" />
-            <Input
-              type="text"
-              name="twoFAToken"
-              placeholder="6-digit 2FA code"
-              value={formData.twoFAToken}
-              onChange={handleChange}
-              maxLength={6}
-              className="pl-10 h-12 border border-gray-200 shadow-none text-slate-900 bg-white placeholder:text-gray-500"
-              required
-              autoFocus
-            />
-            <p className="text-xs text-gray-500 mt-1">Enter the code from your authenticator app</p>
-          </div>
+          <>
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-2">
+              <div className="flex items-center gap-2 mb-1">
+                <Shield className="w-4 h-4 text-purple-600" />
+                <p className="text-sm font-semibold text-purple-900">Two-Factor Authentication Required</p>
+              </div>
+              <p className="text-xs text-purple-700">
+                Enter the 6-digit code from your authenticator app
+              </p>
+            </div>
+            <div className="relative">
+              <Shield className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-purple-500" />
+              <Input
+                type="text"
+                name="twoFAToken"
+                placeholder="000000"
+                value={formData.twoFAToken}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, '');
+                  setFormData((prev) => ({ ...prev, twoFAToken: value }));
+                }}
+                maxLength={6}
+                className="pl-10 h-12 border border-gray-200 shadow-none text-slate-900 bg-white placeholder:text-gray-400 text-center text-2xl tracking-widest font-mono"
+                required
+                autoFocus
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate(`/admin-2fa-setup?email=${encodeURIComponent(formData.email)}`)}
+              className="w-full text-center text-sm text-purple-600 hover:text-purple-800 underline mt-2"
+            >
+              Need to setup 2FA? Click here
+            </button>
+          </>
         )}
       </div>
       <Button type="submit" className="w-full h-12 bg-primary hover:bg-green-700 focus:ring-2 focus:ring-green-400 text-white" disabled={loading}>
