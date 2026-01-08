@@ -5,7 +5,7 @@ import { DashboardTitleContext } from "@/layouts/DashboardTitleContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { FetchWalletsResponse } from "@/features/users/types/userApi.types";
-import { WalletList } from "@/features/funding/components/WalletList";
+import { WalletListGrouped } from "@/features/funding/components/WalletListGrouped";
 import { getCompleteUserSummary, getUserTransactions } from "@/features/users/services/usersService";
 import { toast } from "sonner";
 import { DataTable } from "@/features/dashboard/components/data-table";
@@ -365,7 +365,7 @@ export function Summary() {
 
         {/* Column 2 & 3: Wallets and Balances */}
         <div className="lg:col-span-2">
-          <WalletList data={walletData} />
+          <WalletListGrouped data={walletData} />
         </div>
       </div>
 

@@ -8,7 +8,7 @@ import { DashboardTitleContext } from "@/layouts/DashboardTitleContext";
 // removed unused imports
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { WalletList } from "../components/WalletList";
+import { WalletListGrouped } from "../components/WalletListGrouped";
 import { fetchUserWallets } from "@/features/users/services/usersService";
 import type { FetchWalletsResponse, WalletEntry } from "@/features/users/types/userApi.types";
 import { toast } from "sonner";
@@ -214,7 +214,7 @@ export function UserWallet() {
           </div>
         </div>
           {/* compute filtered data for display */}
-          <WalletList data={
+          <WalletListGrouped data={
             (() => {
               if (!walletData) return null;
               if (!searchTerm) return walletData;
