@@ -580,7 +580,7 @@ export function GiftCardSubmissionDetail() {
 
       {/* Approve Dialog */}
       <Dialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
-        <DialogContent className="max-w-md bg-white text-black">
+        <DialogContent className="max-w-md !bg-white !text-black">
           <DialogHeader>
             <DialogTitle className="text-black">Approve Gift Card Submission</DialogTitle>
           </DialogHeader>
@@ -650,7 +650,7 @@ export function GiftCardSubmissionDetail() {
 
       {/* Reject Dialog */}
       <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <DialogContent className="max-w-md bg-white text-black">
+        <DialogContent className="max-w-md !bg-white !text-black">
           <DialogHeader>
             <DialogTitle className="text-black">Reject Gift Card Submission</DialogTitle>
           </DialogHeader>
