@@ -55,10 +55,17 @@ export const submissionColumns = (
     header: 'User',
     cell: ({ row }) => {
       const user = row.original.userId;
+      if (!user || typeof user !== 'object') {
+        return <div className="text-sm text-gray-500">User data unavailable</div>;
+      }
       return (
         <div className="text-sm">
-          <div className="font-medium">{user.firstname} {user.lastname}</div>
-          <div className="text-gray-500 text-xs">{user.email}</div>
+          <div className="font-medium">
+            {user.firstname && user.lastname
+              ? `${user.firstname} ${user.lastname}`
+              : 'N/A'}
+          </div>
+          <div className="text-gray-500 text-xs">{user.email || 'N/A'}</div>
         </div>
       );
     },

@@ -9,12 +9,12 @@ import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { notificationService } from '../services/notificationService';
 import type { NotificationStats, SendNotificationFormData } from '../types/notification.types';
 import { toast } from 'sonner';
-import { 
-  Bell, 
-  Send, 
-  Users, 
-  Smartphone, 
-  CheckCircle, 
+import {
+  Bell,
+  Send,
+  Users,
+  Smartphone,
+  CheckCircle,
   AlertCircle,
   Activity,
   Zap

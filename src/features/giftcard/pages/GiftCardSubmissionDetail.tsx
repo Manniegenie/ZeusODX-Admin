@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { GiftCardService } from '../services/giftcardService';
 import type { GiftCardSubmission, RejectionReason } from '../types/giftcard';
+import { SuccessModal } from '@/components/ui/SuccessModal';
 
 // Helper function to format time ago
 const formatTimeAgo = (date: Date): string => {
@@ -70,6 +71,13 @@ export function GiftCardSubmissionDetail() {
   // Rejection form
   const [rejectionReason, setRejectionReason] = useState<RejectionReason>('OTHER');
   const [rejectionNotes, setRejectionNotes] = useState('');
+
+  // Success modal state
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successModalData, setSuccessModalData] = useState({
+    title: '',
+    message: '',
+  });
 
   // Set page title
   useEffect(() => {
@@ -154,8 +162,12 @@ export function GiftCardSubmissionDetail() {
       });
 
       if (response.success) {
-        toast.success(`Submission approved! User credited ₦${response.data.paymentAmount.toLocaleString()}`);
         setShowApproveDialog(false);
+        setSuccessModalData({
+          title: 'Submission Approved',
+          message: `Successfully approved submission and credited user with ₦${response.data.paymentAmount.toLocaleString()}`,
+        });
+        setShowSuccessModal(true);
         await loadSubmission();
       }
     } catch (error: any) {
@@ -182,8 +194,12 @@ export function GiftCardSubmissionDetail() {
       });
 
       if (response.success) {
-        toast.success('Submission rejected');
         setShowRejectDialog(false);
+        setSuccessModalData({
+          title: 'Submission Rejected',
+          message: 'The gift card submission has been rejected and the user has been notified.',
+        });
+        setShowSuccessModal(true);
         await loadSubmission();
       }
     } catch (error: any) {
@@ -278,10 +294,9 @@ export function GiftCardSubmissionDetail() {
                 )}
                 {canReject && (
                   <Button
-                    variant="destructive"
                     onClick={() => setShowRejectDialog(true)}
                     disabled={loading}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-black"
                   >
                     <XCircle className="w-4 h-4" />
                     Reject
@@ -306,20 +321,34 @@ export function GiftCardSubmissionDetail() {
             <div>
               <Label className="text-gray-500">Name</Label>
               <div className="font-medium">
-                {submission.userId.firstname} {submission.userId.lastname}
+                {submission.userId && typeof submission.userId === 'object'
+                  ? `${submission.userId.firstname || 'N/A'} ${submission.userId.lastname || ''}`
+                  : 'User data unavailable'}
               </div>
             </div>
             <div>
               <Label className="text-gray-500">Email</Label>
-              <div className="font-medium text-sm">{submission.userId.email}</div>
+              <div className="font-medium text-sm">
+                {submission.userId && typeof submission.userId === 'object'
+                  ? submission.userId.email || 'N/A'
+                  : 'N/A'}
+              </div>
             </div>
             <div>
               <Label className="text-gray-500">Phone</Label>
-              <div className="font-medium">{submission.userId.phonenumber}</div>
+              <div className="font-medium">
+                {submission.userId && typeof submission.userId === 'object'
+                  ? submission.userId.phonenumber || 'N/A'
+                  : 'N/A'}
+              </div>
             </div>
             <div>
               <Label className="text-gray-500">User ID</Label>
-              <div className="font-mono text-xs text-gray-600">{submission.userId._id}</div>
+              <div className="font-mono text-xs text-gray-600">
+                {submission.userId && typeof submission.userId === 'object'
+                  ? submission.userId._id || 'N/A'
+                  : 'N/A'}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -551,9 +580,9 @@ export function GiftCardSubmissionDetail() {
 
       {/* Approve Dialog */}
       <Dialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white text-black">
           <DialogHeader>
-            <DialogTitle>Approve Gift Card Submission</DialogTitle>
+            <DialogTitle className="text-black">Approve Gift Card Submission</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -621,9 +650,9 @@ export function GiftCardSubmissionDetail() {
 
       {/* Reject Dialog */}
       <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white text-black">
           <DialogHeader>
-            <DialogTitle>Reject Gift Card Submission</DialogTitle>
+            <DialogTitle className="text-black">Reject Gift Card Submission</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -662,9 +691,9 @@ export function GiftCardSubmissionDetail() {
               Cancel
             </Button>
             <Button
-              variant="destructive"
               onClick={handleReject}
               disabled={loading || (rejectionReason === 'OTHER' && !rejectionNotes.trim())}
+              className="bg-red-600 hover:bg-red-700 text-black"
             >
               Reject Submission
             </Button>
@@ -687,6 +716,17 @@ export function GiftCardSubmissionDetail() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title={successModalData.title}
+        message={successModalData.message}
+        redirectTo="/giftcards/submissions"
+        autoRedirectDelay={3000}
+        redirectButtonText="Back to Submissions"
+      />
     </div>
   );
 }
