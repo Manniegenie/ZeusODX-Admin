@@ -19,7 +19,7 @@ import type {
 } from '../types/giftcard';
 
 export class GiftCardService {
-  private static readonly API_BASE = '/admin/giftcard';
+  private static readonly API_BASE = '/admingiftcard';
 
   /**
    * Get all gift card rates with filtering and pagination
