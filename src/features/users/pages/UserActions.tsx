@@ -9,7 +9,8 @@ import {
   RefreshCw,
   Loader2,
   XCircle,
-  Trash2
+  Trash2,
+  Ban
 } from 'lucide-react';
 import type { User } from '../types/user';
 
@@ -119,6 +120,15 @@ export function UserActions() {
       title: 'Danger Zone',
       description: 'Destructive actions - use with caution',
       actions: [
+        {
+          icon: Ban,
+          label: 'Block/Unblock User',
+          description: 'Prevent user from withdrawals & utilities',
+          path: '/user-management/block-user',
+          color: 'text-orange-700',
+          bgColor: 'bg-orange-100',
+          isDanger: true
+        },
         {
           icon: Trash2,
           label: 'Delete User',
@@ -256,6 +266,14 @@ export function UserActions() {
               <div className="grid grid-cols-[120px_1fr] gap-4">
                 <span className="text-green-600 font-semibold">POST</span>
                 <span>/pending/wipe</span>
+              </div>
+              <div className="grid grid-cols-[120px_1fr] gap-4">
+                <span className="text-green-600 font-semibold">POST</span>
+                <span>/blockuser/block</span>
+              </div>
+              <div className="grid grid-cols-[120px_1fr] gap-4">
+                <span className="text-green-600 font-semibold">POST</span>
+                <span>/blockuser/unblock</span>
               </div>
               <div className="grid grid-cols-[120px_1fr] gap-4">
                 <span className="text-red-600 font-semibold">DELETE</span>

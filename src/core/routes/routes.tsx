@@ -28,6 +28,7 @@ import { WalletGenerateByPhone } from '@/features/users/pages/WalletGenerateByPh
 import { RegenerateWalletByPhone } from '@/features/users/pages/RegenerateWalletByPhone';
 import { Summary } from '@/features/users/pages/Summary';
 import { UserActions } from '@/features/users/pages/UserActions';
+import { BlockUser } from '@/features/users/pages/BlockUser';
 import { KYCReview } from '@/features/kyc/pages/KYCReview';
 import { KYCDetail } from '@/features/kyc/pages/KYCDetail';
 import { NotificationsManagement } from '@/features/notifications/pages/NotificationsManagement';
@@ -100,6 +101,10 @@ export const router = createBrowserRouter([
           {
             path: 'user-management/regenerate-wallet-by-phone',
             element: <RegenerateWalletByPhone />,
+          },
+          {
+            path: 'user-management/block-user',
+            element: <BlockUser />,
           },
           {
             path: 'fees-rates',

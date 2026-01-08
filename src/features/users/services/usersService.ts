@@ -118,7 +118,7 @@ export async function getCompleteUserSummary(email: string): Promise<CompleteUse
 
 export async function getUserTransactions(email: string) {
   const token = localStorage.getItem('token');
-  const res = await axios.post(`${BASE_URL}/fetchtransactions/transactions-by-email`,
+  const res = await axios.post(`${BASE_URL}/fetch/transactions-by-email`,
     { email },
     {
       headers: {
@@ -130,4 +130,45 @@ export async function getUserTransactions(email: string) {
   return res.data;
 }
 
-export default { getUsersSummary, removePasswordPin, fetchUserWallets, wipePendingBalance, getCompleteUserSummary, getUserTransactions };
+export async function blockUser(email: string, reason?: string) {
+  const token = localStorage.getItem('token');
+  const res = await axios.post(`${BASE_URL}/blockuser/block`,
+    { email, reason },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    }
+  );
+  return res.data;
+}
+
+export async function unblockUser(email: string) {
+  const token = localStorage.getItem('token');
+  const res = await axios.post(`${BASE_URL}/blockuser/unblock`,
+    { email },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    }
+  );
+  return res.data;
+}
+
+export async function checkUserBlocked(email: string) {
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${BASE_URL}/blockuser/check`,
+    {
+      params: { email },
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    }
+  );
+  return res.data;
+}
+
+export default { getUsersSummary, removePasswordPin, fetchUserWallets, wipePendingBalance, getCompleteUserSummary, getUserTransactions, blockUser, unblockUser, checkUserBlocked };
