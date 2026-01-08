@@ -207,12 +207,15 @@ export function Admin2FASetup() {
                   Use an authenticator app like Google Authenticator, Authy, or Microsoft Authenticator to scan this QR code.
                 </p>
                 {qrCodeUrl && (
-                  <div className="flex justify-center bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex justify-center items-center bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                     <img
                       src={qrCodeUrl}
                       alt="2FA QR Code"
-                      className="w-48 h-48 object-contain"
-                      style={{ imageRendering: 'crisp-edges' }}
+                      className="max-w-[200px] max-h-[200px] w-auto h-auto"
+                      style={{
+                        imageRendering: 'pixelated',
+                        display: 'block'
+                      }}
                     />
                   </div>
                 )}
