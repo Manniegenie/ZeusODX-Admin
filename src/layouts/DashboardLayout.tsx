@@ -18,6 +18,7 @@ import {
   UserCheck,
   Zap,
   CreditCard,
+  UserCog,
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -102,6 +103,11 @@ const navItems: NavItem[] = [
     title: 'Audit & Monitoring',
     path: '/audit',
     icon: <LineChart className="w-5 h-5" />,
+  },
+  {
+    title: 'Admin Settings',
+    path: '/admin-settings',
+    icon: <UserCog className="w-5 h-5" />,
   },
   {
     title: 'Settings',

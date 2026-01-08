@@ -38,6 +38,7 @@ import { OnrampManagement } from '@/features/fees/pages/OnrampManagement';
 import { OfframpManagement } from '@/features/fees/pages/OfframpManagement';
 import { GiftCardSubmissions } from '@/features/giftcard/pages/GiftCardSubmissions';
 import { GiftCardSubmissionDetail } from '@/features/giftcard/pages/GiftCardSubmissionDetail';
+import { AdminSettings } from '@/features/admin-settings/pages/AdminSettings';
 
 export const router = createBrowserRouter([
   {
@@ -187,6 +188,10 @@ export const router = createBrowserRouter([
           {
             path: 'scheduled-notifications',
             element: <ScheduledNotifications />,
+          },
+          {
+            path: 'admin-settings',
+            element: <AdminSettings />,
           },
           {
             path: 'settings',
