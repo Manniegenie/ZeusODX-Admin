@@ -116,4 +116,18 @@ export async function getCompleteUserSummary(email: string): Promise<CompleteUse
   return res.data as CompleteUserSummaryResponse;
 }
 
-export default { getUsersSummary, removePasswordPin, fetchUserWallets, wipePendingBalance, getCompleteUserSummary };
+export async function getUserTransactions(email: string) {
+  const token = localStorage.getItem('token');
+  const res = await axios.post(`${BASE_URL}/fetchtransactions/transactions-by-email`,
+    { email },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    }
+  );
+  return res.data;
+}
+
+export default { getUsersSummary, removePasswordPin, fetchUserWallets, wipePendingBalance, getCompleteUserSummary, getUserTransactions };
