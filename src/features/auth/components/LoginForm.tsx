@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { login } from '../store/auth.slice';
@@ -14,8 +14,10 @@ export function LoginForm() {
   const [formData, setFormData] = useState({
     email: '',
     passwordPin: '',
+    twoFAToken: '',
   });
   const [loading, setLoading] = useState(false);
+  const [requires2FA, setRequires2FA] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,10 +28,19 @@ export function LoginForm() {
     e.preventDefault();
     setLoading(true);
     try {
-      await dispatch(login(formData)).unwrap();
+      const result = await dispatch(login(formData)).unwrap();
+      // Check if 2FA is required
+      if (result.requires2FA) {
+        setRequires2FA(true);
+        setLoading(false);
+        return;
+      }
       navigate('/');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
+      // Reset 2FA state on error
+      setRequires2FA(false);
+      setFormData((prev) => ({ ...prev, twoFAToken: '' }));
     } finally {
       setLoading(false);
     }
@@ -52,6 +63,7 @@ export function LoginForm() {
             onChange={handleChange}
             className="pl-10 h-12 border border-gray-200 shadow-none text-slate-900 bg-white placeholder:text-gray-500"
             required
+            disabled={requires2FA}
           />
         </div>
         <div className="relative">
@@ -64,6 +76,7 @@ export function LoginForm() {
             onChange={handleChange}
             className="pl-10 h-12 border border-gray-200 shadow-none text-slate-900 bg-white placeholder:text-gray-500"
             required
+            disabled={requires2FA}
           />
           <button
             type="button"
@@ -77,6 +90,24 @@ export function LoginForm() {
             )}
           </button>
         </div>
+
+        {requires2FA && (
+          <div className="relative">
+            <Shield className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-purple-500" />
+            <Input
+              type="text"
+              name="twoFAToken"
+              placeholder="6-digit 2FA code"
+              value={formData.twoFAToken}
+              onChange={handleChange}
+              maxLength={6}
+              className="pl-10 h-12 border border-gray-200 shadow-none text-slate-900 bg-white placeholder:text-gray-500"
+              required
+              autoFocus
+            />
+            <p className="text-xs text-gray-500 mt-1">Enter the code from your authenticator app</p>
+          </div>
+        )}
       </div>
       <Button type="submit" className="w-full h-12 bg-primary hover:bg-green-700 focus:ring-2 focus:ring-green-400 text-white" disabled={loading}>
         {loading ? (

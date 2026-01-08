@@ -39,6 +39,7 @@ import { OfframpManagement } from '@/features/fees/pages/OfframpManagement';
 import { GiftCardSubmissions } from '@/features/giftcard/pages/GiftCardSubmissions';
 import { GiftCardSubmissionDetail } from '@/features/giftcard/pages/GiftCardSubmissionDetail';
 import { AdminSettings } from '@/features/admin-settings/pages/AdminSettings';
+import { Admin2FASetup } from '@/features/admin-settings/pages/Admin2FASetup';
 
 export const router = createBrowserRouter([
   {
@@ -212,5 +213,9 @@ export const router = createBrowserRouter([
   {
     path: 'reset-password',
     element: <ResetPasswordPage />,
+  },
+  {
+    path: 'admin-2fa-setup',
+    element: <Admin2FASetup />,
   },
 ]);
