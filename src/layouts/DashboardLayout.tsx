@@ -17,6 +17,7 @@ import {
   MoreVertical,
   UserCheck,
   Zap,
+  CreditCard,
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -67,7 +68,15 @@ const navItems: NavItem[] = [
       { title: 'Off-ramp management', path: '/fees-rates/offramp-management' },
       { title: 'Price markdown', path: '/fees-rates/price-markdown' },
       { title: 'Price calculator', path: '/fees-rates/price-calculator' },
+    ]
+  },
+  {
+    title: 'Gift Cards',
+    path: '/giftcards',
+    icon: <CreditCard className="w-5 h-5" />,
+    sub_menu: [
       { title: 'Gift card rates', path: '/fees-rates/gift-card-rates' },
+      { title: 'Review submissions', path: '/giftcards/submissions' },
     ]
   },
   {
