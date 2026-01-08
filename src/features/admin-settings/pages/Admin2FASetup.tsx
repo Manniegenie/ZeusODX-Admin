@@ -21,11 +21,16 @@ export function Admin2FASetup() {
   const [step, setStep] = useState<'setup' | 'verify'>('setup');
   const [loading, setLoading] = useState(false);
   const [setupComplete, setSetupComplete] = useState(false);
+  const [fromLogin, setFromLogin] = useState(false);
 
   useEffect(() => {
     const emailParam = searchParams.get('email');
+    const fromLoginParam = searchParams.get('fromLogin');
     if (emailParam) {
       setEmail(emailParam);
+    }
+    if (fromLoginParam === 'true') {
+      setFromLogin(true);
     }
   }, [searchParams]);
 
@@ -146,6 +151,14 @@ export function Admin2FASetup() {
               </CardDescription>
             </div>
           </div>
+          {fromLogin && (
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-blue-900">
+                <strong>2FA Required:</strong> Two-factor authentication is mandatory for all admin accounts.
+                Please complete the setup below to access your account.
+              </p>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           {step === 'setup' ? (

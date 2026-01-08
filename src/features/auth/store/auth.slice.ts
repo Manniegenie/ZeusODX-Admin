@@ -74,7 +74,12 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        // Check if 2FA is required (don't set user/token yet)
+        // Check if 2FA setup is required (don't set user/token yet)
+        if (action.payload.requires2FASetup) {
+          // Don't set user or token, just return the response
+          return;
+        }
+        // Check if 2FA token is required (don't set user/token yet)
         if (action.payload.requires2FA) {
           // Don't set user or token, just return the response
           return;

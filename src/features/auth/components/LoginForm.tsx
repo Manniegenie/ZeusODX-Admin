@@ -29,12 +29,22 @@ export function LoginForm() {
     setLoading(true);
     try {
       const result = await dispatch(login(formData)).unwrap();
-      // Check if 2FA is required
+
+      // Check if 2FA setup is required
+      if (result.requires2FASetup) {
+        setLoading(false);
+        // Redirect to 2FA setup page with fromLogin flag
+        navigate(`/admin-2fa-setup?email=${encodeURIComponent(formData.email)}&fromLogin=true`);
+        return;
+      }
+
+      // Check if 2FA token is required
       if (result.requires2FA) {
         setRequires2FA(true);
         setLoading(false);
         return;
       }
+
       navigate('/');
     } catch (error: any) {
       console.error('Login failed:', error);
