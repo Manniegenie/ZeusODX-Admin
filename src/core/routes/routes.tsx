@@ -36,6 +36,8 @@ import { ScheduledNotifications } from '@/features/notifications/pages/Scheduled
 import { PriceMarkdown } from '@/features/fees/pages/PriceMarkdown';
 import { OnrampManagement } from '@/features/fees/pages/OnrampManagement';
 import { OfframpManagement } from '@/features/fees/pages/OfframpManagement';
+import { GiftCardSubmissions } from '@/features/giftcard/pages/GiftCardSubmissions';
+import { GiftCardSubmissionDetail } from '@/features/giftcard/pages/GiftCardSubmissionDetail';
 
 export const router = createBrowserRouter([
   {
@@ -118,9 +120,17 @@ export const router = createBrowserRouter([
             path: 'fees-rates/add-crypto-fee',
             element: <AddCryptoFee />,
           },
-          { 
+          {
             path: 'fees-rates/gift-card-rates',
             element: <GiftCardRates />,
+          },
+          {
+            path: 'giftcards/submissions',
+            element: <GiftCardSubmissions />,
+          },
+          {
+            path: 'giftcards/submissions/:submissionId',
+            element: <GiftCardSubmissionDetail />,
           },
           {
             path: 'fees-rates/onramp-management',

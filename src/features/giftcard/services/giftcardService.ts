@@ -7,7 +7,15 @@ import type {
   BulkCreateRatesRequest,
   CreateRateResponse,
   BulkCreateRatesResponse,
-  DeleteRateResponse
+  DeleteRateResponse,
+  SubmissionFilterParams,
+  SubmissionsResponse,
+  SubmissionDetailResponse,
+  ApproveSubmissionRequest,
+  ApproveSubmissionResponse,
+  RejectSubmissionRequest,
+  RejectSubmissionResponse,
+  ReviewSubmissionResponse
 } from '../types/giftcard';
 
 export class GiftCardService {
@@ -96,6 +104,94 @@ export class GiftCardService {
       return response.data;
     } catch (error) {
       console.error('Error toggling gift card rate status:', error);
+      throw error;
+    }
+  }
+
+  // ============================================
+  // GIFT CARD SUBMISSION MANAGEMENT
+  // ============================================
+
+  /**
+   * Get all gift card submissions with filtering and pagination
+   */
+  static async getSubmissions(params: SubmissionFilterParams): Promise<SubmissionsResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params.page) queryParams.append('page', params.page.toString());
+      if (params.limit) queryParams.append('limit', params.limit.toString());
+      if (params.status) queryParams.append('status', params.status);
+      if (params.cardType) queryParams.append('cardType', params.cardType);
+      if (params.country) queryParams.append('country', params.country);
+      if (params.searchTerm) queryParams.append('searchTerm', params.searchTerm);
+      if (params.dateFrom) queryParams.append('dateFrom', params.dateFrom);
+      if (params.dateTo) queryParams.append('dateTo', params.dateTo);
+      if (params.sortBy) queryParams.append('sortBy', params.sortBy);
+      if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+
+      const response = await axios.get(`${this.API_BASE}/submissions?${queryParams.toString()}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching gift card submissions:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get a specific gift card submission by ID
+   */
+  static async getSubmissionById(id: string): Promise<SubmissionDetailResponse> {
+    try {
+      const response = await axios.get(`${this.API_BASE}/submissions/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching gift card submission detail:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Approve a gift card submission
+   */
+  static async approveSubmission(
+    id: string,
+    data: ApproveSubmissionRequest
+  ): Promise<ApproveSubmissionResponse> {
+    try {
+      const response = await axios.post(`${this.API_BASE}/submissions/${id}/approve`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error approving gift card submission:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Reject a gift card submission
+   */
+  static async rejectSubmission(
+    id: string,
+    data: RejectSubmissionRequest
+  ): Promise<RejectSubmissionResponse> {
+    try {
+      const response = await axios.post(`${this.API_BASE}/submissions/${id}/reject`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error rejecting gift card submission:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Mark a gift card submission as under review
+   */
+  static async markAsReviewing(id: string): Promise<ReviewSubmissionResponse> {
+    try {
+      const response = await axios.post(`${this.API_BASE}/submissions/${id}/review`);
+      return response.data;
+    } catch (error) {
+      console.error('Error marking submission as reviewing:', error);
       throw error;
     }
   }

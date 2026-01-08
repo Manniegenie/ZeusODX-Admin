@@ -115,3 +115,139 @@ export interface DeleteRateResponse {
     };
   };
 }
+
+// Gift Card Submission Types
+export type SubmissionStatus = 'PENDING' | 'REVIEWING' | 'APPROVED' | 'REJECTED' | 'PAID';
+export type CardFormat = 'PHYSICAL' | 'E_CODE';
+export type RejectionReason =
+  | 'INVALID_IMAGE'
+  | 'ALREADY_USED'
+  | 'INSUFFICIENT_BALANCE'
+  | 'FAKE_CARD'
+  | 'UNREADABLE'
+  | 'WRONG_TYPE'
+  | 'EXPIRED'
+  | 'INVALID_ECODE'
+  | 'DUPLICATE_ECODE'
+  | 'OTHER';
+
+export interface GiftCardSubmission {
+  _id: string;
+  userId: {
+    _id: string;
+    email: string;
+    firstname: string;
+    lastname: string;
+    phonenumber: string;
+  };
+  cardType: string;
+  cardFormat: CardFormat;
+  country: string;
+  cardValue: number;
+  currency: string;
+  eCode?: string;
+  cardRange?: string;
+  description?: string;
+  imageUrls: string[];
+  imagePublicIds: string[];
+  totalImages: number;
+  status: SubmissionStatus;
+  expectedRate: number;
+  expectedRateDisplay: string;
+  expectedAmountToReceive: number;
+  expectedSourceCurrency: string;
+  expectedTargetCurrency: string;
+  giftCardRateId?: string;
+  approvedValue?: number;
+  paymentRate?: number;
+  paymentAmount?: number;
+  paidAt?: string;
+  transactionId?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  reviewNotes?: string;
+  rejectionReason?: RejectionReason;
+  vanillaType?: string;
+  metadata?: {
+    submittedAt: string;
+    userAgent?: string;
+    ipAddress?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SubmissionFilterParams {
+  page?: number;
+  limit?: number;
+  status?: SubmissionStatus;
+  cardType?: string;
+  country?: string;
+  searchTerm?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface SubmissionsResponse {
+  success: boolean;
+  data: {
+    submissions: GiftCardSubmission[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalSubmissions: number;
+      limit: number;
+    };
+  };
+  message: string;
+}
+
+export interface SubmissionDetailResponse {
+  success: boolean;
+  data: GiftCardSubmission;
+  message: string;
+}
+
+export interface ApproveSubmissionRequest {
+  approvedValue: number;
+  paymentRate: number;
+  notes?: string;
+}
+
+export interface ApproveSubmissionResponse {
+  success: boolean;
+  message: string;
+  data: {
+    submissionId: string;
+    status: SubmissionStatus;
+    paymentAmount: number;
+    transactionId: string;
+    userBalance: number;
+  };
+}
+
+export interface RejectSubmissionRequest {
+  rejectionReason: RejectionReason;
+  notes?: string;
+}
+
+export interface RejectSubmissionResponse {
+  success: boolean;
+  message: string;
+  data: {
+    submissionId: string;
+    status: SubmissionStatus;
+    rejectionReason: RejectionReason;
+  };
+}
+
+export interface ReviewSubmissionResponse {
+  success: boolean;
+  message: string;
+  data: {
+    submissionId: string;
+    status: SubmissionStatus;
+  };
+}
