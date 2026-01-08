@@ -5,16 +5,16 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: dark;
-  color: #ffffff;
-  background-color: #000000;
+  color-scheme: light;
+  color: #1f2937;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --primary: #35297F
+  --primary: #35297F;
   --primary-foreground: #ffffff;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: #000000;
@@ -32,8 +32,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  color: #ffffff;
-  background-color: #000000;
+  color: #1f2937;
+  background-color: #ffffff;
 }
 
 .bg-primary {
