@@ -4,7 +4,9 @@ import type {
   CreateAdminResponse,
   GetAdminsResponse,
   ResetAdmin2FAPayload,
-  ResetAdmin2FAResponse
+  ResetAdmin2FAResponse,
+  DeleteAdminPayload,
+  DeleteAdminResponse
 } from '../types/admin.types';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -39,6 +41,18 @@ export const adminService = {
         'Content-Type': 'application/json',
         Authorization: token ? `Bearer ${token}` : undefined,
       },
+    });
+    return response.data;
+  },
+
+  async deleteAdmin(adminId: string, payload: Omit<DeleteAdminPayload, 'adminId'>): Promise<DeleteAdminResponse> {
+    const token = localStorage.getItem('token');
+    const response = await axios.delete(`${BASE_URL}/admin/register/${adminId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+      data: payload,
     });
     return response.data;
   },

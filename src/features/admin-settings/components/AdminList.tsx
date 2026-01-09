@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Shield, UserCog, Users, ShieldCheck, ShieldAlert, RotateCcw } from 'lucide-react';
+import { Shield, UserCog, Users, ShieldCheck, ShieldAlert, RotateCcw, Trash2 } from 'lucide-react';
 import { adminService } from '../services/admin.service';
 import type { Admin } from '../types/admin.types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,12 +29,18 @@ export function AdminList() {
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(true);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null);
   const [resetForm, setResetForm] = useState({
     email: '',
     passwordPin: '',
   });
+  const [deleteForm, setDeleteForm] = useState({
+    email: '',
+    passwordPin: '',
+  });
   const [resetting, setResetting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchAdmins();
@@ -99,6 +105,53 @@ export function AdminList() {
       });
     } finally {
       setResetting(false);
+    }
+  };
+
+  const handleOpenDeleteDialog = (admin: Admin) => {
+    setSelectedAdmin(admin);
+    setDeleteForm({ email: '', passwordPin: '' });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setSelectedAdmin(null);
+    setDeleteForm({ email: '', passwordPin: '' });
+  };
+
+  const handleDeleteAdmin = async () => {
+    if (!selectedAdmin) return;
+
+    if (!deleteForm.email || !deleteForm.passwordPin) {
+      toast.error('All fields are required');
+      return;
+    }
+
+    if (deleteForm.passwordPin.length !== 6) {
+      toast.error('Password PIN must be 6 digits');
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      await adminService.deleteAdmin(selectedAdmin._id, {
+        email: deleteForm.email,
+        passwordPin: deleteForm.passwordPin,
+      });
+
+      toast.success('Admin deleted successfully', {
+        description: `${selectedAdmin.adminName} has been removed from the system`,
+      });
+
+      handleCloseDeleteDialog();
+      fetchAdmins(); // Refresh the list
+    } catch (error: any) {
+      toast.error('Failed to delete admin', {
+        description: error.response?.data?.message || 'An error occurred while deleting admin',
+      });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -220,17 +273,28 @@ export function AdminList() {
                         {formatDate(admin.createdAt)}
                       </TableCell>
                       <TableCell className="text-right">
-                        {admin.is2FASetupCompleted && (
+                        <div className="flex items-center justify-end gap-2">
+                          {admin.is2FASetupCompleted && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleOpenResetDialog(admin)}
+                              className="gap-2"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                              Reset 2FA
+                            </Button>
+                          )}
                           <Button
                             size="sm"
-                            variant="outline"
-                            onClick={() => handleOpenResetDialog(admin)}
+                            variant="destructive"
+                            onClick={() => handleOpenDeleteDialog(admin)}
                             className="gap-2"
                           >
-                            <RotateCcw className="w-3 h-3" />
-                            Reset 2FA
+                            <Trash2 className="w-3 h-3" />
+                            Delete
                           </Button>
-                        )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -300,6 +364,75 @@ export function AdminList() {
                 <>
                   <RotateCcw className="w-4 h-4" />
                   Reset 2FA
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Admin Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Admin: {selectedAdmin?.adminName}</DialogTitle>
+            <DialogDescription>
+              This action is permanent and cannot be undone. Enter your super admin credentials to confirm.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="delete-email">Your Email</Label>
+              <Input
+                id="delete-email"
+                type="email"
+                placeholder="Enter your email"
+                value={deleteForm.email}
+                onChange={(e) => setDeleteForm({ ...deleteForm, email: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="delete-pin">Your Password PIN</Label>
+              <Input
+                id="delete-pin"
+                type="password"
+                placeholder="Enter your 6-digit PIN"
+                maxLength={6}
+                value={deleteForm.passwordPin}
+                onChange={(e) =>
+                  setDeleteForm({ ...deleteForm, passwordPin: e.target.value.replace(/\D/g, '') })
+                }
+              />
+            </div>
+
+            <div className="rounded-lg bg-red-50 border border-red-200 p-3">
+              <p className="text-sm text-red-800">
+                <strong>Danger:</strong> This will permanently delete {selectedAdmin?.adminName} from the system. This action cannot be reversed.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseDeleteDialog} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteAdmin}
+              disabled={deleting}
+              className="gap-2"
+            >
+              {deleting ? (
+                <>
+                  <Trash2 className="w-4 h-4 animate-pulse" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4" />
+                  Delete Admin
                 </>
               )}
             </Button>

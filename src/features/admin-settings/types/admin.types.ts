@@ -42,3 +42,14 @@ export interface ResetAdmin2FAResponse {
   success: boolean;
   message: string;
 }
+
+export interface DeleteAdminPayload {
+  email: string;
+  passwordPin: string;
+  adminId: string;
+}
+
+export interface DeleteAdminResponse {
+  success: boolean;
+  message: string;
+}

@@ -129,15 +129,17 @@ export function LoginForm() {
                 autoFocus
               />
             </div>
-            <button
-              type="button"
-              onClick={() => navigate(`/admin-2fa-setup?email=${encodeURIComponent(formData.email)}`)}
-              className="w-full text-center text-sm text-purple-600 hover:text-purple-800 underline mt-2"
-            >
-              Need to setup 2FA? Click here
-            </button>
           </>
         )}
+
+        {/* Setup 2FA link - always visible */}
+        <button
+          type="button"
+          onClick={() => navigate(`/admin-2fa-setup?email=${encodeURIComponent(formData.email)}`)}
+          className="w-full text-center text-sm text-purple-600 hover:text-purple-800 underline"
+        >
+          Need to setup 2FA? Click here
+        </button>
       </div>
       <Button type="submit" className="w-full h-12 bg-primary hover:bg-green-700 focus:ring-2 focus:ring-green-400 text-white" disabled={loading}>
         {loading ? (
