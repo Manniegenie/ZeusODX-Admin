@@ -1,6 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { CreateAdminForm } from '../components/CreateAdminForm';
+import { AdminList } from '../components/AdminList';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, UserCog, Users } from 'lucide-react';
 
@@ -77,6 +78,9 @@ export function AdminSettings() {
       <div className="max-w-2xl">
         <CreateAdminForm />
       </div>
+
+      {/* Admin List */}
+      <AdminList />
     </div>
   );
 }
