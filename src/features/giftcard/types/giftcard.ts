@@ -133,12 +133,22 @@ export type RejectionReason =
 
 export interface GiftCardSubmission {
   _id: string;
-  userId: {
+  // Backend returns userId as populated object in detail view or user object in list view
+  userId: string | {
     _id: string;
     email: string;
     firstname: string;
     lastname: string;
     phonenumber: string;
+    username?: string;
+  };
+  user?: {
+    _id: string;
+    email: string;
+    firstname: string;
+    lastname: string;
+    phonenumber: string;
+    username?: string;
   };
   cardType: string;
   cardFormat: CardFormat;

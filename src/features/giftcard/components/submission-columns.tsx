@@ -51,10 +51,11 @@ export const submissionColumns = (
     },
   },
   {
-    accessorKey: 'userId',
+    accessorKey: 'user',
     header: 'User',
     cell: ({ row }) => {
-      const user = row.original.userId;
+      // Handle both formats: user field from list API or populated userId from detail API
+      const user = row.original.user || (typeof row.original.userId === 'object' ? row.original.userId : null);
       if (!user || typeof user !== 'object') {
         return <div className="text-sm text-gray-500">User data unavailable</div>;
       }

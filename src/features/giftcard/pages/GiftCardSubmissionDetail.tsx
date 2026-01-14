@@ -318,38 +318,40 @@ export function GiftCardSubmissionDetail() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div>
-              <Label className="text-gray-500">Name</Label>
-              <div className="font-medium">
-                {submission.userId && typeof submission.userId === 'object'
-                  ? `${submission.userId.firstname || 'N/A'} ${submission.userId.lastname || ''}`
-                  : 'User data unavailable'}
-              </div>
-            </div>
-            <div>
-              <Label className="text-gray-500">Email</Label>
-              <div className="font-medium text-sm">
-                {submission.userId && typeof submission.userId === 'object'
-                  ? submission.userId.email || 'N/A'
-                  : 'N/A'}
-              </div>
-            </div>
-            <div>
-              <Label className="text-gray-500">Phone</Label>
-              <div className="font-medium">
-                {submission.userId && typeof submission.userId === 'object'
-                  ? submission.userId.phonenumber || 'N/A'
-                  : 'N/A'}
-              </div>
-            </div>
-            <div>
-              <Label className="text-gray-500">User ID</Label>
-              <div className="font-mono text-xs text-gray-600">
-                {submission.userId && typeof submission.userId === 'object'
-                  ? submission.userId._id || 'N/A'
-                  : 'N/A'}
-              </div>
-            </div>
+            {(() => {
+              // Handle both formats: user field from list API or populated userId from detail API
+              const user = submission.user || (typeof submission.userId === 'object' ? submission.userId : null);
+              return (
+                <>
+                  <div>
+                    <Label className="text-gray-500">Name</Label>
+                    <div className="font-medium">
+                      {user
+                        ? `${user.firstname || 'N/A'} ${user.lastname || ''}`
+                        : 'User data unavailable'}
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-500">Email</Label>
+                    <div className="font-medium text-sm">
+                      {user ? user.email || 'N/A' : 'N/A'}
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-500">Phone</Label>
+                    <div className="font-medium">
+                      {user ? user.phonenumber || 'N/A' : 'N/A'}
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-500">User ID</Label>
+                    <div className="font-mono text-xs text-gray-600">
+                      {user ? user._id || 'N/A' : 'N/A'}
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
           </CardContent>
         </Card>
 
