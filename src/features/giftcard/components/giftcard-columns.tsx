@@ -202,10 +202,8 @@ export const createColumns = ({
           >
             {rate.isActive ? (
               <ToggleLeft className="h-4 w-4 text-gray-600" />
-              <ToggleLeft className="h-4 w-4" />
             ) : (
               <ToggleRight className="h-4 w-4 text-green-600" />
-              <ToggleRight className="h-4 w-4" />
             )}
           </Button>
           <Button
@@ -213,7 +211,6 @@ export const createColumns = ({
             size="sm"
             onClick={() => onDelete(rate)}
             className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-            className="h-8 w-8 p-0"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
