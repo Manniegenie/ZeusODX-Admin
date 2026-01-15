@@ -9,27 +9,27 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary purple button - ZeusODX primary #35297F
+        // Primary purple button - white text
         default: "bg-[#35297F] text-white hover:bg-[#2a1f66] focus-visible:ring-[#7C6BFF]/30",
-        // Destructive red button - ZeusODX error #FF4444
+        // Destructive red button - white text
         destructive:
-          "bg-[#FF4444] text-white hover:bg-[#cc3636] focus-visible:ring-[#FF4444]/30 dark:bg-[#FF4444]",
-        // Outline button with primary border
+          "bg-[#FF4444] text-white hover:bg-[#cc3636] focus-visible:ring-[#FF4444]/30",
+        // Outline button - white bg, purple border/text
         outline:
-          "border border-[#35297F] bg-white text-[#35297F] shadow-xs hover:bg-[#F4F2FF] dark:bg-[#2A2A2A] dark:border-[#7C6BFF] dark:text-[#7C6BFF] dark:hover:bg-[#3A3A3A]",
-        // Secondary purple button - ZeusODX secondary #7C6BFF
+          "border border-[#35297F] bg-white text-[#35297F] shadow-xs hover:bg-[#F4F2FF]",
+        // Secondary purple button - white text
         secondary:
           "bg-[#7C6BFF] text-white hover:bg-[#6a5be6]",
-        // Ghost button
+        // Ghost button - transparent bg, dark text for visibility
         ghost:
-          "hover:bg-[#F4F2FF] text-[#35297F] dark:hover:bg-[#3A3A3A] dark:text-[#7C6BFF]",
-        // Link style
-        link: "text-[#35297F] underline-offset-4 hover:underline",
-        // Success button - ZeusODX success #00C851
+          "bg-transparent text-[#1A1A1A] hover:bg-gray-100",
+        // Link style - dark text
+        link: "text-[#1A1A1A] underline-offset-4 hover:underline",
+        // Success button - white text
         success: "bg-[#00C851] text-white hover:bg-[#00a844] focus-visible:ring-[#00C851]/30",
-        // Warning button - ZeusODX warning #FF8800
+        // Warning button - white text
         warning: "bg-[#FF8800] text-white hover:bg-[#e67a00] focus-visible:ring-[#FF8800]/30",
-        // Accent pink button - ZeusODX accent #FF6B9D
+        // Accent pink button - white text
         accent: "bg-[#FF6B9D] text-white hover:bg-[#e65a8a] focus-visible:ring-[#FF6B9D]/30",
       },
       size: {
