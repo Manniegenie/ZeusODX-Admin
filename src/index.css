@@ -6,23 +6,45 @@
   font-weight: 400;
 
   color-scheme: light;
-  color: #1f2937;
-  background-color: #ffffff;
+  color: #1A1A1A;
+  background-color: #F4F2FF;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  /* Primary Colors - from ZeusODX app */
   --primary: #35297F;
   --primary-foreground: #ffffff;
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: #000000;
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: #000000;
-  --accent: oklch(0.15 0 0);
-  --accent-foreground: #000000;
-  --destructive: oklch(0.65 0.23 27);
+  --secondary: #7C6BFF;
+  --secondary-foreground: #ffffff;
+  --accent: #FF6B9D;
+  --accent-foreground: #ffffff;
+
+  /* Text Colors */
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B6B6B;
+  --text-muted: #9B9B9B;
+  --muted: #9B9B9B;
+  --muted-foreground: #6B6B6B;
+
+  /* Surface & Border */
+  --surface: #FFFFFF;
+  --card-background: #FFFFFF;
+  --border: #E5E5E5;
+  --background: #F4F2FF;
+
+  /* Status Colors */
+  --success: #00C851;
+  --warning: #FF8800;
+  --error: #FF4444;
+  --destructive: #FF4444;
+
+  /* Crypto Colors */
+  --bitcoin: #F7931A;
+  --ethereum: #627EEA;
+  --coin-gold: #FFD700;
 }
 
 
@@ -30,8 +52,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  color: #1f2937;
-  background-color: #ffffff;
+  color: #1A1A1A;
+  background-color: #F4F2FF;
 }
 
 #root {
@@ -44,4 +66,25 @@ body {
 }
 .text-primary {
   color: #35297F;
+}
+.bg-secondary {
+  background-color: #7C6BFF;
+}
+.text-secondary {
+  color: #6B6B6B;
+}
+.bg-accent {
+  background-color: #FF6B9D;
+}
+.bg-success {
+  background-color: #00C851;
+}
+.bg-warning {
+  background-color: #FF8800;
+}
+.bg-error {
+  background-color: #FF4444;
+}
+.text-muted {
+  color: #9B9B9B;
 }
