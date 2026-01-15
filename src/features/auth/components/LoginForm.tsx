@@ -132,7 +132,7 @@ export function LoginForm() {
           </>
         )}
       </div>
-      <Button type="submit" className="w-full h-12 bg-primary hover:bg-green-700 focus:ring-2 focus:ring-green-400 text-white" disabled={loading}>
+      <Button type="submit" size="xl" className="w-full" disabled={loading}>
         {loading ? (
           <span className="flex items-center justify-center">
             <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

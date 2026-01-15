@@ -9,21 +9,34 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-white hover:bg-[#2a1f66]",
+        // Primary purple button - ZeusODX primary #35297F
+        default: "bg-[#35297F] text-white hover:bg-[#2a1f66] focus-visible:ring-[#7C6BFF]/30",
+        // Destructive red button - ZeusODX error #FF4444
         destructive:
-          "bg-destructive text-white hover:bg-red-700 focus-visible:ring-red-200 dark:focus-visible:ring-red-400 dark:bg-red-600",
+          "bg-[#FF4444] text-white hover:bg-[#cc3636] focus-visible:ring-[#FF4444]/30 dark:bg-[#FF4444]",
+        // Outline button with primary border
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-gray-800 dark:border-input dark:hover:bg-gray-700 text-foreground",
+          "border border-[#35297F] bg-white text-[#35297F] shadow-xs hover:bg-[#F4F2FF] dark:bg-[#2A2A2A] dark:border-[#7C6BFF] dark:text-[#7C6BFF] dark:hover:bg-[#3A3A3A]",
+        // Secondary purple button - ZeusODX secondary #7C6BFF
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-gray-200",
+          "bg-[#7C6BFF] text-white hover:bg-[#6a5be6]",
+        // Ghost button
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-gray-800 text-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "hover:bg-[#F4F2FF] text-[#35297F] dark:hover:bg-[#3A3A3A] dark:text-[#7C6BFF]",
+        // Link style
+        link: "text-[#35297F] underline-offset-4 hover:underline",
+        // Success button - ZeusODX success #00C851
+        success: "bg-[#00C851] text-white hover:bg-[#00a844] focus-visible:ring-[#00C851]/30",
+        // Warning button - ZeusODX warning #FF8800
+        warning: "bg-[#FF8800] text-white hover:bg-[#e67a00] focus-visible:ring-[#FF8800]/30",
+        // Accent pink button - ZeusODX accent #FF6B9D
+        accent: "bg-[#FF6B9D] text-white hover:bg-[#e65a8a] focus-visible:ring-[#FF6B9D]/30",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        xl: "h-12 rounded-md px-8 has-[>svg]:px-6",
         icon: "size-9",
       },
     },

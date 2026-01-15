@@ -118,11 +118,11 @@ export function EditFee() {
                 className="w-full py-6 border-gray-300"
               />
             </div>
-            <div className="grip w-full grid-cols-2 gap-4 md:grid">
-              <Button onClick={() => navigate(-1)} className="bg-white flex h-12 w-full md:w-full text-primary border border-green-600 items-center gap-2">
+            <div className="grid w-full grid-cols-2 gap-4">
+              <Button variant="outline" size="xl" onClick={() => navigate(-1)} className="w-full">
                 Cancel
               </Button>
-              <Button onClick={handleSave} className="flex h-12 w-full md:w-full text-white items-center gap-2" disabled={saving}>
+              <Button size="xl" onClick={handleSave} className="w-full" disabled={saving}>
                 {saving ? 'Saving…' : 'Save changes'}
               </Button>
             </div>

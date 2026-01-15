@@ -6,11 +6,11 @@ import type { GiftCardSubmission, SubmissionStatus } from '../types/giftcard';
 
 const getStatusBadge = (status: SubmissionStatus) => {
   const variants = {
-    PENDING: { variant: 'secondary' as const, label: 'Pending', className: 'bg-yellow-100 text-yellow-800' },
-    REVIEWING: { variant: 'default' as const, label: 'Reviewing', className: 'bg-blue-100 text-blue-800' },
-    APPROVED: { variant: 'default' as const, label: 'Approved', className: 'bg-green-100 text-green-800' },
-    REJECTED: { variant: 'destructive' as const, label: 'Rejected', className: 'bg-red-100 text-red-800' },
-    PAID: { variant: 'default' as const, label: 'Paid', className: 'bg-emerald-100 text-emerald-800' },
+    PENDING: { variant: 'secondary' as const, label: 'Pending', className: 'bg-[#fff3e0] text-[#FF8800]' },
+    REVIEWING: { variant: 'default' as const, label: 'Reviewing', className: 'bg-[#F4F2FF] text-[#35297F]' },
+    APPROVED: { variant: 'default' as const, label: 'Approved', className: 'bg-[#e6f7ed] text-[#00C851]' },
+    REJECTED: { variant: 'destructive' as const, label: 'Rejected', className: 'bg-[#ffe6e6] text-[#FF4444]' },
+    PAID: { variant: 'default' as const, label: 'Paid', className: 'bg-[#e6f7ed] text-[#00a844]' },
   };
 
   const config = variants[status] || variants.PENDING;
@@ -128,9 +128,7 @@ export const submissionColumns = (
       <div className="flex items-center gap-2">
         <Button
           size="sm"
-          variant="outline"
           onClick={() => onView(row.original)}
-          className="flex items-center gap-1"
         >
           <Eye className="h-4 w-4" />
           View

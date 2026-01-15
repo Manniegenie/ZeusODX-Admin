@@ -112,8 +112,8 @@ export function Admin2FASetup() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md border border-gray-200 shadow-lg">
           <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
+            <div className="mx-auto w-16 h-16 bg-[#e6f7ed] rounded-full flex items-center justify-center mb-4">
+              <CheckCircle2 className="w-10 h-10 text-[#00C851]" />
             </div>
             <CardTitle className="text-2xl">2FA Setup Complete!</CardTitle>
             <CardDescription>
@@ -141,8 +141,8 @@ export function Admin2FASetup() {
       <Card className="w-full max-w-2xl border border-gray-200 shadow-lg">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Shield className="w-6 h-6 text-purple-600" />
+            <div className="p-2 bg-[#F4F2FF] rounded-lg">
+              <Shield className="w-6 h-6 text-[#35297F]" />
             </div>
             <div>
               <CardTitle className="text-2xl">Admin 2FA Setup</CardTitle>
@@ -193,7 +193,8 @@ export function Admin2FASetup() {
 
               <Button
                 type="submit"
-                className="w-full h-12"
+                size="xl"
+                className="w-full"
                 disabled={loading}
               >
                 {loading ? 'Setting up...' : 'Setup 2FA'}
@@ -263,19 +264,21 @@ export function Admin2FASetup() {
                   <Button
                     type="button"
                     variant="outline"
+                    size="xl"
                     onClick={() => {
                       setStep('setup');
                       setQrCodeUrl('');
                       setManualKey('');
                       setVerificationToken('');
                     }}
-                    className="flex-1 h-12"
+                    className="flex-1"
                   >
                     Back
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 h-12"
+                    size="xl"
+                    className="flex-1"
                     disabled={loading}
                   >
                     {loading ? 'Verifying...' : 'Verify & Enable 2FA'}

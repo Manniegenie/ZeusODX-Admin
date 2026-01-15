@@ -350,7 +350,7 @@ export function KYCDetail() {
     return (
       <div className="w-full bg-white space-y-6 p-4 rounded">
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-green-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#35297F]" />
           <span className="ml-2 text-gray-600">Loading KYC details...</span>
         </div>
       </div>
@@ -380,8 +380,8 @@ export function KYCDetail() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button
+            variant="outline"
             onClick={() => navigate('/kyc')}
-            className="flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to KYC Review
@@ -394,6 +394,7 @@ export function KYCDetail() {
         <div className="flex items-center gap-2">
           {user.bvn && (
             <Button
+              variant="success"
               onClick={handleVerifyBvn}
               disabled={verifyingBvn}
               size="sm"
@@ -407,6 +408,7 @@ export function KYCDetail() {
           )}
           {user.bvn && user.bvnVerified && (
             <Button
+              variant="warning"
               onClick={handleDisableBvn}
               disabled={disablingBvn}
               size="sm"
@@ -419,6 +421,7 @@ export function KYCDetail() {
             </Button>
           )}
           <Button
+            variant="destructive"
             onClick={handleDisableKyc}
             disabled={disablingKyc}
             size="sm"
@@ -685,9 +688,10 @@ export function KYCDetail() {
                   />
                 </div>
                 <Button
+                  variant="success"
                   onClick={handleApproveBvn}
                   disabled={approvingBvn || !bvnNumber.trim()}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  className="w-full"
                 >
                   {approvingBvn ? (
                     <>
@@ -719,7 +723,7 @@ export function KYCDetail() {
                     id="idType"
                     value={idType}
                     onChange={(e) => setIdType(e.target.value)}
-                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#35297F]"
                   >
                     <option value="">Select ID Type</option>
                     <option value="bvn">BVN</option>
@@ -752,9 +756,10 @@ export function KYCDetail() {
                   />
                 </div>
                 <Button
+                  variant="success"
                   onClick={handleApprove}
                   disabled={approving || !idType || !idNumber}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  className="w-full"
                 >
                   {approving ? (
                     <>
@@ -788,10 +793,11 @@ export function KYCDetail() {
                     onChange={(e) => setRejectionReason(e.target.value)}
                     placeholder="Enter reason for rejection"
                     rows={4}
-                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF4444] resize-none"
                   />
                 </div>
                 <Button
+                  variant="destructive"
                   onClick={handleDecline}
                   disabled={declining || !rejectionReason.trim()}
                   className="w-full"

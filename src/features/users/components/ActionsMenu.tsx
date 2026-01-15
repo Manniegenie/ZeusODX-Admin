@@ -51,7 +51,8 @@ export function ActionsMenu({ row }: { row: Row<User> }) {
     <div>
       <Button
         ref={btnRef}
-        className="p-2 rounded hover:bg-gray-100"
+        variant="ghost"
+        size="icon"
         onClick={toggle}
         aria-label="More actions"
       >
@@ -61,30 +62,33 @@ export function ActionsMenu({ row }: { row: Row<User> }) {
         <div style={{ position: 'absolute', left: pos.left, top: pos.top }} className="z-60">
           <div className="w-48 bg-white text-black/90 border border-gray-200 rounded shadow-lg">
             <Button
+              variant="ghost"
               onClick={() => {
                 setOpen(false);
                 navigate('/user-management/actions', { state: { user: row.original } });
               }}
-              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 font-normal rounded-none"
+              className="w-full justify-start rounded-none font-normal"
             >
               Manage User
             </Button>
             <Button
+              variant="ghost"
               onClick={() => {
                 setOpen(false);
                 navigate('/user-management/summary', { state: { user: row.original } });
               }}
-              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 font-normal rounded-none"
+              className="w-full justify-start rounded-none font-normal"
             >
               View Summary
             </Button>
             <div className="border-t border-gray-200 my-1" />
             <Button
+              variant="ghost"
               onClick={() => {
                 setOpen(false);
                 setConfirmOpen(true);
               }}
-              className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-normal rounded-none"
+              className="w-full justify-start rounded-none font-normal text-[#FF4444] hover:text-[#FF4444] hover:bg-red-50"
             >
               Delete User
             </Button>
@@ -100,8 +104,8 @@ export function ActionsMenu({ row }: { row: Row<User> }) {
           </DialogHeader>
           <div className="text-sm">Are you sure you want to delete <strong>{row.original.email}</strong>?</div>
           <DialogFooter>
-            <Button className="border border-gray-300 text-gray-700 hover:bg-gray-100" onClick={() => setConfirmOpen(false)}>Cancel</Button>
-            <Button className="ml-2 text-white bg-red-500 hover:bg-red-600" onClick={onConfirmDelete}>Delete</Button>
+            <Button variant="outline" onClick={() => setConfirmOpen(false)}>Cancel</Button>
+            <Button variant="destructive" className="ml-2" onClick={onConfirmDelete}>Delete</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

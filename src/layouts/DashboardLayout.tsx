@@ -176,9 +176,10 @@ export function DashboardLayout() {
                 <img src={Logo} alt="Logo" className="h-8" />
               </h1>
               <Button
+                variant="ghost"
                 size="icon"
                 onClick={toggleSidebar}
-                className="hover:bg-gray-100"
+                className="text-white hover:bg-white/20"
               >
                 {isSidebarOpen ? (
                   <ChevronDown className="w-5 h-5 rotate-90" />
@@ -277,14 +278,15 @@ export function DashboardLayout() {
           {/* Header */}
           <header className="h-auto bg-transparent w-full z-20 flex items-center justify-end px-6 py-4">
             <Button
+              variant="ghost"
               size="icon"
               className="lg:hidden"
               onClick={toggleSidebar}
             >
               {isSidebarOpen ? (
-                <XIcon className="w-5 h-5 text-black" />
+                <XIcon className="w-5 h-5" />
               ) : (
-                <MenuIcon className="w-5 h-5 text-black" />
+                <MenuIcon className="w-5 h-5" />
               )}
             </Button>
             <div className='w-full flex justify-between items-end px-4'>

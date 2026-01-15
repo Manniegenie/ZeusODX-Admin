@@ -57,8 +57,8 @@ export function SuccessModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center justify-center mb-4">
-            <div className="rounded-full bg-green-100 p-3">
-              <CheckCircle className="h-12 w-12 text-green-600" />
+            <div className="rounded-full bg-[#e6f7ed] p-3">
+              <CheckCircle className="h-12 w-12 text-[#00C851]" />
             </div>
           </div>
           <DialogTitle className="text-center text-2xl">{title}</DialogTitle>
@@ -78,7 +78,7 @@ export function SuccessModal({
             Close
           </Button>
           {showRedirectButton && redirectTo && (
-            <Button onClick={handleRedirect} className="bg-green-600 hover:bg-green-700">
+            <Button onClick={handleRedirect} variant="success">
               {redirectButtonText}
             </Button>
           )}

@@ -174,7 +174,7 @@ export function NotificationsManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Bell className="w-8 h-8 text-blue-500" />
+          <Bell className="w-8 h-8 text-[#35297F]" />
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Push Notifications</h1>
             <p className="text-gray-600">Send notifications to users via Expo</p>
@@ -193,7 +193,7 @@ export function NotificationsManagement() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <Users className="w-8 h-8 text-blue-500" />
+            <Users className="w-8 h-8 text-[#35297F]" />
             <div>
               <p className="text-sm text-gray-500">Total Users</p>
               <p className="text-2xl font-bold">{stats?.totalUsers || '—'}</p>
@@ -203,7 +203,7 @@ export function NotificationsManagement() {
 
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <Smartphone className="w-8 h-8 text-green-500" />
+            <Smartphone className="w-8 h-8 text-[#00C851]" />
             <div>
               <p className="text-sm text-gray-500">Users with Tokens</p>
               <p className="text-2xl font-bold">{stats?.usersWithTokens || '—'}</p>
@@ -213,7 +213,7 @@ export function NotificationsManagement() {
 
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <Zap className="w-8 h-8 text-purple-500" />
+            <Zap className="w-8 h-8 text-[#7C6BFF]" />
             <div>
               <p className="text-sm text-gray-500">Active Tokens</p>
               <p className="text-2xl font-bold">{stats?.expoTokens || '—'}</p>
@@ -223,7 +223,7 @@ export function NotificationsManagement() {
 
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <Bell className="w-8 h-8 text-orange-500" />
+            <Bell className="w-8 h-8 text-[#FF8800]" />
             <div>
               <p className="text-sm text-gray-500">Expo Tokens</p>
               <p className="text-2xl font-bold">{stats?.expoTokens || '—'}</p>
@@ -234,18 +234,18 @@ export function NotificationsManagement() {
 
       {/* Notification Service Status */}
       {firebaseStatus && (
-        <Card className={`p-4 ${firebaseStatus.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+        <Card className={`p-4 ${firebaseStatus.success ? 'bg-[#e6f7ed] border-[#00C851]' : 'bg-[#ffe6e6] border-[#FF4444]'}`}>
           <div className="flex items-center gap-3">
             {firebaseStatus.success ? (
-              <CheckCircle className="w-6 h-6 text-green-500" />
+              <CheckCircle className="w-6 h-6 text-[#00C851]" />
             ) : (
-              <AlertCircle className="w-6 h-6 text-red-500" />
+              <AlertCircle className="w-6 h-6 text-[#FF4444]" />
             )}
             <div>
-              <p className={`font-medium ${firebaseStatus.success ? 'text-green-800' : 'text-red-800'}`}>
+              <p className={`font-medium ${firebaseStatus.success ? 'text-[#00a844]' : 'text-[#cc3636]'}`}>
                 Expo Service Status: {firebaseStatus.success ? 'Ready' : 'Unavailable'}
               </p>
-              <p className={`text-sm ${firebaseStatus.success ? 'text-green-600' : 'text-red-600'}`}>
+              <p className={`text-sm ${firebaseStatus.success ? 'text-[#00C851]' : 'text-[#FF4444]'}`}>
                 {firebaseStatus.message}
               </p>
             </div>
@@ -348,6 +348,7 @@ export function NotificationsManagement() {
             </Button>
 
             <Button
+              variant="outline"
               onClick={() => {
                 setFormData({
                   title: '',
@@ -369,6 +370,7 @@ export function NotificationsManagement() {
         <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           <Button
+            variant="secondary"
             onClick={() => {
               setFormData(prev => ({
                 ...prev,
@@ -384,6 +386,7 @@ export function NotificationsManagement() {
           </Button>
 
           <Button
+            variant="secondary"
             onClick={() => {
               setFormData(prev => ({
                 ...prev,
@@ -399,6 +402,7 @@ export function NotificationsManagement() {
           </Button>
 
           <Button
+            variant="warning"
             onClick={() => {
               setFormData(prev => ({
                 ...prev,
@@ -430,6 +434,7 @@ export function NotificationsManagement() {
             </p>
             <Button
               type="button"
+              variant="destructive"
               onClick={handleClearAllTokens}
               disabled={clearAllLoading}
               className="w-full justify-center"
@@ -448,6 +453,7 @@ export function NotificationsManagement() {
             />
             <Button
               type="button"
+              variant="warning"
               onClick={handleClearTokensByPhone}
               disabled={clearPhoneLoading}
               className="w-full justify-center"

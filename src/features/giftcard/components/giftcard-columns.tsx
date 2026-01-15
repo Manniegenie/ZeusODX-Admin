@@ -154,12 +154,12 @@ export const createColumns = ({
       return (
         <div className="flex items-center gap-2">
           {rate.isActive ? (
-            <ToggleRight className="w-5 h-5 text-green-500" />
+            <ToggleRight className="w-5 h-5 text-[#00C851]" />
           ) : (
-            <ToggleLeft className="w-5 h-5 text-gray-400" />
+            <ToggleLeft className="w-5 h-5 text-[#9B9B9B]" />
           )}
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-            rate.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+            rate.isActive ? 'bg-[#e6f7ed] text-[#00C851]' : 'bg-gray-100 text-gray-800'
           }`}>
             {rate.isActive ? 'Active' : 'Inactive'}
           </span>
@@ -201,16 +201,16 @@ export const createColumns = ({
             className="h-8 w-8 p-0"
           >
             {rate.isActive ? (
-              <ToggleLeft className="h-4 w-4 text-gray-600" />
+              <ToggleLeft className="h-4 w-4 text-[#6B6B6B]" />
             ) : (
-              <ToggleRight className="h-4 w-4 text-green-600" />
+              <ToggleRight className="h-4 w-4 text-[#00C851]" />
             )}
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onDelete(rate)}
-            className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+            className="h-8 w-8 p-0 text-[#FF4444] hover:text-[#cc3636]"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

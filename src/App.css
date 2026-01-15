@@ -183,50 +183,12 @@
   color: var(--color-primary-foreground) !important;
 }
 
-/* Force ALL buttons to use the same style as Verify BVN button (default variant) - overrides ALL variants and classes */
-button,
-button[data-slot="button"],
-[data-slot="button"],
-button[class*="bg-"],
-button[class*="variant-"],
-[class*="bg-destructive"],
-[class*="bg-secondary"],
-[class*="bg-accent"],
-[class*="variant-destructive"],
-[class*="variant-outline"],
-[class*="variant-secondary"],
-[class*="variant-ghost"],
-[class*="variant-default"],
-*[class*="button"] {
-  background-color: var(--color-primary) !important;
-  color: var(--color-primary-foreground) !important;
-  border: 1px solid var(--color-primary) !important;
-  border-radius: 0.375rem !important;
-  padding: 0.5rem 1rem !important;
-  font-weight: 500 !important;
-  transition: all 0.2s !important;
-}
-
-button:hover:not(:disabled),
-button[data-slot="button"]:hover:not(:disabled),
-[data-slot="button"]:hover:not(:disabled),
-button[class*="bg-"]:hover:not(:disabled),
-button[class*="variant-"]:hover:not(:disabled),
-[class*="bg-destructive"]:hover:not(:disabled),
-[class*="bg-secondary"]:hover:not(:disabled),
-[class*="variant-"]:hover:not(:disabled) {
-  background-color: var(--color-primary) !important;
-  opacity: 0.9 !important;
-}
-
-button:disabled,
-button[data-slot="button"]:disabled,
-[data-slot="button"]:disabled,
-button[class*="bg-"]:disabled,
-button[class*="variant-"]:disabled,
-[class*="bg-destructive"]:disabled,
-[class*="bg-secondary"]:disabled,
-[class*="variant-"]:disabled {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
-}
+/* Button styles are now handled by the Button component variants in button.tsx
+   Using ZeusODX color scheme:
+   - Primary: #35297F (purple)
+   - Secondary: #7C6BFF (lighter purple)
+   - Success: #00C851 (green)
+   - Warning: #FF8800 (orange)
+   - Destructive: #FF4444 (red)
+   - Accent: #FF6B9D (pink)
+*/
