@@ -23,7 +23,7 @@ import { UserWallet } from '@/features/funding/pages/UserWallet';
 import { GiftCardRates } from '@/features/fees/pages/GiftCardRates';
 import { PriceCalculator } from '@/features/fees/pages/PriceCalculator';
 import { CreateNewAdmin } from '@/features/users/pages/CreateNewAdmin';
-import { WipePendingBalance } from '@/features/funding/pages/WipePendingBalance';
+import { DeductBalance } from '@/features/funding/pages/DeductBalance';
 import { WalletGenerateByPhone } from '@/features/users/pages/WalletGenerateByPhone';
 import { RegenerateWalletByPhone } from '@/features/users/pages/RegenerateWalletByPhone';
 import { Summary } from '@/features/users/pages/Summary';
@@ -91,8 +91,8 @@ export const router = createBrowserRouter([
             element: <UserWallet />,
           },
           {
-            path: 'user-management/wipe-pending-balance',
-            element: <WipePendingBalance />,
+            path: 'user-management/deduct-balance',
+            element: <DeductBalance />,
           },
           {
             path: 'user-management/wallet-generation',

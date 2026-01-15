@@ -8,7 +8,7 @@ import {
   Wallet,
   RefreshCw,
   Loader2,
-  XCircle,
+  MinusCircle,
   Trash2,
   Ban
 } from 'lucide-react';
@@ -107,12 +107,12 @@ export function UserActions() {
       description: 'Handle user balance operations',
       actions: [
         {
-          icon: XCircle,
-          label: 'Wipe Pending Balance',
-          description: 'Clear pending balances for currencies',
-          path: '/user-management/wipe-pending-balance',
-          color: 'text-yellow-600',
-          bgColor: 'bg-yellow-50'
+          icon: MinusCircle,
+          label: 'Deduct Balance',
+          description: 'Deduct amount from user balance',
+          path: '/user-management/deduct-balance',
+          color: 'text-red-600',
+          bgColor: 'bg-red-50'
         }
       ]
     },
@@ -265,7 +265,7 @@ export function UserActions() {
               </div>
               <div className="grid grid-cols-[120px_1fr] gap-4">
                 <span className="text-green-600 font-semibold">POST</span>
-                <span>/pending/wipe</span>
+                <span>/pending/deduct</span>
               </div>
               <div className="grid grid-cols-[120px_1fr] gap-4">
                 <span className="text-green-600 font-semibold">POST</span>

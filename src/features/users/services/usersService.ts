@@ -1,5 +1,5 @@
 import axios from '@/core/services/axios';
-import type { UsersSummaryResponse, RemovePasswordResponse, FetchWalletsResponse, WipePendingResponse, CompleteUserSummaryResponse } from '@/features/users/types/userApi.types';
+import type { UsersSummaryResponse, RemovePasswordResponse, FetchWalletsResponse, DeductBalanceResponse, CompleteUserSummaryResponse } from '@/features/users/types/userApi.types';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -61,15 +61,15 @@ export async function fetchUserWallets(email: string) : Promise<FetchWalletsResp
   return res.data as FetchWalletsResponse;
 }
 
-export async function wipePendingBalance(email: string, currency: string) : Promise<WipePendingResponse> {
+export async function deductBalance(email: string, currency: string, amount: number) : Promise<DeductBalanceResponse> {
   const token = localStorage.getItem('token');
-  const res = await axios.post(`${BASE_URL}/pending/wipe`, { email, currency }, {
+  const res = await axios.post(`${BASE_URL}/pending/deduct`, { email, currency, amount }, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
-  return res.data as WipePendingResponse;
+  return res.data as DeductBalanceResponse;
 }
 
 export async function regenerateWalletsByPhone(phonenumber: string, tokens: string[], force = false) {
@@ -171,4 +171,4 @@ export async function checkUserBlocked(email: string) {
   return res.data;
 }
 
-export default { getUsersSummary, removePasswordPin, fetchUserWallets, wipePendingBalance, getCompleteUserSummary, getUserTransactions, blockUser, unblockUser, checkUserBlocked };
+export default { getUsersSummary, removePasswordPin, fetchUserWallets, deductBalance, getCompleteUserSummary, getUserTransactions, blockUser, unblockUser, checkUserBlocked };

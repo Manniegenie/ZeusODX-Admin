@@ -59,10 +59,13 @@ export interface FetchWalletsResponse {
   };
 }
 
-export interface WipePendingResponse {
+export interface DeductBalanceResponse {
   success: boolean;
   message: string;
-  [key: string]: unknown;
+  previousBalance: number;
+  deductedAmount: number;
+  newBalance: number;
+  currency: string;
 }
 
 export interface CompleteUserSummaryResponse {
