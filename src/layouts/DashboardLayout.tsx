@@ -19,6 +19,7 @@ import {
   Zap,
   CreditCard,
   UserCog,
+  BarChart3,
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -47,6 +48,11 @@ const navItems: NavItem[] = [
     title: 'Dashboard',
     path: '/',
     icon: <LayoutDashboard className="w-5 h-5" />,
+  },
+  {
+    title: 'Platform Stats',
+    path: '/platform-stats',
+    icon: <BarChart3 className="w-5 h-5" />,
   },
   {
     title: 'User Management',

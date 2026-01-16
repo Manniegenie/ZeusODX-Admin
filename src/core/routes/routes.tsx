@@ -5,6 +5,7 @@ import { RegisterPage } from '@/features/auth/pages/RegisterPage';
 import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import { Dashboard } from '@/features/dashboard/pages/Dashboard';
+import { PlatformStats } from '@/features/dashboard/pages/PlatformStats';
 import { UserList } from '@/features/users/pages/UserList';
 import { FeesAndRates } from '@/features/fees/pages/FeesAndRates';
 import { EditFee } from '@/features/fees/pages/EditFee';
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
           {
             path: '',
             element: <Dashboard />,
+          },
+          {
+            path: 'platform-stats',
+            element: <PlatformStats />,
           },
           {
             path: 'users',
