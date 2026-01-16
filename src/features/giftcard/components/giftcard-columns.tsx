@@ -65,10 +65,10 @@ export const createColumns = ({
     cell: ({ row }) => {
       const rate = row.original;
       return (
-        <div>
-          <div className="font-medium">{getCardTypeDisplayName(rate.cardType)}</div>
+        <div className="text-black">
+          <div className="font-medium text-black">{getCardTypeDisplayName(rate.cardType)}</div>
           {rate.vanillaType && (
-            <div className="text-xs text-gray-500">Type: {rate.vanillaType}</div>
+            <div className="text-xs text-gray-600">Type: {rate.vanillaType}</div>
           )}
         </div>
       );
@@ -80,9 +80,9 @@ export const createColumns = ({
     cell: ({ row }) => {
       const rate = row.original;
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 text-black">
           <span className="text-xl">{getCountryFlag(rate.country)}</span>
-          <span className="font-medium">{rate.country}</span>
+          <span className="font-medium text-black">{rate.country}</span>
         </div>
       );
     },
@@ -93,9 +93,9 @@ export const createColumns = ({
     cell: ({ row }) => {
       const rate = row.original;
       return (
-        <div>
-          <div className="font-medium">{rate.rateDisplay}</div>
-          <div className="text-xs text-gray-500">
+        <div className="text-black">
+          <div className="font-medium text-black">{rate.rateDisplay}</div>
+          <div className="text-xs text-gray-600">
             {rate.sourceCurrency} → {rate.targetCurrency}
           </div>
         </div>
@@ -108,11 +108,11 @@ export const createColumns = ({
     cell: ({ row }) => {
       const rate = row.original;
       return (
-        <div className="text-sm">
+        <div className="text-sm text-black">
           {rate.physicalRate ? (
-            <span className="font-medium">₦{rate.physicalRate}/{rate.sourceCurrency}</span>
+            <span className="font-medium text-black">₦{rate.physicalRate}/{rate.sourceCurrency}</span>
           ) : (
-            <span className="text-gray-400">N/A</span>
+            <span className="text-gray-500">N/A</span>
           )}
         </div>
       );
@@ -124,11 +124,11 @@ export const createColumns = ({
     cell: ({ row }) => {
       const rate = row.original;
       return (
-        <div className="text-sm">
+        <div className="text-sm text-black">
           {rate.ecodeRate ? (
-            <span className="font-medium">₦{rate.ecodeRate}/{rate.sourceCurrency}</span>
+            <span className="font-medium text-black">₦{rate.ecodeRate}/{rate.sourceCurrency}</span>
           ) : (
-            <span className="text-gray-400">N/A</span>
+            <span className="text-gray-500">N/A</span>
           )}
         </div>
       );
@@ -140,8 +140,8 @@ export const createColumns = ({
     cell: ({ row }) => {
       const rate = row.original;
       return (
-        <div className="text-sm">
-          <div>{rate.sourceCurrency} {rate.minAmount} - {rate.maxAmount}</div>
+        <div className="text-sm text-black">
+          <div className="text-black">{rate.sourceCurrency} {rate.minAmount} - {rate.maxAmount}</div>
         </div>
       );
     },
@@ -173,7 +173,7 @@ export const createColumns = ({
     cell: ({ row }) => {
       const rate = row.original;
       return (
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-700">
           {rate.lastUpdated ? formatDate(rate.lastUpdated) : formatDate(rate.createdAt)}
         </div>
       );
@@ -192,7 +192,7 @@ export const createColumns = ({
             onClick={() => onEdit(rate)}
             className="h-8 w-8 p-0"
           >
-            <Edit className="h-4 w-4" />
+            <Edit className="h-4 w-4 text-gray-700" />
           </Button>
           <Button
             variant="ghost"

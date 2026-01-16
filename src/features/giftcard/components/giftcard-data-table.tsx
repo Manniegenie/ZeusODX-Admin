@@ -97,15 +97,15 @@ export function GiftCardDataTable({
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50">
-              <TableHead className="font-semibold">Card Type</TableHead>
-              <TableHead className="font-semibold">Country</TableHead>
-              <TableHead className="font-semibold">Base Rate</TableHead>
-              <TableHead className="font-semibold">Physical Rate</TableHead>
-              <TableHead className="font-semibold">E-Code Rate</TableHead>
-              <TableHead className="font-semibold">Range</TableHead>
-              <TableHead className="font-semibold">Status</TableHead>
-              <TableHead className="font-semibold">Last Updated</TableHead>
-              <TableHead className="font-semibold">Actions</TableHead>
+              <TableHead className="font-semibold text-black">Card Type</TableHead>
+              <TableHead className="font-semibold text-black">Country</TableHead>
+              <TableHead className="font-semibold text-black">Base Rate</TableHead>
+              <TableHead className="font-semibold text-black">Physical Rate</TableHead>
+              <TableHead className="font-semibold text-black">E-Code Rate</TableHead>
+              <TableHead className="font-semibold text-black">Range</TableHead>
+              <TableHead className="font-semibold text-black">Status</TableHead>
+              <TableHead className="font-semibold text-black">Last Updated</TableHead>
+              <TableHead className="font-semibold text-black">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -118,52 +118,52 @@ export function GiftCardDataTable({
             ) : (
               data.map((rate) => (
                 <TableRow key={rate.id} className="hover:bg-gray-50">
-                  <TableCell>
+                  <TableCell className="text-black">
                     <div>
-                      <div className="font-medium">{getCardTypeDisplayName(rate.cardType)}</div>
+                      <div className="font-medium text-black">{getCardTypeDisplayName(rate.cardType)}</div>
                       {rate.vanillaType && (
-                        <div className="text-xs text-gray-500">Type: {rate.vanillaType}</div>
+                        <div className="text-xs text-gray-600">Type: {rate.vanillaType}</div>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-black">
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{getCountryFlag(rate.country)}</span>
-                      <span className="font-medium">{rate.country}</span>
+                      <span className="font-medium text-black">{rate.country}</span>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-black">
                     <div>
-                      <div className="font-medium">{rate.rateDisplay}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className="font-medium text-black">{rate.rateDisplay}</div>
+                      <div className="text-xs text-gray-600">
                         {rate.sourceCurrency} → {rate.targetCurrency}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-black">
                     <div className="text-sm">
                       {rate.physicalRate ? (
-                        <span className="font-medium">₦{rate.physicalRate}/{rate.sourceCurrency}</span>
+                        <span className="font-medium text-black">₦{rate.physicalRate}/{rate.sourceCurrency}</span>
                       ) : (
-                        <span className="text-gray-400">N/A</span>
+                        <span className="text-gray-500">N/A</span>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-black">
                     <div className="text-sm">
                       {rate.ecodeRate ? (
-                        <span className="font-medium">₦{rate.ecodeRate}/{rate.sourceCurrency}</span>
+                        <span className="font-medium text-black">₦{rate.ecodeRate}/{rate.sourceCurrency}</span>
                       ) : (
-                        <span className="text-gray-400">N/A</span>
+                        <span className="text-gray-500">N/A</span>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className="text-sm">
+                  <TableCell className="text-black">
+                    <div className="text-sm text-black">
                       {rate.sourceCurrency} {rate.minAmount} - {rate.maxAmount}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-black">
                     <div className="flex items-center gap-2">
                       {rate.isActive ? (
                         <ToggleRight className="w-5 h-5 text-green-500" />
@@ -177,12 +177,12 @@ export function GiftCardDataTable({
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className="text-sm text-gray-600">
+                  <TableCell className="text-black">
+                    <div className="text-sm text-gray-700">
                       {rate.lastUpdated ? formatDate(rate.lastUpdated) : formatDate(rate.createdAt)}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-black">
                     <div className="flex items-center gap-2">
                       <Button
                         variant="ghost"
@@ -191,7 +191,7 @@ export function GiftCardDataTable({
                         className="h-8 w-8 p-0"
                         title="Edit rate"
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-4 w-4 text-gray-700" />
                       </Button>
                       <Button
                         variant="ghost"
