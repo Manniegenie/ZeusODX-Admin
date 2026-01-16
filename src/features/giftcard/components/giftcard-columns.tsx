@@ -187,32 +187,39 @@ export const createColumns = ({
       return (
         <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
             size="sm"
             onClick={() => onEdit(rate)}
-            className="h-8 w-8 p-0"
+            className="flex items-center gap-1"
           >
-            <Edit className="h-4 w-4 text-gray-700" />
+            <Edit className="h-4 w-4" />
+            Edit
           </Button>
           <Button
-            variant="ghost"
             size="sm"
+            variant="outline"
             onClick={() => onToggleStatus(rate)}
-            className="h-8 w-8 p-0"
+            className="flex items-center gap-1"
           >
             {rate.isActive ? (
-              <ToggleLeft className="h-4 w-4 text-[#6B6B6B]" />
+              <>
+                <ToggleLeft className="h-4 w-4" />
+                Deactivate
+              </>
             ) : (
-              <ToggleRight className="h-4 w-4 text-[#00C851]" />
+              <>
+                <ToggleRight className="h-4 w-4" />
+                Activate
+              </>
             )}
           </Button>
           <Button
-            variant="ghost"
             size="sm"
+            variant="destructive"
             onClick={() => onDelete(rate)}
-            className="h-8 w-8 p-0 text-[#FF4444] hover:text-[#cc3636]"
+            className="flex items-center gap-1"
           >
             <Trash2 className="h-4 w-4" />
+            Delete
           </Button>
         </div>
       );

@@ -185,35 +185,42 @@ export function GiftCardDataTable({
                   <TableCell className="text-black">
                     <div className="flex items-center gap-2">
                       <Button
-                        variant="ghost"
                         size="sm"
                         onClick={() => onEdit(rate)}
-                        className="h-8 w-8 p-0"
+                        className="flex items-center gap-1"
                         title="Edit rate"
                       >
-                        <Edit className="h-4 w-4 text-gray-700" />
+                        <Edit className="h-4 w-4" />
+                        Edit
                       </Button>
                       <Button
-                        variant="ghost"
                         size="sm"
+                        variant="outline"
                         onClick={() => onToggleStatus(rate)}
-                        className="h-8 w-8 p-0"
+                        className="flex items-center gap-1"
                         title={rate.isActive ? 'Deactivate' : 'Activate'}
                       >
                         {rate.isActive ? (
-                          <ToggleLeft className="h-4 w-4 text-gray-600" />
+                          <>
+                            <ToggleLeft className="h-4 w-4" />
+                            Deactivate
+                          </>
                         ) : (
-                          <ToggleRight className="h-4 w-4 text-green-600" />
+                          <>
+                            <ToggleRight className="h-4 w-4" />
+                            Activate
+                          </>
                         )}
                       </Button>
                       <Button
-                        variant="ghost"
                         size="sm"
+                        variant="destructive"
                         onClick={() => onDelete(rate)}
-                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                        className="flex items-center gap-1"
                         title="Delete rate"
                       >
                         <Trash2 className="h-4 w-4" />
+                        Delete
                       </Button>
                     </div>
                   </TableCell>
