@@ -24,8 +24,15 @@ export async function createGiftCardRateAPI(data: {
   cardType: string;
   country: string;
   rate: number;
-  rateDisplay: string;
-  isActive: boolean;
+  physicalRate?: number;
+  ecodeRate?: number;
+  sourceCurrency?: string;
+  targetCurrency?: string;
+  minAmount?: number;
+  maxAmount?: number;
+  vanillaType?: string;
+  notes?: string;
+  isActive?: boolean;
 }): Promise<unknown> {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const token = localStorage.getItem('token');
@@ -109,11 +116,11 @@ export const deleteGiftCardRateAPI = async (id: string) => {
 /**
  * Update a gift card rate by id
  * PUT /admingiftcard/rates/:id
- * body: { rate?: number; isActive?: boolean; notes?: string }
+ * body: { rate?: number; physicalRate?: number; ecodeRate?: number; minAmount?: number; maxAmount?: number; isActive?: boolean; notes?: string }
  */
 export const updateGiftCardRateAPI = async (
   id: string,
-  body: { rate?: number; isActive?: boolean; notes?: string }
+  body: { rate?: number; physicalRate?: number; ecodeRate?: number; minAmount?: number; maxAmount?: number; isActive?: boolean; notes?: string }
 ) => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const token = localStorage.getItem('token');

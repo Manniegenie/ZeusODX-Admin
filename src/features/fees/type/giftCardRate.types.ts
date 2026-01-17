@@ -4,8 +4,16 @@ export interface GiftCardRate {
   country: string;
   rate: number;
   rateDisplay: string;
+  physicalRate?: number;
+  ecodeRate?: number;
+  minAmount?: number;
+  maxAmount?: number;
+  notes?: string;
   isActive: boolean;
   createdAt: string;
+  updatedAt?: string;
+  lastUpdated?: string;
+  updatedBy?: string;
 }
 
 export interface GiftCardRatesResponse {
