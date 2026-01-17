@@ -23,7 +23,7 @@ export function GiftCardRates() {
 
 
   return (
-    <div className="w-full bg-white space-y-6 p-4 rounded">
+    <div className="w-full bg-white space-y-6 p-4 rounded" style={{ color: '#1A1A1A' }}>
       <div className="w-full">
         {loading ? (
           <div className="flex items-center justify-center w-full h-32">

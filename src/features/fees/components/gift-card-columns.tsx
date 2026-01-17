@@ -13,15 +13,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export const giftCardColumns: ColumnDef<GiftCardRate>[] = [
-  { accessorKey: "cardType", header: "Card type" },
-  { accessorKey: "country", header: "Country" },
-  { accessorKey: "rateDisplay", header: "Base rate" },
-  { accessorKey: "physicalRate", header: "Physical" },
-  { accessorKey: "ecodeRate", header: "E-code" },
-  { accessorKey: "minAmount", header: "Min amount" },
-  { accessorKey: "maxAmount", header: "Max amount" },
-  { accessorKey: "lastUpdated", header: "Last updated" },
-  { accessorKey: "updatedBy", header: "Updated by" },
+  { accessorKey: "cardType", header: "Card type", cell: ({ row }) => <span style={{ color: '#1A1A1A' }}>{row.getValue("cardType")}</span> },
+  { accessorKey: "country", header: "Country", cell: ({ row }) => <span style={{ color: '#1A1A1A' }}>{row.getValue("country")}</span> },
+  { accessorKey: "rateDisplay", header: "Base rate", cell: ({ row }) => <span style={{ color: '#1A1A1A' }}>{row.getValue("rateDisplay")}</span> },
+  { accessorKey: "physicalRate", header: "Physical", cell: ({ row }) => <span style={{ color: '#1A1A1A' }}>{row.getValue("physicalRate")}</span> },
+  { accessorKey: "ecodeRate", header: "E-code", cell: ({ row }) => <span style={{ color: '#1A1A1A' }}>{row.getValue("ecodeRate")}</span> },
+  { accessorKey: "minAmount", header: "Min amount", cell: ({ row }) => <span style={{ color: '#1A1A1A' }}>{row.getValue("minAmount")}</span> },
+  { accessorKey: "maxAmount", header: "Max amount", cell: ({ row }) => <span style={{ color: '#1A1A1A' }}>{row.getValue("maxAmount")}</span> },
+  { accessorKey: "lastUpdated", header: "Last updated", cell: ({ row }) => <span style={{ color: '#1A1A1A' }}>{row.getValue("lastUpdated")}</span> },
+  { accessorKey: "updatedBy", header: "Updated by", cell: ({ row }) => <span style={{ color: '#1A1A1A' }}>{row.getValue("updatedBy")}</span> },
   { 
     accessorKey: "isActive", 
     header: "Status",
