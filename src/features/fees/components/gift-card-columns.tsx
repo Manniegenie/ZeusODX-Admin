@@ -42,8 +42,8 @@ export const giftCardColumns: ColumnDef<GiftCardRate>[] = [
     cell: ({ row }) => {
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild className="bg-white">
-            <Button  className="h-8 w-8 p-0">
+          <DropdownMenuTrigger asChild>
+            <Button className="h-8 w-8 p-0 bg-[#35297F] hover:bg-[#35297F] text-white">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
