@@ -148,7 +148,6 @@ export function DashboardLayout() {
   const [breadcrumb, setBreadcrumb] = useState<string[]>([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { featureAccess } = usePermissions();
 
   // Helper to check if nav item or any of its sub_menu is active
   const isNavItemActive = (item: NavItem) => {
@@ -183,6 +182,21 @@ export function DashboardLayout() {
   const [isSidebarDropdownOpen, setIsSidebarDropdownOpen] = useState(false);
   const [isHeaderDropdownOpen, setIsHeaderDropdownOpen] = useState(false);
 
+  // Sidebar nav filtering by role
+  let filteredNavItems = navItems;
+  if (user?.role === 'moderator') {
+    filteredNavItems = navItems.filter(item =>
+      item.title === 'User Management' || item.title === 'KYC Review'
+    );
+  } else if (user?.role === 'admin') {
+    filteredNavItems = navItems.filter(item =>
+      item.title === 'Funding & Balances' ||
+      item.title === 'Fees & Rates' ||
+      item.title === 'Push Notifications' ||
+      item.title === 'Gift Cards'
+    );
+  } // super_admin sees all
+
   const ctxValue = useMemo(() => ({ setTitle, setBreadcrumb }), [setTitle, setBreadcrumb]);
 
   return (
@@ -212,7 +226,7 @@ export function DashboardLayout() {
             </div>
 
           <nav className="p-3 space-y-1">
-            {navItems.filter(item => featureAccess[item.featureKey]).map((item) =>{
+            {filteredNavItems.map((item) => {
               const active = isNavItemActive(item);
               return item.sub_menu && item.sub_menu.length > 0 ? (
                 <Popover

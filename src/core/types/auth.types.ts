@@ -38,7 +38,7 @@ export interface User {
   name: string;
   adminName?: string;
   role: 'super_admin' | 'admin' | 'moderator';
-  permissions: AdminPermissions;
+  permissions?: AdminPermissions;
   featureAccess?: FeatureAccess;
 }
 
