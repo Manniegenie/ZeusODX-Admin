@@ -47,27 +47,27 @@ const navItems: NavItem[] = [
   {
     title: 'Dashboard',
     path: '/',
-    icon: <LayoutDashboard className="w-5 h-5" />,
+    icon: <LayoutDashboard className="w-4 h-4" />,
   },
   {
     title: 'Platform Stats',
     path: '/platform-stats',
-    icon: <BarChart3 className="w-5 h-5" />,
+    icon: <BarChart3 className="w-4 h-4" />,
   },
   {
     title: 'User Management',
     path: '/users',
-    icon: <Users className="w-5 h-5" />,
+    icon: <Users className="w-4 h-4" />,
   },
   {
     title: 'KYC Review',
     path: '/kyc',
-    icon: <UserCheck className="w-5 h-5" />,
+    icon: <UserCheck className="w-4 h-4" />,
   },
   {
     title: 'Fees & Rates',
     path: '/fees-rates',
-    icon: <Calculator className="w-5 h-5" />,
+    icon: <Calculator className="w-4 h-4" />,
     sub_menu: [
       { title: 'View all fees', path: '/fees-rates' },
       { title: 'Crypto fee management', path: '/fees-rates/crypto-fees-management' },
@@ -80,7 +80,7 @@ const navItems: NavItem[] = [
   {
     title: 'Gift Cards',
     path: '/giftcards',
-    icon: <CreditCard className="w-5 h-5" />,
+    icon: <CreditCard className="w-4 h-4" />,
     sub_menu: [
       { title: 'Gift card rates', path: '/fees-rates/gift-card-rates' },
       { title: 'Review submissions', path: '/giftcards/submissions' },
@@ -89,7 +89,7 @@ const navItems: NavItem[] = [
   {
     title: 'Push Notifications',
     path: '/notifications',
-    icon: <Zap className="w-5 h-5" />,
+    icon: <Zap className="w-4 h-4" />,
     sub_menu: [
       { title: 'Send Notifications', path: '/notifications' },
       { title: 'Scheduled Notifications', path: '/scheduled-notifications' },
@@ -98,27 +98,27 @@ const navItems: NavItem[] = [
   {
     title: 'Funding & Balances',
     path: '/funding',
-    icon: <Wallet className="w-5 h-5" />,
+    icon: <Wallet className="w-4 h-4" />,
   },
   {
     title: 'Security',
     path: '/security',
-    icon: <Shield className="w-5 h-5" />,
+    icon: <Shield className="w-4 h-4" />,
   },
   {
     title: 'Audit & Monitoring',
     path: '/audit',
-    icon: <LineChart className="w-5 h-5" />,
+    icon: <LineChart className="w-4 h-4" />,
   },
   {
     title: 'Admin Settings',
     path: '/admin-settings',
-    icon: <UserCog className="w-5 h-5" />,
+    icon: <UserCog className="w-4 h-4" />,
   },
   {
     title: 'Settings',
     path: '/settings',
-    icon: <Settings className="w-5 h-5" />,
+    icon: <Settings className="w-4 h-4" />,
   },
 ];
 
@@ -174,12 +174,12 @@ export function DashboardLayout() {
       <div className="w-screen flex min-h-screen bg-white dark:bg-white text-gray-900 dark:text-gray-900">
         {/* Sidebar */}
         <aside
-          className={`${isSidebarOpen ? 'w-64' : 'w-20'} min-h-screen sticky top-0 bg-primary shadow-lg transition-all duration-300 z-30 text-white flex flex-col justify-between`}
+          className={`${isSidebarOpen ? 'w-56' : 'w-16'} min-h-screen sticky top-0 bg-primary shadow-lg transition-all duration-300 z-30 text-white flex flex-col justify-between`}
         >
           <div>
-            <div className="flex items-center justify-between h-16 px-4">
-              <h1 className={`${!isSidebarOpen && 'hidden'} font-bold text-xl`}>
-                <img src={Logo} alt="Logo" className="h-8" />
+            <div className="flex items-center justify-between h-12 px-3">
+              <h1 className={`${!isSidebarOpen && 'hidden'} font-bold text-lg`}>
+                <img src={Logo} alt="Logo" className="h-6" />
               </h1>
               <Button
                 variant="ghost"
@@ -195,8 +195,8 @@ export function DashboardLayout() {
               </Button>
             </div>
 
-          <nav className="p-4 space-y-2">
-            {navItems.map((item) =>{ 
+          <nav className="p-3 space-y-1">
+            {navItems.map((item) =>{
               const active = isNavItemActive(item);
               return item.sub_menu && item.sub_menu.length > 0 ? (
                 <Popover
@@ -205,29 +205,28 @@ export function DashboardLayout() {
                   position="right"
                   trigger={
                     <div
-                      className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
-                        active 
+                      className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md transition-colors text-sm ${
+                        active
                           ? 'bg-pupple-800 text-primary-foreground'
                           : 'hover:bg-pupple-700 hover:text-white'
                       }`}
                     >
                       <div className="flex items-center">
                         {item.icon}
-                        <span className={`${!isSidebarOpen && 'hidden'} ml-3`}>
+                        <span className={`${!isSidebarOpen && 'hidden'} ml-2.5`}>
                           {item.title}
                         </span>
                       </div>
-                      <ChevronRightIcon className="w-4 h-4 ml-2" />
+                      <ChevronRightIcon className="w-3.5 h-3.5 ml-1.5" />
                     </div>
                   }
                   content={
                     <div className="p-1 rounded-none shadow-none">
-                      {/* <div className="font-semibold text-lg mb-2">{item.title}</div> */}
                       {item.sub_menu.map((sub) => (
                         <Link
                           key={sub.path}
                           to={sub.path}
-                          className="block hover:bg-gray-100 px-2 py-2.5 border-b border-gray-100 cursor-pointer"
+                          className="block hover:bg-gray-100 px-2 py-2 border-b border-gray-100 cursor-pointer text-sm"
                         >
                           {sub.title}
                         </Link>
@@ -238,18 +237,18 @@ export function DashboardLayout() {
               ) : (
                 <div key={item.path}>
                   {item.title === 'Settings' && (
-                    <hr className="my-2 border-t border-black/20" />
+                    <hr className="my-1.5 border-t border-black/20" />
                   )}
                   <Link
                     to={item.path}
-                    className={`flex items-center p-3 rounded-lg transition-colors ${
+                    className={`flex items-center px-2.5 py-2 rounded-md transition-colors text-sm ${
                       location.pathname === item.path
                         ? 'bg-black/50 text-primary-foreground'
                         : 'hover:bg-black/40 hover:text-white'
                     }`}
                   >
                     {item.icon}
-                    <span className={`${!isSidebarOpen && 'hidden'} ml-3`}>
+                    <span className={`${!isSidebarOpen && 'hidden'} ml-2.5`}>
                       {item.title}
                     </span>
                   </Link>
@@ -258,7 +257,7 @@ export function DashboardLayout() {
           })}
           </nav>
             </div>
-          <div className="relative space-y-2 p-4">
+          <div className="relative space-y-1.5 p-3">
             <ProfileDropdown
               user={{
                 name: user?.name && user?.name.trim() !== '' ? user.name : user?.adminName || '',
@@ -282,7 +281,7 @@ export function DashboardLayout() {
           className={`w-full flex-1 transition-all duration-300 flex flex-col min-h-screen`}
         >
           {/* Header */}
-          <header className="h-auto bg-transparent w-full z-20 flex items-center justify-end px-6 py-4">
+          <header className="h-auto bg-transparent w-full z-20 flex items-center justify-end px-4 py-2.5">
             <Button
               variant="ghost"
               size="icon"
@@ -290,27 +289,27 @@ export function DashboardLayout() {
               onClick={toggleSidebar}
             >
               {isSidebarOpen ? (
-                <XIcon className="w-5 h-5" />
+                <XIcon className="w-4 h-4" />
               ) : (
-                <MenuIcon className="w-5 h-5" />
+                <MenuIcon className="w-4 h-4" />
               )}
             </Button>
-            <div className='w-full flex justify-between items-end px-4'>
+            <div className='w-full flex justify-between items-end px-3'>
               <div className='w-fit flex flex-col items-start justify-start'>
                 {/* Breadcrumbs (not shown on dashboard) */}
                 {location.pathname !== '/dashboard' && breadcrumb.length > 0 && (
-                  <nav className="flex text-[13px] text-[#475467] items-center space-x-2 mb-2">
+                  <nav className="flex text-xs text-[#475467] items-center space-x-1.5 mb-1">
                     {breadcrumb.map((crumb, idx) => (
                       <span key={idx} className="flex items-center">
                         {crumb}
                         {idx < breadcrumb.length - 1 && (
-                          <ChevronRightIcon className="mx-2 w-4 h-4 text-gray-400" />
+                          <ChevronRightIcon className="mx-1.5 w-3.5 h-3.5 text-gray-400" />
                         )}
                       </span>
                     ))}
                   </nav>
                 )}
-                <h1 className="text-[24px] font-medium text-[#2B2B2B]">{title}</h1>
+                <h1 className="text-lg font-medium text-[#2B2B2B]">{title}</h1>
               </div>
               <ProfileDropdown
                 user={{
@@ -330,7 +329,7 @@ export function DashboardLayout() {
           </header>
 
           {/* Page Content */}
-          <div className="w-full flex-1 p-4 mt-4 pb-8">
+          <div className="w-full flex-1 p-3 mt-2 pb-6">
             <Outlet />
           </div>
         </main>

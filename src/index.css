@@ -163,9 +163,10 @@
   }
   html {
     height: 100%;
+    font-size: 14px; /* Base font size reduced for compact UI */
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-sm;
     margin: 0;
     min-width: 320px;
     min-height: 100%;

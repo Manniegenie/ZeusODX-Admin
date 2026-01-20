@@ -207,7 +207,7 @@ export function Dashboard() {
   }
 
   return (
-    <div className="w-full bg-white space-y-6 p-4 rounded">
+    <div className="w-full bg-white space-y-4 p-3 rounded">
       {/* Universal Search Bar */}
       <div className="w-full">
         <div className="flex gap-2">
@@ -445,40 +445,40 @@ export function Dashboard() {
       </div>
 
       {/* Dashboard Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
-        <Card className="p-6 bg-primary rounded-lg text-white relative overflow-hidden">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <Card className="p-4 bg-primary rounded-lg text-white relative overflow-hidden">
           <img src={CardBg} className='object-fit absolute left-0 top-0' alt='Logo' />
-          <div className="flex flex-col items-start gap-3 space-x-4">
-            <p className="text-sm text-white font-semibold">Total Users</p>
-            <h3 className="text-[30px] font-bold">{loading ? '...' : analytics?.data?.users?.total ?? total}</h3>
+          <div className="flex flex-col items-start gap-1">
+            <p className="text-xs text-white font-semibold">Total Users</p>
+            <h3 className="text-xl font-bold">{loading ? '...' : analytics?.data?.users?.total ?? total}</h3>
           </div>
         </Card>
-        
-        <Card className="p-6 rounded-lg border-gray-200 shadow-none">
-          <div className="flex flex-col items-start gap-3 space-x-4">
-            <p className="text-sm text-gray-500 font-semibold">Trades</p>
-            <h3 className="text-2xl font-bold">{loading ? '...' : analytics?.data?.chatbotTrades?.overview?.total ?? '—'}</h3>
+
+        <Card className="p-4 rounded-lg border-gray-200 shadow-none">
+          <div className="flex flex-col items-start gap-1">
+            <p className="text-xs text-gray-500 font-semibold">Trades</p>
+            <h3 className="text-xl font-bold">{loading ? '...' : analytics?.data?.chatbotTrades?.overview?.total ?? '—'}</h3>
           </div>
         </Card>
-        
-        <Card className="p-6 rounded-lg border-gray-200 shadow-none">
-          <div className="flex flex-col items-start gap-3 space-x-4">
-            <p className="text-sm text-gray-500 font-semibold">Completed Trades</p>
-            <h3 className="text-2xl font-bold">{loading ? '...' : analytics?.data?.chatbotTrades?.overview?.completed ?? '—'}</h3>
+
+        <Card className="p-4 rounded-lg border-gray-200 shadow-none">
+          <div className="flex flex-col items-start gap-1">
+            <p className="text-xs text-gray-500 font-semibold">Completed Trades</p>
+            <h3 className="text-xl font-bold">{loading ? '...' : analytics?.data?.chatbotTrades?.overview?.completed ?? '—'}</h3>
           </div>
         </Card>
-        
-        <Card className="p-6 rounded-lg border-gray-200 shadow-none">
-          <div className="flex flex-col items-start gap-3 space-x-4">
-            <p className="text-sm text-gray-500 font-semibold">Pending Trades</p>
-            <h3 className="text-2xl font-bold">{loading ? '...' : analytics?.data?.chatbotTrades?.overview?.pending ?? '—'}</h3>
+
+        <Card className="p-4 rounded-lg border-gray-200 shadow-none">
+          <div className="flex flex-col items-start gap-1">
+            <p className="text-xs text-gray-500 font-semibold">Pending Trades</p>
+            <h3 className="text-xl font-bold">{loading ? '...' : analytics?.data?.chatbotTrades?.overview?.pending ?? '—'}</h3>
           </div>
         </Card>
-        
-        <Card className="p-6 rounded-lg border-gray-200 shadow-none">
-          <div className="flex flex-col items-start gap-3 space-x-4">
-            <p className="text-sm text-gray-500 font-semibold">Transaction Volume</p>
-            <h3 className="text-2xl font-bold">
+
+        <Card className="p-4 rounded-lg border-gray-200 shadow-none">
+          <div className="flex flex-col items-start gap-1">
+            <p className="text-xs text-gray-500 font-semibold">Transaction Volume</p>
+            <h3 className="text-xl font-bold">
               {loading ? '...' : formatCurrency(analytics?.data?.transactionVolume)}
             </h3>
           </div>
