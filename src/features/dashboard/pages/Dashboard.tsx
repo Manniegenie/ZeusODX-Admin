@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import CardBg from '../../../assets/img/card-bg.png';
 import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import type { RootState } from '@/core/store/store';
-import { getDashboardAnalytics, getRecentTransactions, getFilteredData } from '../services/analyticsService'
+import { getDashboardAnalytics, getRecentTransactions, getFilteredData, getVolumes } from '../services/analyticsService'
 import { toast } from 'sonner'
 import type { DashboardAnalyticsResponse, Transaction } from '../type/analytic';
 import { DataTable } from '../components/data-table';
@@ -45,6 +45,8 @@ export function Dashboard() {
   
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
+  const [volumes, setVolumes] = useState<{deposits?: any[]; withdrawals?: any[]}>({})
+
   // Helper function to format currency
   const formatCurrency = (value: number | undefined | null) => {
     if (value === undefined || value === null) return '—';
@@ -77,6 +79,12 @@ export function Dashboard() {
       }
     }
     load()
+  }, [])
+
+  useEffect(() => {
+    getVolumes().then(res => {
+      if (res.success) setVolumes(res.data)
+    }).catch(() => {})
   }, [])
 
   // Fetch transactions with filters
@@ -445,7 +453,7 @@ export function Dashboard() {
       </div>
 
       {/* Dashboard Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="p-4 bg-primary rounded-lg text-white relative overflow-hidden">
           <img src={CardBg} className='object-fit absolute left-0 top-0' alt='Logo' />
           <div className="flex flex-col items-start gap-1">
@@ -480,6 +488,26 @@ export function Dashboard() {
             <p className="text-xs text-gray-500 font-semibold">Transaction Volume</p>
             <h3 className="text-xl font-bold">
               {loading ? '...' : formatCurrency(analytics?.data?.transactionVolume)}
+            </h3>
+          </div>
+        </Card>
+
+        <Card className="p-4 rounded-lg border-gray-200 shadow-none">
+          <div className="flex flex-col items-start gap-1">
+            <p className="text-xs text-gray-500 font-semibold">Deposit Volume</p>
+            <h3 className="text-xl font-bold">
+              {volumes.deposits && volumes.deposits.length > 0 ?
+                volumes.deposits.map(d => `${d._id}: ₦${Number(d.totalAmount).toLocaleString()}`).join(', ') : '—'}
+            </h3>
+          </div>
+        </Card>
+
+        <Card className="p-4 rounded-lg border-gray-200 shadow-none">
+          <div className="flex flex-col items-start gap-1">
+            <p className="text-xs text-gray-500 font-semibold">Withdrawal Volume</p>
+            <h3 className="text-xl font-bold">
+              {volumes.withdrawals && volumes.withdrawals.length > 0 ?
+                volumes.withdrawals.map(w => `${w._id}: ₦${Number(w.totalAmount).toLocaleString()}`).join(', ') : '—'}
             </h3>
           </div>
         </Card>

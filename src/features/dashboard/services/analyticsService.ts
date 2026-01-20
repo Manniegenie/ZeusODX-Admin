@@ -203,4 +203,12 @@ export const getPlatformStats = async (): Promise<PlatformStatsResponse> => {
   return res.data
 }
 
+export const getVolumes = async () => {
+  const token = localStorage.getItem('token')
+  const res = await axios.get(`${BASE_URL}/analytics/volumes`, {
+    headers: { Authorization: token ? `Bearer ${token}` : undefined }
+  })
+  return res.data
+}
+
 export default getDashboardAnalytics
