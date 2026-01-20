@@ -1,114 +1,174 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-@theme {
-  --color-card: #FFFFFF;
-  --color-card-foreground: #1A1A1A;
-  --color-background: #FFFFFF;
-  --color-foreground: #1A1A1A;
-  --color-primary: #35297F;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #7C6BFF;
-  --color-secondary-foreground: #ffffff;
-  --color-muted: #F3F4F6;
-  --color-muted-foreground: #6B6B6B;
-  --color-accent: #FF6B9D;
-  --color-accent-foreground: #ffffff;
-  --color-destructive: #FF4444;
-  --color-destructive-foreground: #ffffff;
-  --color-border: #E5E5E5;
-  --color-input: #E5E5E5;
-  --color-ring: #35297F;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================
+   ZeusODX Admin - Consolidated Styles
+   ============================================ */
 
 :root {
+  /* Border radius */
+  --radius: 0.625rem;
+
+  /* Core colors */
+  --background: #FFFFFF;
+  --foreground: #1A1A1A;
+
+  /* Card */
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+
+  /* Popover */
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+
+  /* Primary - Purple */
+  --primary: #35297F;
+  --primary-foreground: #FFFFFF;
+
+  /* Secondary - Light Purple */
+  --secondary: #7C6BFF;
+  --secondary-foreground: #FFFFFF;
+
+  /* Muted */
+  --muted: #9B9B9B;
+  --muted-foreground: #6B6B6B;
+
+  /* Accent - Pink */
+  --accent: #FF6B9D;
+  --accent-foreground: #FFFFFF;
+
+  /* Destructive - Red */
+  --destructive: #FF4444;
+  --destructive-foreground: #FFFFFF;
+
+  /* Border & Input */
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: #35297F;
+
+  /* Status colors */
+  --success: #00C851;
+  --warning: #FF8800;
+  --error: #FF4444;
+
+  /* Charts */
+  --chart-1: #35297F;
+  --chart-2: #7C6BFF;
+  --chart-3: #FF6B9D;
+  --chart-4: #00C851;
+  --chart-5: #FF8800;
+
+  /* Sidebar */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #35297F;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #7C6BFF;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: #35297F;
+
+  /* Typography */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light;
-  color: #1A1A1A;
-  background-color: #FFFFFF;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
 
-  /* Primary Colors - from ZeusODX app */
-  --primary: #35297F;
-  --primary-foreground: #ffffff;
-  --secondary: #7C6BFF;
-  --secondary-foreground: #ffffff;
+/* Dark mode */
+.dark {
+  --background: #1A1A1A;
+  --foreground: #F5F5F5;
+  --card: #2A2A2A;
+  --card-foreground: #F5F5F5;
+  --popover: #2A2A2A;
+  --popover-foreground: #F5F5F5;
+  --primary: #7C6BFF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #35297F;
+  --secondary-foreground: #FFFFFF;
+  --muted: #6B6B6B;
+  --muted-foreground: #9B9B9B;
   --accent: #FF6B9D;
-  --accent-foreground: #ffffff;
-
-  /* Text Colors */
-  --text-primary: #1A1A1A;
-  --text-secondary: #6B6B6B;
-  --text-muted: #9B9B9B;
-  --muted: #9B9B9B;
-  --muted-foreground: #6B6B6B;
-
-  /* Surface & Border */
-  --surface: #FFFFFF;
-  --card-background: #FFFFFF;
-  --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
-  --border: #E5E5E5;
-  --background: #FFFFFF;
-  --foreground: #1A1A1A;
-
-  /* Status Colors */
-  --success: #00C851;
-  --warning: #FF8800;
-  --error: #FF4444;
+  --accent-foreground: #FFFFFF;
   --destructive: #FF4444;
-  --destructive-foreground: #ffffff;
-
-  /* Crypto Colors */
-  --bitcoin: #F7931A;
-  --ethereum: #627EEA;
-  --coin-gold: #FFD700;
+  --border: #3A3A3A;
+  --input: #3A3A3A;
+  --ring: #7C6BFF;
+  --chart-1: #7C6BFF;
+  --chart-2: #35297F;
+  --chart-3: #FF6B9D;
+  --chart-4: #00C851;
+  --chart-5: #FF8800;
+  --sidebar: #2A2A2A;
+  --sidebar-foreground: #F5F5F5;
+  --sidebar-primary: #7C6BFF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #35297F;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #3A3A3A;
+  --sidebar-ring: #7C6BFF;
 }
 
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  color: #1A1A1A;
-  background-color: #FFFFFF;
+/* Tailwind theme mapping */
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-#root {
-  width: 100%;
-  min-height: 100vh;
-}
-
-.bg-primary {
-  background-color: #35297F;
-}
-.text-primary {
-  color: #35297F;
-}
-.bg-secondary {
-  background-color: #7C6BFF;
-}
-.text-secondary {
-  color: #6B6B6B;
-}
-.bg-accent {
-  background-color: #FF6B9D;
-}
-.bg-success {
-  background-color: #00C851;
-}
-.bg-warning {
-  background-color: #FF8800;
-}
-.bg-error {
-  background-color: #FF4444;
-}
-.text-muted {
-  color: #9B9B9B;
+/* Base styles */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+  #root {
+    width: 100%;
+    min-height: 100vh;
+  }
 }

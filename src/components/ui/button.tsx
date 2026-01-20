@@ -16,7 +16,7 @@ const buttonVariants = cva(
           "bg-[#FF4444] text-white hover:bg-[#cc3636] focus-visible:ring-[#FF4444]/30",
         // Outline button - white bg, purple border/text
         outline:
-          "border border-[#35297F] bg-white text-[#35297F] shadow-xs hover:bg-[#F4F2FF]",
+          "border border-[#35297F] bg-white text-[#35297F] shadow-xs hover:bg-gray-100",
         // Secondary purple button - white text
         secondary:
           "bg-[#7C6BFF] text-white hover:bg-[#6a5be6]",

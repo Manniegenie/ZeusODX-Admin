@@ -141,7 +141,7 @@ export function Admin2FASetup() {
       <Card className="w-full max-w-2xl border border-gray-200 shadow-lg">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#F4F2FF] rounded-lg">
+            <div className="p-2 bg-gray-100 rounded-lg">
               <Shield className="w-6 h-6 text-[#35297F]" />
             </div>
             <div>

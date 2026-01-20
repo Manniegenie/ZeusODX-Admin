@@ -7,7 +7,7 @@ import type { GiftCardSubmission, SubmissionStatus } from '../types/giftcard';
 const getStatusBadge = (status: SubmissionStatus) => {
   const variants = {
     PENDING: { variant: 'secondary' as const, label: 'Pending', className: 'bg-[#fff3e0] text-[#FF8800]' },
-    REVIEWING: { variant: 'default' as const, label: 'Reviewing', className: 'bg-[#F4F2FF] text-[#35297F]' },
+    REVIEWING: { variant: 'default' as const, label: 'Reviewing', className: 'bg-gray-100 text-[#35297F]' },
     APPROVED: { variant: 'default' as const, label: 'Approved', className: 'bg-[#e6f7ed] text-[#00C851]' },
     REJECTED: { variant: 'destructive' as const, label: 'Rejected', className: 'bg-[#ffe6e6] text-[#FF4444]' },
     PAID: { variant: 'default' as const, label: 'Paid', className: 'bg-[#e6f7ed] text-[#00a844]' },
