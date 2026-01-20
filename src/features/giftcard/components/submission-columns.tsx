@@ -10,7 +10,7 @@ const getStatusBadge = (status: SubmissionStatus) => {
     REVIEWING: { variant: 'default' as const, label: 'Reviewing', className: 'bg-gray-100 text-[#35297F]' },
     APPROVED: { variant: 'default' as const, label: 'Approved', className: 'bg-[#e6f7ed] text-[#00C851]' },
     REJECTED: { variant: 'destructive' as const, label: 'Rejected', className: 'bg-[#ffe6e6] text-[#FF4444]' },
-    PAID: { variant: 'default' as const, label: 'Paid', className: 'bg-[#e6f7ed] text-[#00a844]' },
+    PAID: { variant: 'default' as const, label: 'Paid', className: 'bg-emerald-100 text-emerald-800 border border-emerald-300' },
   };
 
   const config = variants[status] || variants.PENDING;

@@ -142,10 +142,10 @@ export function GiftCardSubmissions() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">Total</div>
-          <div className="text-2xl font-bold">{totalSubmissions}</div>
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <Card className="p-4 bg-black text-white">
+          <div className="text-sm text-gray-200">Total</div>
+          <div className="text-2xl font-bold text-white">{totalSubmissions}</div>
         </Card>
         <Card className="p-4 bg-yellow-50">
           <div className="text-sm text-yellow-700">Pending</div>
@@ -163,6 +163,12 @@ export function GiftCardSubmissions() {
           <div className="text-sm text-green-700">Approved</div>
           <div className="text-2xl font-bold text-green-900">
             {submissions.filter(s => s.status === 'APPROVED').length}
+          </div>
+        </Card>
+        <Card className="p-4 bg-emerald-50">
+          <div className="text-sm text-emerald-700">Paid</div>
+          <div className="text-2xl font-bold text-emerald-900">
+            {submissions.filter(s => s.status === 'PAID').length}
           </div>
         </Card>
         <Card className="p-4 bg-red-50">
