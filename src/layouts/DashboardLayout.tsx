@@ -30,6 +30,8 @@ import type { RootState } from '@/core/store/store';
 import Logo from '../assets/img/logo.png';
 import { ProfileDropdown } from '@/components/ui/ProfileDropdown';
 import { Popover } from '@/components/ui/Popover';
+import { usePermissions } from '@/core/hooks/usePermissions';
+import type { FeatureAccess } from '@/core/types/auth.types';
 
 interface SubMenuItem {
   title: string;
@@ -41,6 +43,7 @@ interface NavItem {
   path: string;
   icon: React.ReactNode;
   sub_menu?: SubMenuItem[];
+  featureKey: keyof FeatureAccess; // Maps to permission key
 }
 
 const navItems: NavItem[] = [
@@ -48,26 +51,31 @@ const navItems: NavItem[] = [
     title: 'Dashboard',
     path: '/',
     icon: <LayoutDashboard className="w-4 h-4" />,
+    featureKey: 'dashboard',
   },
   {
     title: 'Platform Stats',
     path: '/platform-stats',
     icon: <BarChart3 className="w-4 h-4" />,
+    featureKey: 'platformStats',
   },
   {
     title: 'User Management',
     path: '/users',
     icon: <Users className="w-4 h-4" />,
+    featureKey: 'userManagement',
   },
   {
     title: 'KYC Review',
     path: '/kyc',
     icon: <UserCheck className="w-4 h-4" />,
+    featureKey: 'kycReview',
   },
   {
     title: 'Fees & Rates',
     path: '/fees-rates',
     icon: <Calculator className="w-4 h-4" />,
+    featureKey: 'feesAndRates',
     sub_menu: [
       { title: 'View all fees', path: '/fees-rates' },
       { title: 'Crypto fee management', path: '/fees-rates/crypto-fees-management' },
@@ -81,6 +89,7 @@ const navItems: NavItem[] = [
     title: 'Gift Cards',
     path: '/giftcards',
     icon: <CreditCard className="w-4 h-4" />,
+    featureKey: 'giftCards',
     sub_menu: [
       { title: 'Gift card rates', path: '/fees-rates/gift-card-rates' },
       { title: 'Review submissions', path: '/giftcards/submissions' },
@@ -90,6 +99,7 @@ const navItems: NavItem[] = [
     title: 'Push Notifications',
     path: '/notifications',
     icon: <Zap className="w-4 h-4" />,
+    featureKey: 'pushNotifications',
     sub_menu: [
       { title: 'Send Notifications', path: '/notifications' },
       { title: 'Scheduled Notifications', path: '/scheduled-notifications' },
@@ -99,26 +109,31 @@ const navItems: NavItem[] = [
     title: 'Funding & Balances',
     path: '/funding',
     icon: <Wallet className="w-4 h-4" />,
+    featureKey: 'fundingAndBalances',
   },
   {
     title: 'Security',
     path: '/security',
     icon: <Shield className="w-4 h-4" />,
+    featureKey: 'security',
   },
   {
     title: 'Audit & Monitoring',
     path: '/audit',
     icon: <LineChart className="w-4 h-4" />,
+    featureKey: 'auditAndMonitoring',
   },
   {
     title: 'Admin Settings',
     path: '/admin-settings',
     icon: <UserCog className="w-4 h-4" />,
+    featureKey: 'adminSettings',
   },
   {
     title: 'Settings',
     path: '/settings',
     icon: <Settings className="w-4 h-4" />,
+    featureKey: 'settings',
   },
 ];
 
@@ -133,6 +148,7 @@ export function DashboardLayout() {
   const [breadcrumb, setBreadcrumb] = useState<string[]>([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { featureAccess } = usePermissions();
 
   // Helper to check if nav item or any of its sub_menu is active
   const isNavItemActive = (item: NavItem) => {
@@ -196,7 +212,7 @@ export function DashboardLayout() {
             </div>
 
           <nav className="p-3 space-y-1">
-            {navItems.map((item) =>{
+            {navItems.filter(item => featureAccess[item.featureKey]).map((item) =>{
               const active = isNavItemActive(item);
               return item.sub_menu && item.sub_menu.length > 0 ? (
                 <Popover

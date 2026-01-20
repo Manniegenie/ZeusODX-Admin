@@ -1,9 +1,45 @@
+export interface AdminPermissions {
+  canDeleteUsers: boolean;
+  canManageWallets: boolean;
+  canManageFees: boolean;
+  canViewTransactions: boolean;
+  canFundUsers: boolean;
+  canManageKYC: boolean;
+  canAccessReports: boolean;
+  canManageAdmins: boolean;
+}
+
+export interface FeatureAccess {
+  dashboard: boolean;
+  platformStats: boolean;
+  userManagement: boolean;
+  kycReview: boolean;
+  feesAndRates: boolean;
+  giftCards: boolean;
+  fundingAndBalances: boolean;
+  pushNotifications: boolean;
+  security: boolean;
+  auditAndMonitoring: boolean;
+  adminSettings: boolean;
+  settings: boolean;
+  canDeleteUsers: boolean;
+  canManageWallets: boolean;
+  canManageFees: boolean;
+  canViewTransactions: boolean;
+  canFundUsers: boolean;
+  canManageKYC: boolean;
+  canAccessReports: boolean;
+  canManageAdmins: boolean;
+}
+
 export interface User {
   id: string;
   email: string;
   name: string;
   adminName?: string;
-  role: string;
+  role: 'super_admin' | 'admin' | 'moderator';
+  permissions: AdminPermissions;
+  featureAccess?: FeatureAccess;
 }
 
 export interface AuthState {
@@ -11,6 +47,7 @@ export interface AuthState {
   token: string | null;
   loading: boolean;
   error: string | null;
+  featureAccess: FeatureAccess | null;
 }
 
 export interface LoginCredentials {

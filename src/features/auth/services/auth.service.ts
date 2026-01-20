@@ -96,6 +96,19 @@ class AuthService {
       return { token };
     }
 
+  async getPermissions(token: string) {
+    try {
+      const response = await axios.get(`${BASE_URL}/admin/permissions`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch permissions');
+    }
+  }
+
   async register(credentials: RegisterCredentials) {
     const response = await fetch(`${BASE_URL}/register`, {
       method: 'POST',

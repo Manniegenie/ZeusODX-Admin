@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import  type { AuthState, LoginCredentials, RegisterCredentials, ResetPasswordCredentials } from '@/core/types/auth.types';
+import  type { AuthState, LoginCredentials, RegisterCredentials, ResetPasswordCredentials, FeatureAccess } from '@/core/types/auth.types';
 import { authService } from '../services/auth.service';
 
 const getPersistedUser = () => {
@@ -7,11 +7,17 @@ const getPersistedUser = () => {
   return userStr ? JSON.parse(userStr) : null;
 };
 
+const getPersistedFeatureAccess = (): FeatureAccess | null => {
+  const featureAccessStr = localStorage.getItem('featureAccess');
+  return featureAccessStr ? JSON.parse(featureAccessStr) : null;
+};
+
 const initialState: AuthState = {
   user: getPersistedUser(),
   token: localStorage.getItem('token'),
   loading: false,
   error: null,
+  featureAccess: getPersistedFeatureAccess(),
 };
 
 export const login = createAsyncThunk(
@@ -58,11 +64,17 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
         state.error = null;
+        state.featureAccess = null;
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('featureAccess');
       },
     clearError: (state) => {
       state.error = null;
+    },
+    setFeatureAccess: (state, action) => {
+      state.featureAccess = action.payload;
+      localStorage.setItem('featureAccess', JSON.stringify(action.payload));
     },
   },
   extraReducers: (builder) => {
@@ -74,14 +86,10 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        // Check if 2FA setup is required (don't set user/token yet)
         if (action.payload.requires2FASetup) {
-          // Don't set user or token, just return the response
           return;
         }
-        // Check if 2FA token is required (don't set user/token yet)
         if (action.payload.requires2FA) {
-          // Don't set user or token, just return the response
           return;
         }
         state.user = action.payload.admin;
@@ -90,12 +98,16 @@ const authSlice = createSlice({
           localStorage.setItem('token', action.payload.accessToken);
         }
         if (action.payload.admin) {
-          // Ensure name is present and saved
           const userToSave = {
             ...action.payload.admin,
             name: action.payload.admin.name || action.payload.admin.username || '',
+            permissions: action.payload.admin.permissions,
           };
           localStorage.setItem('user', JSON.stringify(userToSave));
+        }
+        if (action.payload.featureAccess) {
+          state.featureAccess = action.payload.featureAccess;
+          localStorage.setItem('featureAccess', JSON.stringify(action.payload.featureAccess));
         }
       })
       .addCase(login.rejected, (state, action) => {
@@ -143,5 +155,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { logout, clearError, setFeatureAccess } = authSlice.actions;
 export const authReducer = authSlice.reducer;
