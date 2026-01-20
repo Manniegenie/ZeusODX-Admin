@@ -30,7 +30,6 @@ import type { RootState } from '@/core/store/store';
 import Logo from '../assets/img/logo.png';
 import { ProfileDropdown } from '@/components/ui/ProfileDropdown';
 import { Popover } from '@/components/ui/Popover';
-import { usePermissions } from '@/core/hooks/usePermissions';
 import type { FeatureAccess } from '@/core/types/auth.types';
 
 interface SubMenuItem {
