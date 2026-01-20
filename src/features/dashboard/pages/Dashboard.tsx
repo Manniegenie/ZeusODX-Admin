@@ -45,7 +45,12 @@ export function Dashboard() {
   
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  const [volumes, setVolumes] = useState<{deposits?: any[]; withdrawals?: any[]}>({})
+  const [volumes, setVolumes] = useState<{
+    deposits?: any[];
+    withdrawals?: any[];
+    totalDepositNGN?: number;
+    totalWithdrawalNGN?: number;
+  }>({})
 
   // Helper function to format currency
   const formatCurrency = (value: number | undefined | null) => {
@@ -453,7 +458,7 @@ export function Dashboard() {
       </div>
 
       {/* Dashboard Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-9">
         <Card className="p-4 bg-primary rounded-lg text-white relative overflow-hidden">
           <img src={CardBg} className='object-fit absolute left-0 top-0' alt='Logo' />
           <div className="flex flex-col items-start gap-1">
@@ -508,6 +513,23 @@ export function Dashboard() {
             <h3 className="text-xl font-bold">
               {volumes.withdrawals && volumes.withdrawals.length > 0 ?
                 volumes.withdrawals.map(w => `${w._id}: ₦${Number(w.totalAmount).toLocaleString()}`).join(', ') : '—'}
+            </h3>
+          </div>
+        </Card>
+
+        <Card className="p-4 rounded-lg border-gray-200 shadow-none">
+          <div className="flex flex-col items-start gap-1">
+            <p className="text-xs text-gray-500 font-semibold">Deposit Volume (NGN)</p>
+            <h3 className="text-xl font-bold">
+              {volumes.totalDepositNGN ? `₦${Number(volumes.totalDepositNGN).toLocaleString()}` : '—'}
+            </h3>
+          </div>
+        </Card>
+        <Card className="p-4 rounded-lg border-gray-200 shadow-none">
+          <div className="flex flex-col items-start gap-1">
+            <p className="text-xs text-gray-500 font-semibold">Withdrawal Volume (NGN)</p>
+            <h3 className="text-xl font-bold">
+              {volumes.totalWithdrawalNGN ? `₦${Number(volumes.totalWithdrawalNGN).toLocaleString()}` : '—'}
             </h3>
           </div>
         </Card>
