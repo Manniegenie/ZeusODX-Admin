@@ -3,7 +3,7 @@
 @theme {
   --color-card: #FFFFFF;
   --color-card-foreground: #1A1A1A;
-  --color-background: #F4F2FF;
+  --color-background: #FFFFFF;
   --color-foreground: #1A1A1A;
   --color-primary: #35297F;
   --color-primary-foreground: #ffffff;
@@ -27,7 +27,7 @@
 
   color-scheme: light;
   color: #1A1A1A;
-  background-color: #F4F2FF;
+  background-color: #FFFFFF;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -55,7 +55,7 @@
   --card: #FFFFFF;
   --card-foreground: #1A1A1A;
   --border: #E5E5E5;
-  --background: #F4F2FF;
+  --background: #FFFFFF;
   --foreground: #1A1A1A;
 
   /* Status Colors */
@@ -77,7 +77,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   color: #1A1A1A;
-  background-color: #F4F2FF;
+  background-color: #FFFFFF;
 }
 
 #root {
