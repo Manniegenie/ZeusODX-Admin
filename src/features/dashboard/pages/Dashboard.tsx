@@ -464,31 +464,31 @@ export function Dashboard() {
         <Card className="p-4 bg-primary rounded-lg text-white relative overflow-hidden min-w-0 flex-1">
           <img src={CardBg} className='object-fit absolute left-0 top-0' alt='Logo' />
           <div className="flex flex-col items-start gap-1 min-w-0">
-            <p className="text-xs text-white font-semibold">Total Users</p>
+            <p className="text-xs text-white font-semibold whitespace-nowrap">Total Users</p>
             <h3 className="text-xl font-bold break-words min-w-0">{loading ? '...' : analytics?.data?.users?.total ?? total}</h3>
           </div>
         </Card>
         <Card className="p-4 rounded-lg border-gray-200 shadow-none min-w-0 flex-1">
           <div className="flex flex-col items-start gap-1 min-w-0">
-            <p className="text-xs text-gray-500 font-semibold">Trades</p>
+            <p className="text-xs text-gray-500 font-semibold whitespace-nowrap">Trades</p>
             <h3 className="text-xl font-bold break-words min-w-0">{loading ? '...' : analytics?.data?.chatbotTrades?.overview?.total ?? '—'}</h3>
           </div>
         </Card>
         <Card className="p-4 rounded-lg border-gray-200 shadow-none min-w-0 flex-1">
           <div className="flex flex-col items-start gap-1 min-w-0">
-            <p className="text-xs text-gray-500 font-semibold">Completed Trades</p>
+            <p className="text-xs text-gray-500 font-semibold whitespace-nowrap">Completed Trades</p>
             <h3 className="text-xl font-bold break-words min-w-0">{loading ? '...' : analytics?.data?.chatbotTrades?.overview?.completed ?? '—'}</h3>
           </div>
         </Card>
         <Card className="p-4 rounded-lg border-gray-200 shadow-none min-w-0 flex-1">
           <div className="flex flex-col items-start gap-1 min-w-0">
-            <p className="text-xs text-gray-500 font-semibold">Pending Trades</p>
+            <p className="text-xs text-gray-500 font-semibold whitespace-nowrap">Pending Trades</p>
             <h3 className="text-xl font-bold break-words min-w-0">{loading ? '...' : analytics?.data?.chatbotTrades?.overview?.pending ?? '—'}</h3>
           </div>
         </Card>
         <Card className="p-4 rounded-lg border-gray-200 shadow-none min-w-0 flex-1">
           <div className="flex flex-col items-start gap-1 min-w-0">
-            <p className="text-xs text-gray-500 font-semibold">Transaction Volume</p>
+            <p className="text-xs text-gray-500 font-semibold whitespace-nowrap">Transaction Volume</p>
             <h3 className="text-xl font-bold break-words min-w-0">
               {loading ? '...' : formatCurrency(analytics?.data?.transactionVolume)}
             </h3>
@@ -496,7 +496,7 @@ export function Dashboard() {
         </Card>
         <Card className="p-4 rounded-lg border-gray-200 shadow-none min-w-0 flex-1">
           <div className="flex flex-col items-start gap-1 min-w-0">
-            <p className="text-xs text-gray-500 font-semibold">Deposit Volume (USD)</p>
+            <p className="text-xs text-gray-500 font-semibold whitespace-nowrap">Deposit Volume (USD)</p>
             <h3 className="text-xl font-bold break-words min-w-0">
               {volumes.totalDepositUSD !== undefined ? `$${Number(volumes.totalDepositUSD).toLocaleString()}` : '—'}
             </h3>
@@ -504,7 +504,7 @@ export function Dashboard() {
         </Card>
         <Card className="p-4 rounded-lg border-gray-200 shadow-none min-w-0 flex-1">
           <div className="flex flex-col items-start gap-1 min-w-0">
-            <p className="text-xs text-gray-500 font-semibold">Withdrawal Volume (USD)</p>
+            <p className="text-xs text-gray-500 font-semibold whitespace-nowrap">Withdrawal Volume (USD)</p>
             <h3 className="text-xl font-bold break-words min-w-0">
               {volumes.totalWithdrawalUSD !== undefined ? `$${Number(volumes.totalWithdrawalUSD).toLocaleString()}` : '—'}
             </h3>
