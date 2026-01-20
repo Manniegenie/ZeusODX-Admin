@@ -171,10 +171,10 @@ export function DashboardLayout() {
 
   return (
     <DashboardTitleContext.Provider value={ctxValue}>
-      <div className="w-screen flex h-screen bg-white dark:bg-white text-gray-900 dark:text-gray-900">
+      <div className="w-screen flex min-h-screen bg-white dark:bg-white text-gray-900 dark:text-gray-900">
         {/* Sidebar */}
         <aside
-          className={`${isSidebarOpen ? 'w-64' : 'w-20'} h-screen bg-primary shadow-lg transition-all duration-300 z-30 text-white flex flex-col justify-between`}
+          className={`${isSidebarOpen ? 'w-64' : 'w-20'} min-h-screen sticky top-0 bg-primary shadow-lg transition-all duration-300 z-30 text-white flex flex-col justify-between`}
         >
           <div>
             <div className="flex items-center justify-between h-16 px-4">
@@ -279,7 +279,7 @@ export function DashboardLayout() {
 
         {/* Main Content */}
         <main
-          className={`w-full flex-1 transition-all duration-300 flex flex-col overflow-hidden`}
+          className={`w-full flex-1 transition-all duration-300 flex flex-col min-h-screen`}
         >
           {/* Header */}
           <header className="h-auto bg-transparent w-full z-20 flex items-center justify-end px-6 py-4">
@@ -330,7 +330,7 @@ export function DashboardLayout() {
           </header>
 
           {/* Page Content */}
-          <div className="w-full flex-1 overflow-y-auto p-4 mt-4">
+          <div className="w-full flex-1 p-4 mt-4 pb-8">
             <Outlet />
           </div>
         </main>
