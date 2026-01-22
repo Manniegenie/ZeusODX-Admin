@@ -16,6 +16,7 @@ export interface FeatureAccess {
   kycReview: boolean;
   feesAndRates: boolean;
   giftCards: boolean;
+  banners: boolean;
   fundingAndBalances: boolean;
   pushNotifications: boolean;
   security: boolean;

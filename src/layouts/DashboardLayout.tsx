@@ -20,6 +20,7 @@ import {
   CreditCard,
   UserCog,
   BarChart3,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -103,6 +104,12 @@ const navItems: NavItem[] = [
       { title: 'Send Notifications', path: '/notifications' },
       { title: 'Scheduled Notifications', path: '/scheduled-notifications' },
     ]
+  },
+  {
+    title: 'Banners',
+    path: '/banners',
+    icon: <ImageIcon className="w-4 h-4" />,
+    featureKey: 'banners',
   },
   {
     title: 'Funding & Balances',
@@ -192,7 +199,8 @@ export function DashboardLayout() {
       item.title === 'Funding & Balances' ||
       item.title === 'Fees & Rates' ||
       item.title === 'Push Notifications' ||
-      item.title === 'Gift Cards'
+      item.title === 'Gift Cards' ||
+      item.title === 'Banners'
     );
   } // super_admin sees all
 

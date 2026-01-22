@@ -41,6 +41,7 @@ import { GiftCardSubmissions } from '@/features/giftcard/pages/GiftCardSubmissio
 import { GiftCardSubmissionDetail } from '@/features/giftcard/pages/GiftCardSubmissionDetail';
 import { AdminSettings } from '@/features/admin-settings/pages/AdminSettings';
 import { Admin2FASetup } from '@/features/admin-settings/pages/Admin2FASetup';
+import { BannerManagement } from '@/features/banners/pages/BannerManagement';
 
 export const router = createBrowserRouter([
   {
@@ -194,6 +195,10 @@ export const router = createBrowserRouter([
           {
             path: 'scheduled-notifications',
             element: <ScheduledNotifications />,
+          },
+          {
+            path: 'banners',
+            element: <BannerManagement />,
           },
           {
             path: 'admin-settings',
