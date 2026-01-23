@@ -81,6 +81,38 @@ export function KYCDataTable({
     return typeMap[idType] || idType;
   };
 
+  // Helper function to get KYC level color
+  const getKycLevelColor = (level: string) => {
+    switch (level?.toLowerCase()) {
+      case 'level3':
+        return 'bg-purple-100 text-purple-800';
+      case 'level2':
+        return 'bg-blue-100 text-blue-800';
+      case 'level1':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-600';
+    }
+  };
+
+  // Helper function to format confidence value
+  const formatConfidence = (value: string | undefined) => {
+    if (!value) return 'N/A';
+    const num = parseFloat(value);
+    if (isNaN(num)) return value;
+    return `${(num * 100).toFixed(1)}%`;
+  };
+
+  // Helper function to format date of birth
+  const formatDob = (dateString: string | undefined) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   return (
     <div className="space-y-4">
       {/* Table Controls */}
@@ -99,14 +131,18 @@ export function KYCDataTable({
       </div>
 
       {/* Table */}
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border rounded-lg overflow-hidden overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50">
               <TableHead className="font-semibold">User</TableHead>
+              <TableHead className="font-semibold">KYC Level</TableHead>
               <TableHead className="font-semibold">ID Type</TableHead>
               <TableHead className="font-semibold">ID Number</TableHead>
+              <TableHead className="font-semibold">Personal Info</TableHead>
               <TableHead className="font-semibold">Status</TableHead>
+              <TableHead className="font-semibold">Confidence</TableHead>
+              <TableHead className="font-semibold">Images</TableHead>
               <TableHead className="font-semibold">Submitted</TableHead>
               <TableHead className="font-semibold">Actions</TableHead>
             </TableRow>
@@ -124,6 +160,16 @@ export function KYCDataTable({
                   </div>
                 </TableCell>
                 <TableCell>
+                  <div className="space-y-1">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getKycLevelColor(entry.user.kycLevel)}`}>
+                      {entry.user.kycLevel || 'N/A'}
+                    </span>
+                    <div className="text-xs text-gray-500 capitalize">
+                      {entry.user.kycStatus || 'Unknown'}
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
                   <div className="font-medium">
                     {getIdTypeDisplayName(entry.frontendIdType)}
                   </div>
@@ -137,14 +183,61 @@ export function KYCDataTable({
                   </div>
                 </TableCell>
                 <TableCell>
+                  <div className="text-sm space-y-0.5">
+                    {entry.dateOfBirth && (
+                      <div className="text-gray-700">
+                        <span className="text-gray-500">DOB:</span> {formatDob(entry.dateOfBirth)}
+                      </div>
+                    )}
+                    {entry.gender && (
+                      <div className="text-gray-700 capitalize">
+                        <span className="text-gray-500">Gender:</span> {entry.gender}
+                      </div>
+                    )}
+                    {entry.country && (
+                      <div className="text-gray-700">
+                        <span className="text-gray-500">Country:</span> {entry.country}
+                      </div>
+                    )}
+                    {!entry.dateOfBirth && !entry.gender && !entry.country && (
+                      <span className="text-gray-400">N/A</span>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(entry.status)}`}>
                     {entry.status}
                   </span>
                   {entry.resultText && (
-                    <div className="text-xs text-gray-500 mt-1 max-w-xs truncate">
+                    <div className="text-xs text-gray-500 mt-1 max-w-xs truncate" title={entry.resultText}>
                       {entry.resultText}
                     </div>
                   )}
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm space-y-0.5">
+                    <div className="font-medium">
+                      {formatConfidence(entry.confidenceValue)}
+                    </div>
+                    {entry.resultCode && (
+                      <div className="text-xs text-gray-500">
+                        Code: {entry.resultCode}
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-center">
+                    {entry.hasImages ? (
+                      <span className="inline-flex items-center gap-1 text-green-600" title="Has images">
+                        <Image className="w-4 h-4" />
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-gray-400" title="No images">
+                        <ImageOff className="w-4 h-4" />
+                      </span>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
