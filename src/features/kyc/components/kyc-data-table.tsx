@@ -39,8 +39,9 @@ export function KYCDataTable({
   };
 
   // Helper function to get status color
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
+  const getStatusColor = (status: unknown) => {
+    const statusStr = typeof status === 'string' ? status.toLowerCase() : '';
+    switch (statusStr) {
       case 'approved':
         return 'bg-green-100 text-green-800';
       case 'rejected':
@@ -82,8 +83,9 @@ export function KYCDataTable({
   };
 
   // Helper function to get KYC level color
-  const getKycLevelColor = (level: string) => {
-    switch (level?.toLowerCase()) {
+  const getKycLevelColor = (level: unknown) => {
+    const levelStr = typeof level === 'string' ? level.toLowerCase() : '';
+    switch (levelStr) {
       case 'level3':
         return 'bg-purple-100 text-purple-800';
       case 'level2':
@@ -161,11 +163,11 @@ export function KYCDataTable({
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getKycLevelColor(entry.user.kycLevel)}`}>
-                      {entry.user.kycLevel || 'N/A'}
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getKycLevelColor(entry.user?.kycLevel)}`}>
+                      {typeof entry.user?.kycLevel === 'string' ? entry.user.kycLevel : 'N/A'}
                     </span>
                     <div className="text-xs text-gray-500 capitalize">
-                      {entry.user.kycStatus || 'Unknown'}
+                      {typeof entry.user?.kycStatus === 'string' ? entry.user.kycStatus : 'Unknown'}
                     </div>
                   </div>
                 </TableCell>
@@ -206,9 +208,9 @@ export function KYCDataTable({
                 </TableCell>
                 <TableCell>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(entry.status)}`}>
-                    {entry.status}
+                    {typeof entry.status === 'string' ? entry.status : 'Unknown'}
                   </span>
-                  {entry.resultText && (
+                  {entry.resultText && typeof entry.resultText === 'string' && (
                     <div className="text-xs text-gray-500 mt-1 max-w-xs truncate" title={entry.resultText}>
                       {entry.resultText}
                     </div>
