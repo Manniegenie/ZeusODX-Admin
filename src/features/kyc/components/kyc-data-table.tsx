@@ -141,7 +141,9 @@ export function KYCDataTable({
               <TableHead className="font-semibold">KYC Level</TableHead>
               <TableHead className="font-semibold">ID Type</TableHead>
               <TableHead className="font-semibold">ID Number</TableHead>
-              <TableHead className="font-semibold">Personal Info</TableHead>
+              <TableHead className="font-semibold">DOB</TableHead>
+              <TableHead className="font-semibold">Gender</TableHead>
+              <TableHead className="font-semibold">Country</TableHead>
               <TableHead className="font-semibold">Status</TableHead>
               <TableHead className="font-semibold">Confidence</TableHead>
               <TableHead className="font-semibold">Images</TableHead>
@@ -185,25 +187,18 @@ export function KYCDataTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="text-sm space-y-0.5">
-                    {entry.dateOfBirth && (
-                      <div className="text-gray-700">
-                        <span className="text-gray-500">DOB:</span> {formatDob(entry.dateOfBirth)}
-                      </div>
-                    )}
-                    {entry.gender && (
-                      <div className="text-gray-700 capitalize">
-                        <span className="text-gray-500">Gender:</span> {entry.gender}
-                      </div>
-                    )}
-                    {entry.country && (
-                      <div className="text-gray-700">
-                        <span className="text-gray-500">Country:</span> {entry.country}
-                      </div>
-                    )}
-                    {!entry.dateOfBirth && !entry.gender && !entry.country && (
-                      <span className="text-gray-400">N/A</span>
-                    )}
+                  <div className="text-sm text-gray-700">
+                    {formatDob(entry.dateOfBirth)}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm text-gray-700 capitalize">
+                    {entry.gender || 'N/A'}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm text-gray-700">
+                    {entry.country || 'N/A'}
                   </div>
                 </TableCell>
                 <TableCell>

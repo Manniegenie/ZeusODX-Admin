@@ -1,9 +1,41 @@
+// Rate range for a specific value bracket
+export interface RateRangeValues {
+  rate: number | null;
+  physicalRate: number | null;
+  ecodeRate: number | null;
+}
+
+// All rate ranges for a gift card
+export interface RateRanges {
+  range25_100?: RateRangeValues | null;   // $25 - $100
+  range100_200?: RateRangeValues | null;  // $100 - $200
+  range200_500?: RateRangeValues | null;  // $200 - $500
+  range500_1000?: RateRangeValues | null; // $500 - $1000
+}
+
+// Rate range configuration from backend
+export interface RateRangeConfig {
+  min: number;
+  max: number;
+  label: string;
+}
+
+export interface RateRangesConfig {
+  range25_100: RateRangeConfig;
+  range100_200: RateRangeConfig;
+  range200_500: RateRangeConfig;
+  range500_1000: RateRangeConfig;
+}
+
+export type RateRangeKey = keyof RateRanges;
+
 export interface GiftCardRate {
   id: string;
   cardType: string;
   country: string;
   rate: number;
   rateDisplay: string;
+  rateRanges?: RateRanges;
   physicalRate?: number;
   ecodeRate?: number;
   sourceCurrency: string;
@@ -21,12 +53,22 @@ export interface GiftCardRatesResponse {
   success: boolean;
   data: {
     rates: GiftCardRate[];
+    rateRangesConfig?: RateRangesConfig;
     pagination: {
       currentPage: number;
       totalPages: number;
       totalRates: number;
       limit: number;
     };
+  };
+  message: string;
+}
+
+export interface RateRangesConfigResponse {
+  success: boolean;
+  data: {
+    rateRanges: RateRangesConfig;
+    rangeKeys: RateRangeKey[];
   };
   message: string;
 }
@@ -44,6 +86,7 @@ export interface CreateRateRequest {
   cardType: string;
   country: string;
   rate: number;
+  rateRanges?: RateRanges;
   physicalRate?: number;
   ecodeRate?: number;
   sourceCurrency?: string;
@@ -56,6 +99,7 @@ export interface CreateRateRequest {
 
 export interface UpdateRateRequest {
   rate?: number;
+  rateRanges?: RateRanges;
   physicalRate?: number;
   ecodeRate?: number;
   minAmount?: number;
@@ -77,6 +121,7 @@ export interface CreateRateResponse {
     country: string;
     rate: number;
     rateDisplay: string;
+    rateRanges?: RateRanges;
     physicalRate?: number;
     ecodeRate?: number;
     minAmount: number;

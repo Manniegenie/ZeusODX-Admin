@@ -9,7 +9,16 @@ import { Label } from '@/components/ui/label';
 import { Filter, Plus, RefreshCw, ChevronLeft, ChevronRight, Edit, Trash2, ToggleLeft, ToggleRight, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { GiftCardService } from '../services/giftcardService';
-import type { GiftCardRate, FilterParams, CreateRateRequest, UpdateRateRequest } from '../types/giftcard';
+import type { GiftCardRate, FilterParams, CreateRateRequest, UpdateRateRequest, RateRanges, RateRangeKey, RateRangesConfig } from '../types/giftcard';
+
+// Rate ranges configuration (matches backend)
+const RATE_RANGE_KEYS: RateRangeKey[] = ['range25_100', 'range100_200', 'range200_500', 'range500_1000'];
+const RATE_RANGE_LABELS: Record<RateRangeKey, string> = {
+  range25_100: '$25 - $100',
+  range100_200: '$100 - $200',
+  range200_500: '$200 - $500',
+  range500_1000: '$500 - $1,000'
+};
 
 const CARD_TYPES = [
   'APPLE', 'STEAM', 'NORDSTROM', 'MACY', 'NIKE', 'GOOGLE_PLAY',
@@ -95,12 +104,18 @@ export function GiftCardRates() {
     cardType: '',
     country: '',
     rate: 0,
+    rateRanges: {
+      range25_100: { rate: null, physicalRate: null, ecodeRate: null },
+      range100_200: { rate: null, physicalRate: null, ecodeRate: null },
+      range200_500: { rate: null, physicalRate: null, ecodeRate: null },
+      range500_1000: { rate: null, physicalRate: null, ecodeRate: null }
+    },
     physicalRate: undefined,
     ecodeRate: undefined,
     sourceCurrency: 'USD',
     targetCurrency: 'NGN',
-    minAmount: 5,
-    maxAmount: 2000,
+    minAmount: 25,
+    maxAmount: 1000,
     vanillaType: undefined,
     notes: ''
   });
@@ -197,6 +212,12 @@ export function GiftCardRates() {
       cardType: rate.cardType,
       country: rate.country,
       rate: rate.rate,
+      rateRanges: rate.rateRanges || {
+        range25_100: { rate: null, physicalRate: null, ecodeRate: null },
+        range100_200: { rate: null, physicalRate: null, ecodeRate: null },
+        range200_500: { rate: null, physicalRate: null, ecodeRate: null },
+        range500_1000: { rate: null, physicalRate: null, ecodeRate: null }
+      },
       physicalRate: rate.physicalRate,
       ecodeRate: rate.ecodeRate,
       sourceCurrency: rate.sourceCurrency,
@@ -217,6 +238,7 @@ export function GiftCardRates() {
       setLoading(true);
       const updateData: UpdateRateRequest = {
         rate: formData.rate,
+        rateRanges: formData.rateRanges,
         physicalRate: formData.physicalRate,
         ecodeRate: formData.ecodeRate,
         minAmount: formData.minAmount,
@@ -287,15 +309,44 @@ export function GiftCardRates() {
       cardType: '',
       country: '',
       rate: 0,
+      rateRanges: {
+        range25_100: { rate: null, physicalRate: null, ecodeRate: null },
+        range100_200: { rate: null, physicalRate: null, ecodeRate: null },
+        range200_500: { rate: null, physicalRate: null, ecodeRate: null },
+        range500_1000: { rate: null, physicalRate: null, ecodeRate: null }
+      },
       physicalRate: undefined,
       ecodeRate: undefined,
       sourceCurrency: 'USD',
       targetCurrency: 'NGN',
-      minAmount: 5,
-      maxAmount: 2000,
+      minAmount: 25,
+      maxAmount: 1000,
       vanillaType: undefined,
       notes: ''
     });
+  };
+
+  // Helper to update rate range values
+  const updateRateRange = (rangeKey: RateRangeKey, field: 'rate' | 'physicalRate' | 'ecodeRate', value: string) => {
+    const numValue = value === '' ? null : parseFloat(value);
+    setFormData(prev => ({
+      ...prev,
+      rateRanges: {
+        ...prev.rateRanges,
+        [rangeKey]: {
+          ...prev.rateRanges?.[rangeKey],
+          [field]: numValue
+        }
+      }
+    }));
+  };
+
+  // Get rate range summary for display
+  const getRateRangeSummary = (rateRanges: RateRanges | undefined) => {
+    if (!rateRanges) return 'No range rates set';
+    const setRanges = RATE_RANGE_KEYS.filter(key => rateRanges[key]?.rate);
+    if (setRanges.length === 0) return 'No range rates set';
+    return `${setRanges.length}/4 ranges configured`;
   };
 
   // Count active filters
@@ -460,10 +511,8 @@ export function GiftCardRates() {
                   <tr className="bg-gray-50 border-b">
                     <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Card Type</th>
                     <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Country</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Base Rate</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Physical Rate</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>E-Code Rate</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Range</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Default Rate</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Rate Ranges</th>
                     <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Status</th>
                     <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Last Updated</th>
                     <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Actions</th>
@@ -495,21 +544,26 @@ export function GiftCardRates() {
                         </div>
                       </td>
                       <td className="p-3">
-                        {rate.physicalRate ? (
-                          <span className="font-medium" style={{ color: '#111827' }}>₦{rate.physicalRate}/{rate.sourceCurrency}</span>
-                        ) : (
-                          <span style={{ color: '#9CA3AF' }}>N/A</span>
-                        )}
-                      </td>
-                      <td className="p-3">
-                        {rate.ecodeRate ? (
-                          <span className="font-medium" style={{ color: '#111827' }}>₦{rate.ecodeRate}/{rate.sourceCurrency}</span>
-                        ) : (
-                          <span style={{ color: '#9CA3AF' }}>N/A</span>
-                        )}
-                      </td>
-                      <td className="p-3">
-                        <span style={{ color: '#111827' }}>{rate.sourceCurrency} {rate.minAmount} - {rate.maxAmount}</span>
+                        <div className="space-y-1">
+                          {RATE_RANGE_KEYS.map(rangeKey => {
+                            const rangeRate = rate.rateRanges?.[rangeKey];
+                            const hasRate = rangeRate?.rate || rangeRate?.physicalRate || rangeRate?.ecodeRate;
+                            return (
+                              <div key={rangeKey} className="flex items-center gap-2 text-xs">
+                                <span className="w-20 font-medium" style={{ color: '#6B7280' }}>
+                                  {RATE_RANGE_LABELS[rangeKey]}:
+                                </span>
+                                {hasRate ? (
+                                  <span style={{ color: '#111827' }}>
+                                    ₦{rangeRate?.rate || rangeRate?.physicalRate || rangeRate?.ecodeRate}
+                                  </span>
+                                ) : (
+                                  <span style={{ color: '#D1D5DB' }}>—</span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </td>
                       <td className="p-3">
                         <div className="flex items-center gap-2">
@@ -660,79 +714,96 @@ export function GiftCardRates() {
             )}
 
             <div>
-              <Label style={{ color: '#374151' }}>Base Rate (₦) *</Label>
+              <Label style={{ color: '#374151' }}>Default Rate (₦) *</Label>
               <Input
                 type="number"
                 value={formData.rate}
-                onChange={(e) => setFormData({...formData, rate: parseFloat(e.target.value)})}
-                placeholder="e.g., 1500"
+                onChange={(e) => setFormData({...formData, rate: parseFloat(e.target.value) || 0})}
+                placeholder="Fallback rate"
               />
+              <p className="text-xs mt-1" style={{ color: '#6B7280' }}>Used when no range-specific rate is set</p>
             </div>
 
             <div>
-              <Label style={{ color: '#374151' }}>Physical Rate (₦)</Label>
-              <Input
-                type="number"
-                value={formData.physicalRate || ''}
-                onChange={(e) => setFormData({...formData, physicalRate: e.target.value ? parseFloat(e.target.value) : undefined})}
-                placeholder="Optional"
-              />
+              <Label style={{ color: '#374151' }}>Currency</Label>
+              <div className="flex gap-2">
+                <Select value={formData.sourceCurrency} onValueChange={(value) => setFormData({...formData, sourceCurrency: value})}>
+                  <SelectTrigger className="w-24">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CURRENCIES.map(currency => (
+                      <SelectItem key={currency} value={currency}>{currency}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <span className="flex items-center">→</span>
+                <Select value={formData.targetCurrency} onValueChange={(value) => setFormData({...formData, targetCurrency: value})}>
+                  <SelectTrigger className="w-24">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CURRENCIES.map(currency => (
+                      <SelectItem key={currency} value={currency}>{currency}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            <div>
-              <Label style={{ color: '#374151' }}>E-Code Rate (₦)</Label>
-              <Input
-                type="number"
-                value={formData.ecodeRate || ''}
-                onChange={(e) => setFormData({...formData, ecodeRate: e.target.value ? parseFloat(e.target.value) : undefined})}
-                placeholder="Optional"
-              />
-            </div>
+            {/* Rate Ranges Section */}
+            <div className="col-span-2">
+              <Label style={{ color: '#374151' }} className="text-base font-semibold">Rate Ranges</Label>
+              <p className="text-xs mb-3" style={{ color: '#6B7280' }}>Set different rates for each card value range</p>
 
-            <div>
-              <Label style={{ color: '#374151' }}>Source Currency</Label>
-              <Select value={formData.sourceCurrency} onValueChange={(value) => setFormData({...formData, sourceCurrency: value})}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CURRENCIES.map(currency => (
-                    <SelectItem key={currency} value={currency}>{currency}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label style={{ color: '#374151' }}>Target Currency</Label>
-              <Select value={formData.targetCurrency} onValueChange={(value) => setFormData({...formData, targetCurrency: value})}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CURRENCIES.map(currency => (
-                    <SelectItem key={currency} value={currency}>{currency}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label style={{ color: '#374151' }}>Min Amount</Label>
-              <Input
-                type="number"
-                value={formData.minAmount}
-                onChange={(e) => setFormData({...formData, minAmount: parseFloat(e.target.value)})}
-              />
-            </div>
-
-            <div>
-              <Label style={{ color: '#374151' }}>Max Amount</Label>
-              <Input
-                type="number"
-                value={formData.maxAmount}
-                onChange={(e) => setFormData({...formData, maxAmount: parseFloat(e.target.value)})}
-              />
+              <div className="border rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Range</th>
+                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Base Rate (₦)</th>
+                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Physical (₦)</th>
+                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>E-Code (₦)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {RATE_RANGE_KEYS.map(rangeKey => (
+                      <tr key={rangeKey} className="border-t">
+                        <td className="p-2 font-medium" style={{ color: '#111827' }}>
+                          {RATE_RANGE_LABELS[rangeKey]}
+                        </td>
+                        <td className="p-2">
+                          <Input
+                            type="number"
+                            className="h-8"
+                            value={formData.rateRanges?.[rangeKey]?.rate ?? ''}
+                            onChange={(e) => updateRateRange(rangeKey, 'rate', e.target.value)}
+                            placeholder="—"
+                          />
+                        </td>
+                        <td className="p-2">
+                          <Input
+                            type="number"
+                            className="h-8"
+                            value={formData.rateRanges?.[rangeKey]?.physicalRate ?? ''}
+                            onChange={(e) => updateRateRange(rangeKey, 'physicalRate', e.target.value)}
+                            placeholder="—"
+                          />
+                        </td>
+                        <td className="p-2">
+                          <Input
+                            type="number"
+                            className="h-8"
+                            value={formData.rateRanges?.[rangeKey]?.ecodeRate ?? ''}
+                            onChange={(e) => updateRateRange(rangeKey, 'ecodeRate', e.target.value)}
+                            placeholder="—"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <div className="col-span-2">
@@ -773,48 +844,67 @@ export function GiftCardRates() {
             </div>
 
             <div>
-              <Label style={{ color: '#374151' }}>Base Rate (₦) *</Label>
+              <Label style={{ color: '#374151' }}>Default Rate (₦) *</Label>
               <Input
                 type="number"
                 value={formData.rate}
-                onChange={(e) => setFormData({...formData, rate: parseFloat(e.target.value)})}
+                onChange={(e) => setFormData({...formData, rate: parseFloat(e.target.value) || 0})}
               />
+              <p className="text-xs mt-1" style={{ color: '#6B7280' }}>Fallback rate when no range-specific rate is set</p>
             </div>
 
-            <div>
-              <Label style={{ color: '#374151' }}>Physical Rate (₦)</Label>
-              <Input
-                type="number"
-                value={formData.physicalRate || ''}
-                onChange={(e) => setFormData({...formData, physicalRate: e.target.value ? parseFloat(e.target.value) : undefined})}
-              />
-            </div>
+            <div className="col-span-2">
+              <Label style={{ color: '#374151' }} className="text-base font-semibold">Rate Ranges</Label>
+              <p className="text-xs mb-3" style={{ color: '#6B7280' }}>Set different rates for each card value range</p>
 
-            <div>
-              <Label style={{ color: '#374151' }}>E-Code Rate (₦)</Label>
-              <Input
-                type="number"
-                value={formData.ecodeRate || ''}
-                onChange={(e) => setFormData({...formData, ecodeRate: e.target.value ? parseFloat(e.target.value) : undefined})}
-              />
-            </div>
-
-            <div>
-              <Label style={{ color: '#374151' }}>Min Amount</Label>
-              <Input
-                type="number"
-                value={formData.minAmount}
-                onChange={(e) => setFormData({...formData, minAmount: parseFloat(e.target.value)})}
-              />
-            </div>
-
-            <div>
-              <Label style={{ color: '#374151' }}>Max Amount</Label>
-              <Input
-                type="number"
-                value={formData.maxAmount}
-                onChange={(e) => setFormData({...formData, maxAmount: parseFloat(e.target.value)})}
-              />
+              <div className="border rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Range</th>
+                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Base Rate (₦)</th>
+                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Physical (₦)</th>
+                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>E-Code (₦)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {RATE_RANGE_KEYS.map(rangeKey => (
+                      <tr key={rangeKey} className="border-t">
+                        <td className="p-2 font-medium" style={{ color: '#111827' }}>
+                          {RATE_RANGE_LABELS[rangeKey]}
+                        </td>
+                        <td className="p-2">
+                          <Input
+                            type="number"
+                            className="h-8"
+                            value={formData.rateRanges?.[rangeKey]?.rate ?? ''}
+                            onChange={(e) => updateRateRange(rangeKey, 'rate', e.target.value)}
+                            placeholder="—"
+                          />
+                        </td>
+                        <td className="p-2">
+                          <Input
+                            type="number"
+                            className="h-8"
+                            value={formData.rateRanges?.[rangeKey]?.physicalRate ?? ''}
+                            onChange={(e) => updateRateRange(rangeKey, 'physicalRate', e.target.value)}
+                            placeholder="—"
+                          />
+                        </td>
+                        <td className="p-2">
+                          <Input
+                            type="number"
+                            className="h-8"
+                            value={formData.rateRanges?.[rangeKey]?.ecodeRate ?? ''}
+                            onChange={(e) => updateRateRange(rangeKey, 'ecodeRate', e.target.value)}
+                            placeholder="—"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <div className="col-span-2">

@@ -1,6 +1,7 @@
 import axios from '@/core/services/axios';
 import type {
   GiftCardRatesResponse,
+  RateRangesConfigResponse,
   FilterParams,
   CreateRateRequest,
   UpdateRateRequest,
@@ -20,6 +21,19 @@ import type {
 
 export class GiftCardService {
   private static readonly API_BASE = '/admingiftcard';
+
+  /**
+   * Get rate ranges configuration
+   */
+  static async getRateRangesConfig(): Promise<RateRangesConfigResponse> {
+    try {
+      const response = await axios.get(`${this.API_BASE}/rate-ranges-config`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching rate ranges config:', error);
+      throw error;
+    }
+  }
 
   /**
    * Get all gift card rates with filtering and pagination
