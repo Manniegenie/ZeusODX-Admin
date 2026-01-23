@@ -24,6 +24,7 @@ export interface KYCEntry {
     document_image?: string;
     cropped_image?: string;
   };
+  hasImages?: boolean;
   user: {
     _id: string;
     firstname: string;

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, RefreshCw, Eye } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RefreshCw, Eye, Image, ImageOff } from 'lucide-react';
 import type { KYCEntry } from '../types/kyc';
 
 interface KYCDataTableProps {
