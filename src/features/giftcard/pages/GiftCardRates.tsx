@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Filter, Plus, RefreshCw, ChevronLeft, ChevronRight, Edit, Trash2, ToggleLeft, ToggleRight, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { GiftCardService } from '../services/giftcardService';
-import type { GiftCardRate, FilterParams, CreateRateRequest, UpdateRateRequest, RateRanges, RateRangeKey } from '../types/giftcard';
+import type { GiftCardRate, FilterParams, CreateRateRequest, UpdateRateRequest, RateRangeKey } from '../types/giftcard';
 
 // Rate ranges configuration (matches backend)
 const RATE_RANGE_KEYS: RateRangeKey[] = ['range25_100', 'range100_200', 'range200_500', 'range500_1000'];
