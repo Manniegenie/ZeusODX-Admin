@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Filter, Plus, RefreshCw, ChevronLeft, ChevronRight, Edit, Trash2, ToggleLeft, ToggleRight, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { GiftCardService } from '../services/giftcardService';
-import type { GiftCardRate, FilterParams, CreateRateRequest, UpdateRateRequest, RateRanges, RateRangeKey, RateRangesConfig } from '../types/giftcard';
+import type { GiftCardRate, FilterParams, CreateRateRequest, UpdateRateRequest, RateRanges, RateRangeKey } from '../types/giftcard';
 
 // Rate ranges configuration (matches backend)
 const RATE_RANGE_KEYS: RateRangeKey[] = ['range25_100', 'range100_200', 'range200_500', 'range500_1000'];
@@ -339,14 +339,6 @@ export function GiftCardRates() {
         }
       }
     }));
-  };
-
-  // Get rate range summary for display
-  const getRateRangeSummary = (rateRanges: RateRanges | undefined) => {
-    if (!rateRanges) return 'No range rates set';
-    const setRanges = RATE_RANGE_KEYS.filter(key => rateRanges[key]?.rate);
-    if (setRanges.length === 0) return 'No range rates set';
-    return `${setRanges.length}/4 ranges configured`;
   };
 
   // Count active filters
