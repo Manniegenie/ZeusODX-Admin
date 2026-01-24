@@ -21,7 +21,7 @@ import { Settings } from '@/features/settings/pages/Settings';
 import { Disable2Fa } from '@/features/users/pages/Disable2Fa';
 import { RemovePassword } from '@/features/users/pages/RemovePassword';
 import { UserWallet } from '@/features/funding/pages/UserWallet';
-import { GiftCardRates } from '@/features/fees/pages/GiftCardRates';
+import { GiftCardRates } from '@/features/giftcard/pages/GiftCardRates';
 import { PriceCalculator } from '@/features/fees/pages/PriceCalculator';
 import { CreateNewAdmin } from '@/features/users/pages/CreateNewAdmin';
 import { DeductBalance } from '@/features/funding/pages/DeductBalance';
