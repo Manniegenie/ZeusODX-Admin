@@ -504,7 +504,10 @@ export function GiftCardRates() {
                     <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Card Type</th>
                     <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Country</th>
                     <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Default Rate</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Rate Ranges</th>
+                    <th className="text-left p-3 font-semibold text-center" style={{ color: '#111827' }}>$25-$100</th>
+                    <th className="text-left p-3 font-semibold text-center" style={{ color: '#111827' }}>$100-$200</th>
+                    <th className="text-left p-3 font-semibold text-center" style={{ color: '#111827' }}>$200-$500</th>
+                    <th className="text-left p-3 font-semibold text-center" style={{ color: '#111827' }}>$500-$1,000</th>
                     <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Status</th>
                     <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Last Updated</th>
                     <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Actions</th>
@@ -535,28 +538,39 @@ export function GiftCardRates() {
                           </div>
                         </div>
                       </td>
-                      <td className="p-3">
-                        <div className="space-y-1">
-                          {RATE_RANGE_KEYS.map(rangeKey => {
-                            const rangeRate = rate.rateRanges?.[rangeKey];
-                            const hasRate = rangeRate?.rate || rangeRate?.physicalRate || rangeRate?.ecodeRate;
-                            return (
-                              <div key={rangeKey} className="flex items-center gap-2 text-xs">
-                                <span className="w-20 font-medium" style={{ color: '#6B7280' }}>
-                                  {RATE_RANGE_LABELS[rangeKey]}:
-                                </span>
-                                {hasRate ? (
-                                  <span style={{ color: '#111827' }}>
-                                    ₦{rangeRate?.rate || rangeRate?.physicalRate || rangeRate?.ecodeRate}
-                                  </span>
-                                ) : (
+                      {/* Rate Range Columns */}
+                      {RATE_RANGE_KEYS.map(rangeKey => {
+                        const rangeRate = rate.rateRanges?.[rangeKey];
+                        const baseRate = rangeRate?.rate;
+                        const physicalRate = rangeRate?.physicalRate;
+                        const ecodeRate = rangeRate?.ecodeRate;
+                        const hasAnyRate = baseRate || physicalRate || ecodeRate;
+                        return (
+                          <td key={rangeKey} className="p-3 text-center">
+                            {hasAnyRate ? (
+                              <div className="space-y-0.5">
+                                {baseRate && (
+                                  <div className="text-sm font-medium" style={{ color: '#111827' }}>
+                                    ₦{baseRate}
+                                  </div>
+                                )}
+                                {(physicalRate || ecodeRate) && (
+                                  <div className="text-xs" style={{ color: '#6B7280' }}>
+                                    {physicalRate && <span>P: ₦{physicalRate}</span>}
+                                    {physicalRate && ecodeRate && ' / '}
+                                    {ecodeRate && <span>E: ₦{ecodeRate}</span>}
+                                  </div>
+                                )}
+                                {!baseRate && !physicalRate && !ecodeRate && (
                                   <span style={{ color: '#D1D5DB' }}>—</span>
                                 )}
                               </div>
-                            );
-                          })}
-                        </div>
-                      </td>
+                            ) : (
+                              <span style={{ color: '#D1D5DB' }}>—</span>
+                            )}
+                          </td>
+                        );
+                      })}
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           {rate.isActive ? (
