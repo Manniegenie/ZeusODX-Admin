@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../../../ZeusODX"
+		},
+		{
+			"path": "../../../ZeusODX-web"
 		}
 	],
 	"settings": {}
