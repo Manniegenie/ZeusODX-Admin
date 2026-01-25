@@ -234,7 +234,7 @@ export function AdminList() {
                   {admins.map((admin) => (
                     <TableRow key={admin._id}>
                       <TableCell className="font-medium">{admin.adminName}</TableCell>
-                      <TableCell>{admin.email}</TableCell>
+                      <TableCell className="normal-case">{admin.email}</TableCell>
                       <TableCell>
                         <Badge className={getRoleBadgeColor(admin.role)}>
                           <span className="flex items-center gap-1">

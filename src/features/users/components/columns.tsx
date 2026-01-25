@@ -15,6 +15,7 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "email",
     header: "Email",
+    cell: info => <span className="normal-case">{info.getValue() as string}</span>,
   },
   {
     accessorKey: "phonenumber",

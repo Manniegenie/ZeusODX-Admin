@@ -281,7 +281,7 @@ export function UserList() {
           {activeFilterCount > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {activeFilters.searchTerm && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm normal-case">
                   Search: {activeFilters.searchTerm}
                   <button onClick={() => removeFilter('searchTerm')} className="hover:bg-green-200 rounded-full p-0.5">
                     <X className="h-3 w-3" />

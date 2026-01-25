@@ -83,7 +83,7 @@ export function DataTable({ data, loading, pagination, onPageChange }: DataTable
                 <TableCell>
                   <div>
                     <div className="font-medium">{`${user.firstname} ${user.lastname}`.trim() || 'No Name'}</div>
-                    <div className="text-sm text-gray-500">{user.email}</div>
+                    <div className="text-sm text-gray-500 normal-case">{user.email}</div>
                   </div>
                 </TableCell>
                 <TableCell>{user.phonenumber || '—'}</TableCell>

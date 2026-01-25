@@ -102,7 +102,7 @@ export function ActionsMenu({ row }: { row: Row<User> }) {
           <DialogHeader>
             <DialogTitle>Delete user</DialogTitle>
           </DialogHeader>
-          <div className="text-sm">Are you sure you want to delete <strong>{row.original.email}</strong>?</div>
+          <div className="text-sm">Are you sure you want to delete <strong className="normal-case">{row.original.email}</strong>?</div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmOpen(false)}>Cancel</Button>
             <Button variant="destructive" className="ml-2" onClick={onConfirmDelete}>Delete</Button>

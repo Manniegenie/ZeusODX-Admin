@@ -454,7 +454,7 @@ export function KYCDetail() {
               </div>
               <div>
                 <Label className="text-sm text-gray-500">Email</Label>
-                <p className="text-base font-medium flex items-center gap-2">
+                <p className="text-base font-medium flex items-center gap-2 normal-case">
                   <Mail className="w-4 h-4" />
                   {user.email}
                 </p>

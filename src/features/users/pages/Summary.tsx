@@ -246,7 +246,7 @@ export function Summary() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">Email:</span>
-                        <span className="font-medium text-xs">{userData.email}</span>
+                        <span className="font-medium text-xs normal-case">{userData.email}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">Phone:</span>

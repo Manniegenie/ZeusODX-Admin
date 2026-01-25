@@ -84,7 +84,7 @@ export const columns: ColumnDef<KYCEntry>[] = [
           <div className="font-medium">
             {entry.user.firstname} {entry.user.lastname}
           </div>
-          <div className="text-sm text-gray-600">{entry.user.email}</div>
+          <div className="text-sm text-gray-600 normal-case">{entry.user.email}</div>
           <div className="text-sm text-gray-500">{entry.user.phonenumber}</div>
         </div>
       );

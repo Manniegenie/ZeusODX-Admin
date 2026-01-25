@@ -157,7 +157,7 @@ export function UserActions() {
           <CardHeader>
             <CardTitle className="text-2xl">User Actions</CardTitle>
             <CardDescription className="text-base">
-              Managing: <span className="font-semibold text-black">{user.email}</span>
+              Managing: <span className="font-semibold text-black normal-case">{user.email}</span>
             </CardDescription>
           </CardHeader>
           <CardContent>
