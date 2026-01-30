@@ -18,7 +18,7 @@ export function RegenerateWalletByPhone() {
   const location = useLocation();
   const stateUser = ((location as unknown) as RouteState).state?.user;
   const [phonenumber, setPhonenumber] = useState(stateUser?.phonenumber || "");
-  const availableTokens = ["BTC_BTC", "ETH_ETH", "SOL_SOL", "USDT_USDT", "USDC_USDC", "NGNB_NGNB"];
+  const availableTokens = ["BTC_BTC", "ETH_ETH", "SOL_SOL", "USDT_USDT", "USDC_USDC", "NGNZ_NGNZ"];
   const [selectedTokens, setSelectedTokens] = useState<string[]>(stateUser?.tokens ?? []);
   const [force, setForce] = useState(false);
   const [loading, setLoading] = useState(false);

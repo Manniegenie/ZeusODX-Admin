@@ -121,7 +121,7 @@ export function FundUserForm() {
                 <option value="BNB">BNB</option>
                 <option value="MATIC">MATIC</option>
                 <option value="TRX">TRX</option>
-                <option value="NGNB">NGNB</option>
+                <option value="NGNZ">NGNZ</option>
               </select>
             </div>
             <div className="grid gap-2">

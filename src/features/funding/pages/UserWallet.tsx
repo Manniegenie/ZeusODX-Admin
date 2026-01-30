@@ -22,7 +22,7 @@ export function UserWallet() {
   const [userEmail, setUserEmail] = useState<string>(
     () => navState.user?.email ?? ""
   );
-  const availableTokens = ["BTC_BTC", "ETH_ETH", "SOL_SOL", "USDT_USDT", "USDC_USDC", "NGNB_NGNB"];
+  const availableTokens = ["BTC_BTC", "ETH_ETH", "SOL_SOL", "USDT_USDT", "USDC_USDC", "NGNZ_NGNZ"];
   const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
   const [walletData, setWalletData] = useState<FetchWalletsResponse | null>(
     null
