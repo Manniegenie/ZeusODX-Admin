@@ -103,6 +103,7 @@ const navItems: NavItem[] = [
     sub_menu: [
       { title: 'Send Notifications', path: '/notifications' },
       { title: 'Scheduled Notifications', path: '/scheduled-notifications' },
+      { title: 'Gift Card Notifications', path: '/scheduled-giftcard-notifications' },
     ]
   },
   {

@@ -34,6 +34,7 @@ import { KYCReview } from '@/features/kyc/pages/KYCReview';
 import { KYCDetail } from '@/features/kyc/pages/KYCDetail';
 import { NotificationsManagement } from '@/features/notifications/pages/NotificationsManagement';
 import { ScheduledNotifications } from '@/features/notifications/pages/ScheduledNotifications';
+import { ScheduledGiftCardNotifications } from '@/features/notifications/pages/ScheduledGiftCardNotifications';
 import { PriceMarkdown } from '@/features/fees/pages/PriceMarkdown';
 import { OnrampManagement } from '@/features/fees/pages/OnrampManagement';
 import { OfframpManagement } from '@/features/fees/pages/OfframpManagement';
@@ -195,6 +196,10 @@ export const router = createBrowserRouter([
           {
             path: 'scheduled-notifications',
             element: <ScheduledNotifications />,
+          },
+          {
+            path: 'scheduled-giftcard-notifications',
+            element: <ScheduledGiftCardNotifications />,
           },
           {
             path: 'banners',
