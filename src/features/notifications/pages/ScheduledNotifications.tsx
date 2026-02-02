@@ -125,7 +125,8 @@ export function ScheduledNotifications() {
         </div>
         <div className="flex gap-2">
           <Button
-            onClick={testNotification}
+            type="button"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); testNotification(); }}
             disabled={testing}
             className="flex items-center gap-2"
           >
