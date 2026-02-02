@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
@@ -29,6 +29,7 @@ export function ScheduledNotifications() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<ScheduledNotificationStatus | null>(null);
   const [testing, setTesting] = useState(false);
+  const testInProgressRef = useRef(false);
 
   useEffect(() => {
     titleCtx?.setTitle('Scheduled Notifications');
@@ -77,15 +78,30 @@ export function ScheduledNotifications() {
   };
 
   const testNotification = async () => {
+    if (testInProgressRef.current) return;
+    testInProgressRef.current = true;
     setTesting(true);
     try {
-      await axiosInstance.post('/admin/scheduled-notifications/test');
-      toast.success('Test notification sent successfully');
-    } catch (error) {
+      const { data } = await axiosInstance.post('/admin/scheduled-notifications/test');
+      if (data.success && data.data?.delivered !== undefined) {
+        const { totalUsers, delivered, failed, skipped } = data.data;
+        if (delivered > 0) {
+          toast.success(`Sent to ${delivered}/${totalUsers} users${failed ? ` (${failed} failed)` : ''}`);
+        } else {
+          toast.warning(data.message || `0/${totalUsers} delivered. ${skipped ? `${skipped} skipped (no valid token).` : ''}`);
+        }
+      } else if (!data.success) {
+        toast.error(data.message || 'Test failed');
+      } else {
+        toast.success(data.message || 'Test completed');
+      }
+    } catch (error: any) {
       console.error('Failed to send test notification:', error);
-      toast.error('Failed to send test notification');
+      const msg = error?.response?.data?.message || error?.response?.data?.error || 'Failed to send test notification';
+      toast.error(msg);
     } finally {
       setTesting(false);
+      testInProgressRef.current = false;
     }
   };
 
