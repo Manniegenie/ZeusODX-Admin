@@ -197,7 +197,7 @@ export function DashboardLayout() {
     );
   } else if (user?.role === 'admin') {
     filteredNavItems = navItems.filter(item =>
-      item.title === 'Funding & Balances' ||
+      item.title === 'KYC Review' ||
       item.title === 'Fees & Rates' ||
       item.title === 'Push Notifications' ||
       item.title === 'Gift Cards' ||
