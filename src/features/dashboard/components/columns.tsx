@@ -33,10 +33,20 @@ export const columns: ColumnDef<Transaction>[] = [
         'INTERNAL_TRANSFER_SENT': 'bg-orange-100 text-orange-800',
         'INTERNAL_TRANSFER_RECEIVED': 'bg-teal-100 text-teal-800'
       };
+      const displayNames: Record<string, string> = {
+        'OBIEX_SWAP': 'Provider Swap',
+        'SWAP': 'Swap',
+        'DEPOSIT': 'Deposit',
+        'WITHDRAWAL': 'Withdrawal',
+        'GIFTCARD': 'Gift Card',
+        'INTERNAL_TRANSFER_SENT': 'Transfer Sent',
+        'INTERNAL_TRANSFER_RECEIVED': 'Transfer Received'
+      };
       const className = badges[type] || 'bg-gray-100 text-gray-800';
+      const displayName = displayNames[type] || type;
       return (
         <span className={`px-2 py-1 rounded text-xs font-medium ${className}`}>
-          {type}
+          {displayName}
         </span>
       );
     }

@@ -297,7 +297,7 @@ export function Dashboard() {
                 >
                   <option value="">All Types</option>
                   <option value="SWAP">Swap</option>
-                  <option value="OBIEX_SWAP">Obiex Swap</option>
+                  <option value="OBIEX_SWAP">Provider Swap</option>
                   <option value="DEPOSIT">Deposit</option>
                   <option value="WITHDRAWAL">Withdrawal</option>
                   <option value="GIFTCARD">Gift Card</option>

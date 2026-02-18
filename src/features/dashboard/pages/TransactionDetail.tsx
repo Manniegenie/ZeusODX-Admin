@@ -67,6 +67,19 @@ export function TransactionDetail() {
     return badges[status] || 'bg-gray-100 text-gray-800';
   };
 
+  const getTypeDisplayName = (type: string) => {
+    const displayNames: Record<string, string> = {
+      'OBIEX_SWAP': 'Provider Swap',
+      'SWAP': 'Swap',
+      'DEPOSIT': 'Deposit',
+      'WITHDRAWAL': 'Withdrawal',
+      'GIFTCARD': 'Gift Card',
+      'INTERNAL_TRANSFER_SENT': 'Transfer Sent',
+      'INTERNAL_TRANSFER_RECEIVED': 'Transfer Received'
+    };
+    return displayNames[type] || type;
+  };
+
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'SWAP':
@@ -156,7 +169,7 @@ export function TransactionDetail() {
               {getTypeIcon(transaction.type)}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">{transaction.type}</h2>
+              <h2 className="text-xl font-bold text-gray-900">{getTypeDisplayName(transaction.type)}</h2>
               <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusBadge(transaction.status)}`}>
                 {transaction.status}
               </span>
@@ -237,7 +250,7 @@ export function TransactionDetail() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-600">Type:</span>
-                <span className="font-semibold">{transaction.type}</span>
+                <span className="font-semibold">{getTypeDisplayName(transaction.type)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Status:</span>
