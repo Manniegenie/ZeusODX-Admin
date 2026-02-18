@@ -23,6 +23,13 @@ const COUNTRIES = ['US', 'CANADA', 'AUSTRALIA', 'SWITZERLAND'];
 
 const STATUSES: SubmissionStatus[] = ['PENDING', 'REVIEWING', 'APPROVED', 'REJECTED', 'PAID'];
 
+// Local filter type that allows "all" for UI
+type LocalFilterParams = Omit<SubmissionFilterParams, 'status' | 'cardType' | 'country'> & {
+  status?: SubmissionStatus | 'all';
+  cardType?: string | 'all';
+  country?: string | 'all';
+};
+
 export function GiftCardSubmissions() {
   const titleCtx = useContext(DashboardTitleContext);
   const navigate = useNavigate();
@@ -36,7 +43,7 @@ export function GiftCardSubmissions() {
 
   // Filter states
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<SubmissionFilterParams>({
+  const [filters, setFilters] = useState<LocalFilterParams>({
     page: 1,
     limit: 20,
     status: 'all',
@@ -55,14 +62,16 @@ export function GiftCardSubmissions() {
   }, [titleCtx]);
 
   // Load submissions
-  const loadSubmissions = async (params: SubmissionFilterParams = filters) => {
+  const loadSubmissions = async (params: LocalFilterParams = filters) => {
     try {
       setLoading(true);
       // Convert "all" back to empty string/undefined for API
-      const apiParams = { ...params };
-      if (apiParams.status === 'all') apiParams.status = undefined;
-      if (apiParams.cardType === 'all') apiParams.cardType = '';
-      if (apiParams.country === 'all') apiParams.country = '';
+      const apiParams: SubmissionFilterParams = {
+        ...params,
+        status: params.status === 'all' ? undefined : params.status,
+        cardType: params.cardType === 'all' ? undefined : params.cardType,
+        country: params.country === 'all' ? undefined : params.country,
+      };
       const response = await GiftCardService.getSubmissions(apiParams);
 
       if (response.success) {
@@ -87,7 +96,7 @@ export function GiftCardSubmissions() {
   }, []);
 
   // Handle filter changes
-  const handleFilterChange = (key: keyof SubmissionFilterParams, value: any) => {
+  const handleFilterChange = (key: keyof LocalFilterParams, value: any) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
@@ -100,7 +109,7 @@ export function GiftCardSubmissions() {
 
   // Clear filters
   const clearFilters = () => {
-    const clearedFilters: SubmissionFilterParams = {
+    const clearedFilters: LocalFilterParams = {
       page: 1,
       limit: 20,
       status: 'all',
@@ -128,7 +137,7 @@ export function GiftCardSubmissions() {
     navigate(`/giftcards/submissions/${submission._id}`, { state: { submission } });
   };
 
-  const hasActiveFilters = filters.status || filters.cardType || filters.country || filters.searchTerm || filters.dateFrom || filters.dateTo;
+  const hasActiveFilters = (filters.status && filters.status !== 'all') || (filters.cardType && filters.cardType !== 'all') || (filters.country && filters.country !== 'all') || filters.searchTerm || filters.dateFrom || filters.dateTo;
 
   return (
     <div className="space-y-6">

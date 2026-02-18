@@ -5,8 +5,6 @@ import type { FeatureAccess } from '@/core/types/auth.types';
 import { setFeatureAccess } from '@/features/auth/store/auth.slice';
 import axios from '@/core/services/axios';
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
-
 // Default feature access for when permissions haven't been loaded yet
 const defaultFeatureAccess: FeatureAccess = {
   dashboard: true,
