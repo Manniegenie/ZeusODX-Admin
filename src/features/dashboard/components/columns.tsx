@@ -1,5 +1,6 @@
 "use client"
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import type { ColumnDef } from "@tanstack/react-table"
 import type { Transaction } from '../type/analytic'
 
@@ -161,6 +162,7 @@ export const columns: ColumnDef<Transaction>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const [open, setOpen] = React.useState(false);
+      const navigate = useNavigate();
       const tx = row.original;
       
       return (
@@ -183,7 +185,6 @@ export const columns: ColumnDef<Transaction>[] = [
                 onClick={() => {
                   setOpen(false);
                   navigator.clipboard.writeText(tx.id);
-                  alert('Transaction ID copied');
                 }}
               >
                 Copy Transaction ID
@@ -194,7 +195,6 @@ export const columns: ColumnDef<Transaction>[] = [
                   onClick={() => {
                     setOpen(false);
                     navigator.clipboard.writeText(tx.reference!);
-                    alert('Reference copied');
                   }}
                 >
                   Copy Reference
@@ -204,7 +204,7 @@ export const columns: ColumnDef<Transaction>[] = [
                 className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                 onClick={() => {
                   setOpen(false);
-                  alert(`View details for ${tx.id}`);
+                  navigate(`/transaction/${tx.id}`);
                 }}
               >
                 View Full Details
@@ -214,7 +214,7 @@ export const columns: ColumnDef<Transaction>[] = [
                   className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                   onClick={() => {
                     setOpen(false);
-                    alert(`View user ${tx.username || tx.userId}`);
+                    navigate(`/users?search=${tx.userEmail || tx.username || tx.userId}`);
                   }}
                 >
                   View User

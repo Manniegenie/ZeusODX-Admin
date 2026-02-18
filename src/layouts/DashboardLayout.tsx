@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { DashboardTitleContext } from './DashboardTitleContext';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { usePermissions } from '@/core/hooks/usePermissions';
 import {
   LayoutDashboard,
   Users,
@@ -148,6 +149,7 @@ export function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
   const { user } = useSelector((state: RootState) => state.auth);
+  const { hasFeatureAccess } = usePermissions();
   const [title, setTitle] = useState(() => {
     const currentNavItem = navItems.find(item => location.pathname.startsWith(item.path));
     return currentNavItem ? currentNavItem.title : 'Dashboard';
@@ -189,21 +191,15 @@ export function DashboardLayout() {
   const [isSidebarDropdownOpen, setIsSidebarDropdownOpen] = useState(false);
   const [isHeaderDropdownOpen, setIsHeaderDropdownOpen] = useState(false);
 
-  // Sidebar nav filtering by role
-  let filteredNavItems = navItems;
-  if (user?.role === 'moderator') {
-    filteredNavItems = navItems.filter(item =>
-      item.title === 'User Management' || item.title === 'KYC Review'
-    );
-  } else if (user?.role === 'admin') {
-    filteredNavItems = navItems.filter(item =>
-      item.title === 'KYC Review' ||
-      item.title === 'Fees & Rates' ||
-      item.title === 'Push Notifications' ||
-      item.title === 'Gift Cards' ||
-      item.title === 'Banners'
-    );
-  } // super_admin sees all
+  // Sidebar nav filtering by permissions
+  const filteredNavItems = navItems.filter(item => {
+    // Super admins see all
+    if (user?.role === 'super_admin') {
+      return true;
+    }
+    // Check feature access based on permissions
+    return hasFeatureAccess(item.featureKey);
+  });
 
   const ctxValue = useMemo(() => ({ setTitle, setBreadcrumb }), [setTitle, setBreadcrumb]);
 

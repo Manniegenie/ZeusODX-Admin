@@ -1,5 +1,22 @@
 export type AdminRole = 'admin' | 'super_admin' | 'moderator';
 
+export interface AdminPermissions {
+  canDeleteUsers?: boolean;
+  canManageWallets?: boolean;
+  canManageFees?: boolean;
+  canViewTransactions?: boolean;
+  canFundUsers?: boolean;
+  canManageKYC?: boolean;
+  canAccessReports?: boolean;
+  canManageAdmins?: boolean;
+  canManagePushNotifications?: boolean;
+  canManageUsers?: boolean;
+  canManageGiftcards?: boolean;
+  canManageBanners?: boolean;
+  canRemoveFunding?: boolean;
+  canManageBalances?: boolean;
+}
+
 export interface Admin {
   _id: string;
   adminName: string;
@@ -12,6 +29,7 @@ export interface Admin {
   createdAt: string;
   updatedAt: string;
   lastSuccessfulLogin?: string;
+  permissions?: AdminPermissions;
 }
 
 export interface CreateAdminPayload {

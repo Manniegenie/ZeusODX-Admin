@@ -52,7 +52,7 @@ export function AdminSettings() {
           </CardHeader>
           <CardContent>
             <CardDescription>
-              Can manage wallets, fees, notifications, and gift cards
+              Can manage wallets, fees, push notifications, user management, KYC review, giftcards, banners, remove funding and balances
             </CardDescription>
           </CardContent>
         </Card>

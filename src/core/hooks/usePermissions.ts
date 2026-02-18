@@ -30,6 +30,12 @@ const defaultFeatureAccess: FeatureAccess = {
   canManageKYC: false,
   canAccessReports: false,
   canManageAdmins: false,
+  canManagePushNotifications: false,
+  canManageUsers: false,
+  canManageGiftcards: false,
+  canManageBanners: false,
+  canRemoveFunding: false,
+  canManageBalances: false,
 };
 
 export function usePermissions() {
@@ -40,11 +46,7 @@ export function usePermissions() {
     if (!token) return;
 
     try {
-      const response = await axios.get(`${BASE_URL}/admin/permissions`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get('/admin/permissions');
 
       if (response.data.success) {
         dispatch(setFeatureAccess(response.data.data.featureAccess));
@@ -75,6 +77,12 @@ export function usePermissions() {
           canManageKYC: true,
           canAccessReports: true,
           canManageAdmins: true,
+          canManagePushNotifications: true,
+          canManageUsers: true,
+          canManageGiftcards: true,
+          canManageBanners: true,
+          canRemoveFunding: true,
+          canManageBalances: true,
         };
         dispatch(setFeatureAccess(superAdminAccess));
       }
