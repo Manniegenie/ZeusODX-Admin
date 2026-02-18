@@ -86,9 +86,9 @@ export function GiftCardRates() {
   // Filter states
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterParams>({
-    country: '',
-    cardType: '',
-    vanillaType: '',
+    country: 'all',
+    cardType: 'all',
+    vanillaType: 'all',
     isActive: undefined,
     page: 1,
     limit: 20
@@ -129,7 +129,12 @@ export function GiftCardRates() {
   const loadRates = async (params: FilterParams = filters) => {
     try {
       setLoading(true);
-      const response = await GiftCardService.getRates(params);
+      // Convert "all" back to empty string for API
+      const apiParams = { ...params };
+      if (apiParams.cardType === 'all') apiParams.cardType = '';
+      if (apiParams.country === 'all') apiParams.country = '';
+      if (apiParams.vanillaType === 'all') apiParams.vanillaType = '';
+      const response = await GiftCardService.getRates(apiParams);
 
       if (response.success) {
         setRates(response.data.rates);
@@ -399,7 +404,7 @@ export function GiftCardRates() {
                     <SelectValue placeholder="All types" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All types</SelectItem>
+                    <SelectItem value="all">All types</SelectItem>
                     {CARD_TYPES.map(type => (
                       <SelectItem key={type} value={type}>{type}</SelectItem>
                     ))}
@@ -414,7 +419,7 @@ export function GiftCardRates() {
                     <SelectValue placeholder="All countries" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All countries</SelectItem>
+                    <SelectItem value="all">All countries</SelectItem>
                     {COUNTRIES.map(country => (
                       <SelectItem key={country} value={country}>{country}</SelectItem>
                     ))}
@@ -429,7 +434,7 @@ export function GiftCardRates() {
                     <SelectValue placeholder="All types" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All types</SelectItem>
+                    <SelectItem value="all">All types</SelectItem>
                     {VANILLA_TYPES.map(type => (
                       <SelectItem key={type} value={type}>{type}</SelectItem>
                     ))}
@@ -440,14 +445,14 @@ export function GiftCardRates() {
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>Status</label>
                 <Select
-                  value={filters.isActive === undefined ? '' : filters.isActive.toString()}
-                  onValueChange={(value) => handleFilterChange('isActive', value === '' ? undefined : value === 'true')}
+                  value={filters.isActive === undefined ? 'all' : filters.isActive.toString()}
+                  onValueChange={(value) => handleFilterChange('isActive', value === 'all' ? undefined : value === 'true')}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All statuses</SelectItem>
+                    <SelectItem value="all">All statuses</SelectItem>
                     <SelectItem value="true">Active</SelectItem>
                     <SelectItem value="false">Inactive</SelectItem>
                   </SelectContent>

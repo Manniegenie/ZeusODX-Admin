@@ -39,9 +39,9 @@ export function GiftCardSubmissions() {
   const [filters, setFilters] = useState<SubmissionFilterParams>({
     page: 1,
     limit: 20,
-    status: undefined,
-    cardType: '',
-    country: '',
+    status: 'all',
+    cardType: 'all',
+    country: 'all',
     searchTerm: '',
     dateFrom: '',
     dateTo: '',
@@ -58,7 +58,12 @@ export function GiftCardSubmissions() {
   const loadSubmissions = async (params: SubmissionFilterParams = filters) => {
     try {
       setLoading(true);
-      const response = await GiftCardService.getSubmissions(params);
+      // Convert "all" back to empty string/undefined for API
+      const apiParams = { ...params };
+      if (apiParams.status === 'all') apiParams.status = undefined;
+      if (apiParams.cardType === 'all') apiParams.cardType = '';
+      if (apiParams.country === 'all') apiParams.country = '';
+      const response = await GiftCardService.getSubmissions(apiParams);
 
       if (response.success) {
         setSubmissions(response.data.submissions);
@@ -98,9 +103,9 @@ export function GiftCardSubmissions() {
     const clearedFilters: SubmissionFilterParams = {
       page: 1,
       limit: 20,
-      status: undefined,
-      cardType: '',
-      country: '',
+      status: 'all',
+      cardType: 'all',
+      country: 'all',
       searchTerm: '',
       dateFrom: '',
       dateTo: '',
@@ -210,14 +215,14 @@ export function GiftCardSubmissions() {
               <div>
                 <Label>Status</Label>
                 <Select
-                  value={filters.status || ''}
-                  onValueChange={(value) => handleFilterChange('status', value || undefined)}
+                  value={filters.status || 'all'}
+                  onValueChange={(value) => handleFilterChange('status', value === 'all' ? undefined : value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All statuses</SelectItem>
+                    <SelectItem value="all">All statuses</SelectItem>
                     {STATUSES.map(status => (
                       <SelectItem key={status} value={status}>{status}</SelectItem>
                     ))}
@@ -228,14 +233,14 @@ export function GiftCardSubmissions() {
               <div>
                 <Label>Card Type</Label>
                 <Select
-                  value={filters.cardType || ''}
+                  value={filters.cardType || 'all'}
                   onValueChange={(value) => handleFilterChange('cardType', value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="All types" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All types</SelectItem>
+                    <SelectItem value="all">All types</SelectItem>
                     {CARD_TYPES.map(type => (
                       <SelectItem key={type} value={type}>{type}</SelectItem>
                     ))}
@@ -246,14 +251,14 @@ export function GiftCardSubmissions() {
               <div>
                 <Label>Country</Label>
                 <Select
-                  value={filters.country || ''}
+                  value={filters.country || 'all'}
                   onValueChange={(value) => handleFilterChange('country', value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="All countries" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All countries</SelectItem>
+                    <SelectItem value="all">All countries</SelectItem>
                     {COUNTRIES.map(country => (
                       <SelectItem key={country} value={country}>{country}</SelectItem>
                     ))}

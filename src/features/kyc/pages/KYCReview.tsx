@@ -25,8 +25,8 @@ export function KYCReview() {
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterParams>({
     searchTerm: '',
-    status: '',
-    idType: '',
+    status: 'all',
+    idType: 'all',
     dateFrom: '',
     dateTo: '',
     sortBy: 'createdAt',
@@ -52,8 +52,13 @@ export function KYCReview() {
         setLoading(true);
       }
 
+      // Convert "all" back to empty string for API
+      const apiParams = { ...params };
+      if (apiParams.status === 'all') apiParams.status = '';
+      if (apiParams.idType === 'all') apiParams.idType = '';
+
       const response = await KYCService.getKycEntries({
-        ...params,
+        ...apiParams,
         page,
         limit: 20
       });
@@ -102,8 +107,8 @@ export function KYCReview() {
   const clearFilters = () => {
     const clearedFilters: FilterParams = {
       searchTerm: '',
-      status: '',
-      idType: '',
+      status: 'all',
+      idType: 'all',
       dateFrom: '',
       dateTo: '',
       sortBy: 'createdAt',
@@ -117,7 +122,8 @@ export function KYCReview() {
 
   // Remove individual filter
   const removeFilter = (key: keyof FilterParams) => {
-    const newFilters = { ...activeFilters, [key]: '' };
+    const defaultValue = (key === 'status' || key === 'idType') ? 'all' : '';
+    const newFilters = { ...activeFilters, [key]: defaultValue };
     setActiveFilters(newFilters);
     setFilters(newFilters);
     setCurrentPage(1);
@@ -133,7 +139,7 @@ export function KYCReview() {
 
   // Count active filters
   const activeFilterCount = Object.values(activeFilters).filter(value => 
-    value !== '' && value !== 'createdAt' && value !== 'desc'
+    value !== '' && value !== 'all' && value !== 'createdAt' && value !== 'desc'
   ).length;
 
 
@@ -199,7 +205,7 @@ export function KYCReview() {
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All statuses</SelectItem>
+                    <SelectItem value="all">All statuses</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="approved">Approved</SelectItem>
                     <SelectItem value="rejected">Rejected</SelectItem>
@@ -216,7 +222,7 @@ export function KYCReview() {
                     <SelectValue placeholder="All ID types" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All ID types</SelectItem>
+                    <SelectItem value="all">All ID types</SelectItem>
                     <SelectItem value="bvn">BVN</SelectItem>
                     <SelectItem value="national_id">National ID</SelectItem>
                     <SelectItem value="passport">Passport</SelectItem>

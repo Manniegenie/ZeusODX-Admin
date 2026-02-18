@@ -23,8 +23,8 @@ export function CryptoFeesManagement() {
   const titleCtx = useContext(DashboardTitleContext);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterCurrency, setFilterCurrency] = useState('');
-  const [filterNetwork, setFilterNetwork] = useState('');
+  const [filterCurrency, setFilterCurrency] = useState('all');
+  const [filterNetwork, setFilterNetwork] = useState('all');
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingFee, setEditingFee] = useState<CryptoFee | null>(null);
@@ -57,8 +57,8 @@ export function CryptoFeesManagement() {
       fee.network.toLowerCase().includes(searchTerm.toLowerCase()) ||
       fee.networkName.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesCurrency = filterCurrency === '' || fee.currency === filterCurrency;
-    const matchesNetwork = filterNetwork === '' || fee.network === filterNetwork;
+    const matchesCurrency = filterCurrency === 'all' || filterCurrency === '' || fee.currency === filterCurrency;
+    const matchesNetwork = filterNetwork === 'all' || filterNetwork === '' || fee.network === filterNetwork;
 
     return matchesSearch && matchesCurrency && matchesNetwork;
   });
@@ -186,7 +186,7 @@ export function CryptoFeesManagement() {
                   <SelectValue placeholder="All currencies" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All currencies</SelectItem>
+                  <SelectItem value="all">All currencies</SelectItem>
                   {uniqueCurrencies.map(currency => (
                     <SelectItem key={currency} value={currency}>
                       {currency}
@@ -203,7 +203,7 @@ export function CryptoFeesManagement() {
                   <SelectValue placeholder="All networks" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All networks</SelectItem>
+                  <SelectItem value="all">All networks</SelectItem>
                   {uniqueNetworks.map(network => (
                     <SelectItem key={network} value={network}>
                       {network}

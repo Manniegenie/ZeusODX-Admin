@@ -312,14 +312,14 @@ export function BannerManagement() {
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>Status</label>
                 <Select
-                  value={filters.isActive === undefined ? '' : filters.isActive.toString()}
-                  onValueChange={(value) => handleFilterChange('isActive', value === '' ? undefined : value === 'true')}
+                  value={filters.isActive === undefined ? 'all' : filters.isActive.toString()}
+                  onValueChange={(value) => handleFilterChange('isActive', value === 'all' ? undefined : value === 'true')}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All statuses</SelectItem>
+                    <SelectItem value="all">All statuses</SelectItem>
                     <SelectItem value="true">Active</SelectItem>
                     <SelectItem value="false">Inactive</SelectItem>
                   </SelectContent>
