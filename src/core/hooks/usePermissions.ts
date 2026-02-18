@@ -49,6 +49,12 @@ export function usePermissions() {
       const response = await axios.get('/admin/permissions');
 
       if (response.data.success) {
+        console.log('[PERMISSIONS] Fetched from API:', {
+          userManagement: response.data.data.featureAccess.userManagement,
+          canManageUsers: response.data.data.featureAccess.canManageUsers,
+          role: response.data.data.role,
+          allFeatureAccess: response.data.data.featureAccess
+        });
         dispatch(setFeatureAccess(response.data.data.featureAccess));
       }
     } catch (error) {
@@ -85,22 +91,82 @@ export function usePermissions() {
           canManageBalances: true,
         };
         dispatch(setFeatureAccess(superAdminAccess));
+      } else if (user?.role === 'admin') {
+        // Fallback for admin role - grant all admin permissions
+        const adminAccess: FeatureAccess = {
+          dashboard: true,
+          platformStats: true,
+          userManagement: true, // Admin should have user management
+          kycReview: true,
+          feesAndRates: true,
+          giftCards: true,
+          banners: true,
+          fundingAndBalances: true,
+          pushNotifications: true,
+          security: false,
+          auditAndMonitoring: true,
+          adminSettings: false,
+          settings: true,
+          canDeleteUsers: false,
+          canManageWallets: true,
+          canManageFees: true,
+          canViewTransactions: true,
+          canFundUsers: false,
+          canManageKYC: true,
+          canAccessReports: true,
+          canManageAdmins: false,
+          canManagePushNotifications: true,
+          canManageUsers: true, // Admin should have user management
+          canManageGiftcards: true,
+          canManageBanners: true,
+          canRemoveFunding: true,
+          canManageBalances: true,
+        };
+        dispatch(setFeatureAccess(adminAccess));
       }
     }
   }, [token, dispatch, user?.role]);
 
   useEffect(() => {
-    if (token && !featureAccess) {
+    if (token) {
+      // Always fetch permissions on mount or when token changes
+      // This ensures permissions are fresh and up-to-date
       fetchPermissions();
     }
-  }, [token, featureAccess, fetchPermissions]);
+  }, [token, fetchPermissions]);
 
   const hasFeatureAccess = useCallback(
     (feature: keyof FeatureAccess): boolean => {
-      if (!featureAccess) return defaultFeatureAccess[feature];
-      return featureAccess[feature] ?? false;
+      // Super admins always have access
+      if (user?.role === 'super_admin') {
+        return true;
+      }
+      
+      // If permissions haven't loaded yet, use defaults
+      if (!featureAccess) {
+        // For admin role, grant userManagement access as fallback
+        if (user?.role === 'admin' && feature === 'userManagement') {
+          return true;
+        }
+        return defaultFeatureAccess[feature];
+      }
+      
+      // Check the feature access
+      const hasAccess = featureAccess[feature] ?? false;
+      
+      // Debug logging for userManagement specifically
+      if (feature === 'userManagement') {
+        console.log('[PERMISSIONS] userManagement check:', {
+          hasAccess,
+          featureAccess: featureAccess.userManagement,
+          role: user?.role,
+          canManageUsers: featureAccess.canManageUsers
+        });
+      }
+      
+      return hasAccess;
     },
-    [featureAccess]
+    [featureAccess, user?.role]
   );
 
   const hasPermission = useCallback(

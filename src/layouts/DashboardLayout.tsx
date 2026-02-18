@@ -198,7 +198,19 @@ export function DashboardLayout() {
       return true;
     }
     // Check feature access based on permissions
-    return hasFeatureAccess(item.featureKey);
+    const hasAccess = hasFeatureAccess(item.featureKey);
+    
+    // Debug logging for userManagement specifically
+    if (item.featureKey === 'userManagement') {
+      console.log('[DASHBOARD LAYOUT] User Management visibility check:', {
+        hasAccess,
+        role: user?.role,
+        featureKey: item.featureKey,
+        title: item.title
+      });
+    }
+    
+    return hasAccess;
   });
 
   const ctxValue = useMemo(() => ({ setTitle, setBreadcrumb }), [setTitle, setBreadcrumb]);
