@@ -90,35 +90,35 @@ export function usePermissions() {
         };
         dispatch(setFeatureAccess(superAdminAccess));
       } else if (user?.role === 'admin') {
-        // Fallback for admin role - grant all admin permissions
+        // Fallback for admin role - only push notifications, user management, banners, giftcards
         const adminAccess: FeatureAccess = {
           dashboard: true,
-          platformStats: true,
-          userManagement: true, // Admin should have user management
-          kycReview: true,
-          feesAndRates: true,
+          platformStats: false,
+          userManagement: true,
+          kycReview: false,
+          feesAndRates: false,
           giftCards: true,
           banners: true,
-          fundingAndBalances: true,
+          fundingAndBalances: false,
           pushNotifications: true,
           security: false,
-          auditAndMonitoring: true,
+          auditAndMonitoring: false,
           adminSettings: false,
           settings: true,
           canDeleteUsers: false,
-          canManageWallets: true,
-          canManageFees: true,
-          canViewTransactions: true,
+          canManageWallets: false,
+          canManageFees: false,
+          canViewTransactions: false,
           canFundUsers: false,
-          canManageKYC: true,
-          canAccessReports: true,
+          canManageKYC: false,
+          canAccessReports: false,
           canManageAdmins: false,
           canManagePushNotifications: true,
-          canManageUsers: true, // Admin should have user management
+          canManageUsers: true,
           canManageGiftcards: true,
           canManageBanners: true,
-          canRemoveFunding: true,
-          canManageBalances: true,
+          canRemoveFunding: false,
+          canManageBalances: false,
         };
         dispatch(setFeatureAccess(adminAccess));
       }
@@ -142,9 +142,24 @@ export function usePermissions() {
       
       // If permissions haven't loaded yet, use defaults
       if (!featureAccess) {
-        // For admin role, grant userManagement access as fallback
-        if (user?.role === 'admin' && feature === 'userManagement') {
-          return true;
+        // For admin role, grant only specific features as fallback
+        if (user?.role === 'admin') {
+          const adminOnlyFeatures: (keyof FeatureAccess)[] = [
+            'dashboard',
+            'userManagement',
+            'giftCards',
+            'banners',
+            'pushNotifications',
+            'settings',
+            'canManageUsers',
+            'canManageGiftcards',
+            'canManageBanners',
+            'canManagePushNotifications'
+          ];
+          if (adminOnlyFeatures.includes(feature)) {
+            return true;
+          }
+          return false;
         }
         return defaultFeatureAccess[feature];
       }
