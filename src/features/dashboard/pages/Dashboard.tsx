@@ -303,6 +303,13 @@ export function Dashboard() {
                   <option value="GIFTCARD">Gift Card</option>
                   <option value="INTERNAL_TRANSFER_SENT">Transfer Sent</option>
                   <option value="INTERNAL_TRANSFER_RECEIVED">Transfer Received</option>
+                  <option value="AIRTIME">Airtime</option>
+                  <option value="DATA">Data</option>
+                  <option value="ELECTRICITY">Electricity</option>
+                  <option value="CABLE_TV">Cable TV</option>
+                  <option value="INTERNET">Internet</option>
+                  <option value="BETTING">Betting</option>
+                  <option value="EDUCATION">Education</option>
                 </select>
               </div>
 

@@ -31,7 +31,14 @@ export const columns: ColumnDef<Transaction>[] = [
         'WITHDRAWAL': 'bg-red-100 text-red-800',
         'GIFTCARD': 'bg-purple-600 text-white',
         'INTERNAL_TRANSFER_SENT': 'bg-orange-100 text-orange-800',
-        'INTERNAL_TRANSFER_RECEIVED': 'bg-teal-100 text-teal-800'
+        'INTERNAL_TRANSFER_RECEIVED': 'bg-teal-100 text-teal-800',
+        'AIRTIME': 'bg-yellow-100 text-yellow-800',
+        'DATA': 'bg-cyan-100 text-cyan-800',
+        'ELECTRICITY': 'bg-amber-100 text-amber-800',
+        'CABLE_TV': 'bg-indigo-100 text-indigo-800',
+        'INTERNET': 'bg-sky-100 text-sky-800',
+        'BETTING': 'bg-rose-100 text-rose-800',
+        'EDUCATION': 'bg-lime-100 text-lime-800'
       };
       const displayNames: Record<string, string> = {
         'OBIEX_SWAP': 'Provider Swap',
@@ -40,7 +47,14 @@ export const columns: ColumnDef<Transaction>[] = [
         'WITHDRAWAL': 'Withdrawal',
         'GIFTCARD': 'Gift Card',
         'INTERNAL_TRANSFER_SENT': 'Transfer Sent',
-        'INTERNAL_TRANSFER_RECEIVED': 'Transfer Received'
+        'INTERNAL_TRANSFER_RECEIVED': 'Transfer Received',
+        'AIRTIME': 'Airtime',
+        'DATA': 'Data',
+        'ELECTRICITY': 'Electricity',
+        'CABLE_TV': 'Cable TV',
+        'INTERNET': 'Internet',
+        'BETTING': 'Betting',
+        'EDUCATION': 'Education'
       };
       const className = badges[type] || 'bg-gray-100 text-gray-800';
       const displayName = displayNames[type] || type;

@@ -169,6 +169,14 @@ export interface Transaction {
   cardType?: string;
   country?: string;
   expectedRate?: number;
+  // Bill/utility fields
+  billDetails?: {
+    billType?: string;
+    network?: string;
+    productName?: string;
+    customerPhone?: string;
+    customerInfo?: Record<string, string>;
+  };
 }
 
 export interface RecentTransactionsResponse {
@@ -272,7 +280,7 @@ export interface SwapPairAnalyticsResponse {
 }
 
 // Type unions for type safety
-export type TransactionType = 
+export type TransactionType =
   | 'SWAP'
   | 'OBIEX_SWAP'
   | 'DEPOSIT'
@@ -280,6 +288,13 @@ export type TransactionType =
   | 'GIFTCARD'
   | 'INTERNAL_TRANSFER_SENT'
   | 'INTERNAL_TRANSFER_RECEIVED'
+  | 'AIRTIME'
+  | 'DATA'
+  | 'ELECTRICITY'
+  | 'CABLE_TV'
+  | 'INTERNET'
+  | 'BETTING'
+  | 'EDUCATION'
 
 export type TransactionStatus = 
   | 'SUCCESSFUL'
