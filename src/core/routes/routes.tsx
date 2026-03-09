@@ -43,6 +43,7 @@ import { GiftCardSubmissionDetail } from '@/features/giftcard/pages/GiftCardSubm
 import { AdminSettings } from '@/features/admin-settings/pages/AdminSettings';
 import { Admin2FASetup } from '@/features/admin-settings/pages/Admin2FASetup';
 import { BannerManagement } from '@/features/banners/pages/BannerManagement';
+import { BlogManagement } from '@/features/blog/pages/BlogManagement';
 import { TransactionDetail } from '@/features/dashboard/pages/TransactionDetail';
 
 export const router = createBrowserRouter([
@@ -205,6 +206,10 @@ export const router = createBrowserRouter([
           {
             path: 'banners',
             element: <BannerManagement />,
+          },
+          {
+            path: 'blog',
+            element: <BlogManagement />,
           },
           {
             path: 'admin-settings',

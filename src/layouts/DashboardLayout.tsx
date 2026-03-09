@@ -22,6 +22,7 @@ import {
   UserCog,
   BarChart3,
   Image as ImageIcon,
+  BookOpen,
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -112,6 +113,12 @@ const navItems: NavItem[] = [
     path: '/banners',
     icon: <ImageIcon className="w-4 h-4" />,
     featureKey: 'banners',
+  },
+  {
+    title: 'Blog',
+    path: '/blog',
+    icon: <BookOpen className="w-4 h-4" />,
+    featureKey: 'blog',
   },
   {
     title: 'Funding & Balances',

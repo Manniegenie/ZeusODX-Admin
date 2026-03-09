@@ -23,6 +23,7 @@ export interface FeatureAccess {
   feesAndRates: boolean;
   giftCards: boolean;
   banners: boolean;
+  blog: boolean;
   fundingAndBalances: boolean;
   pushNotifications: boolean;
   security: boolean;
