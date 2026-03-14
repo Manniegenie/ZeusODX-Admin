@@ -153,6 +153,7 @@ export function usePermissions() {
             'kycReview',
             'giftCards',
             'banners',
+            'blog',
             'pushNotifications',
             'settings',
             'canManageUsers',
