@@ -14,7 +14,7 @@ const defaultFeatureAccess: FeatureAccess = {
   feesAndRates: false,
   giftCards: false,
   banners: false,
-  blog: false,
+  blog: true,
   fundingAndBalances: false,
   pushNotifications: false,
   security: false,
