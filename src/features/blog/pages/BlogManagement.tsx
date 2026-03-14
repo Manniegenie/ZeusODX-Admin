@@ -45,8 +45,8 @@ const EMPTY_FORM: BlogFormData = {
 };
 
 export function BlogManagement() {
-  const { setTitle } = useContext(DashboardTitleContext);
-  useEffect(() => { setTitle('Blog Management'); }, [setTitle]);
+  const titleCtx = useContext(DashboardTitleContext);
+  useEffect(() => { titleCtx?.setTitle('Blog Management'); }, [titleCtx]);
 
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(false);
