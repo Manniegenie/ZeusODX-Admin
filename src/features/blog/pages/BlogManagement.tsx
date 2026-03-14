@@ -32,6 +32,7 @@ import {
   ChevronRight,
   Image as ImageIcon,
   X,
+  ArrowLeft,
 } from 'lucide-react';
 
 const EMPTY_FORM: BlogFormData = {
@@ -221,6 +222,159 @@ export function BlogManagement() {
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
+  // ── Full-page article editor ──────────────────────────────────────────────
+  if (isFormOpen) {
+    return (
+      <div className="fixed inset-0 z-50 bg-white flex flex-col">
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-6 h-14 border-b border-gray-200 shrink-0">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsFormOpen(false)}
+              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </button>
+            <span className="text-gray-300">|</span>
+            <h2 className="text-sm font-semibold text-gray-800">
+              {editingPost ? 'Edit Article' : 'New Article'}
+            </h2>
+          </div>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 cursor-pointer select-none text-sm text-gray-600">
+              <input
+                type="checkbox"
+                checked={form.isPublished}
+                onChange={e => setForm(f => ({ ...f, isPublished: e.target.checked }))}
+                className="w-4 h-4 rounded border-gray-300 accent-primary cursor-pointer"
+              />
+              Publish immediately
+            </label>
+            <Button variant="outline" size="sm" onClick={() => setIsFormOpen(false)} disabled={submitting}>
+              Cancel
+            </Button>
+            <Button size="sm" onClick={handleSubmit} disabled={submitting}>
+              {submitting ? 'Saving...' : editingPost ? 'Update Article' : 'Create Article'}
+            </Button>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-3 gap-8">
+
+            {/* Left sidebar — metadata */}
+            <div className="col-span-1 space-y-5">
+              {/* Cover image */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold uppercase tracking-wide text-gray-500">Cover Image</Label>
+                {imagePreview ? (
+                  <div className="relative w-full h-44 rounded-xl overflow-hidden border border-gray-200">
+                    <img src={imagePreview} alt="Cover" className="w-full h-full object-cover" />
+                    <button
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 bg-white rounded-full p-1 shadow hover:bg-gray-100"
+                    >
+                      <X className="w-4 h-4 text-gray-600" />
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-36 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-gray-50 transition-colors"
+                  >
+                    <ImageIcon className="w-6 h-6 text-gray-400 mb-1" />
+                    <span className="text-sm text-gray-400">Click to upload</span>
+                    <span className="text-xs text-gray-300 mt-0.5">PNG, JPG up to 5MB</span>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+              </div>
+
+              {/* Author */}
+              <div className="space-y-1.5">
+                <Label htmlFor="author" className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Author <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="author"
+                  value={form.author}
+                  onChange={e => setForm(f => ({ ...f, author: e.target.value }))}
+                  placeholder="Author name"
+                  className="text-sm"
+                />
+              </div>
+
+              {/* Tags */}
+              <div className="space-y-1.5">
+                <Label htmlFor="tags" className="text-xs font-semibold uppercase tracking-wide text-gray-500">Tags</Label>
+                <Input
+                  id="tags"
+                  value={form.tags}
+                  onChange={e => setForm(f => ({ ...f, tags: e.target.value }))}
+                  placeholder="crypto, news, defi"
+                  className="text-sm"
+                />
+                <p className="text-xs text-gray-400">Comma-separated</p>
+              </div>
+
+              {/* Excerpt */}
+              <div className="space-y-1.5">
+                <Label htmlFor="excerpt" className="text-xs font-semibold uppercase tracking-wide text-gray-500">Excerpt</Label>
+                <textarea
+                  id="excerpt"
+                  value={form.excerpt}
+                  onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))}
+                  placeholder="Short description shown in listings..."
+                  rows={3}
+                  className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                />
+              </div>
+            </div>
+
+            {/* Right — title + content */}
+            <div className="col-span-2 flex flex-col gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="title" className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Title <span className="text-red-500">*</span>
+                </Label>
+                <input
+                  id="title"
+                  value={form.title}
+                  onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                  placeholder="Article title..."
+                  className="w-full text-2xl font-bold border-0 border-b border-gray-200 bg-transparent pb-2 focus:outline-none focus:border-primary placeholder:text-gray-300 transition-colors"
+                />
+              </div>
+
+              <div className="space-y-1.5 flex flex-col flex-1">
+                <Label htmlFor="content" className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Content <span className="text-red-500">*</span>
+                </Label>
+                <textarea
+                  id="content"
+                  value={form.content}
+                  onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
+                  placeholder="Write your article content here. Paste text with paragraphs and spacing — it will be preserved exactly."
+                  className="w-full flex-1 min-h-[60vh] rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm leading-7 focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none font-[inherit] whitespace-pre-wrap"
+                  style={{ whiteSpace: 'pre-wrap' }}
+                />
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -379,128 +533,6 @@ export function BlogManagement() {
           </div>
         </div>
       )}
-
-      {/* Create / Edit Dialog */}
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editingPost ? 'Edit Article' : 'New Article'}</DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4 py-2">
-            {/* Cover Image */}
-            <div className="space-y-1.5">
-              <Label>Cover Image</Label>
-              {imagePreview ? (
-                <div className="relative w-full h-44 rounded-lg overflow-hidden border border-gray-200">
-                  <img src={imagePreview} alt="Cover" className="w-full h-full object-cover" />
-                  <button
-                    onClick={removeImage}
-                    className="absolute top-2 right-2 bg-white rounded-full p-1 shadow hover:bg-gray-100"
-                  >
-                    <X className="w-4 h-4 text-gray-600" />
-                  </button>
-                </div>
-              ) : (
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-32 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-gray-50 transition-colors"
-                >
-                  <ImageIcon className="w-6 h-6 text-gray-400 mb-1" />
-                  <span className="text-sm text-gray-400">Click to upload cover image</span>
-                  <span className="text-xs text-gray-300 mt-0.5">PNG, JPG up to 5MB</span>
-                </div>
-              )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageChange}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2 space-y-1.5">
-                <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
-                <Input
-                  id="title"
-                  value={form.title}
-                  onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                  placeholder="Article title"
-                  className="text-sm"
-                />
-              </div>
-
-              <div className="col-span-2 space-y-1.5">
-                <Label htmlFor="excerpt">Excerpt</Label>
-                <Input
-                  id="excerpt"
-                  value={form.excerpt}
-                  onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))}
-                  placeholder="Short description..."
-                  className="text-sm"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="author">Author <span className="text-red-500">*</span></Label>
-                <Input
-                  id="author"
-                  value={form.author}
-                  onChange={e => setForm(f => ({ ...f, author: e.target.value }))}
-                  placeholder="Author name"
-                  className="text-sm"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="tags">Tags</Label>
-                <Input
-                  id="tags"
-                  value={form.tags}
-                  onChange={e => setForm(f => ({ ...f, tags: e.target.value }))}
-                  placeholder="crypto, news, defi"
-                  className="text-sm"
-                />
-                <p className="text-xs text-gray-400">Comma-separated</p>
-              </div>
-
-              <div className="col-span-2 space-y-1.5">
-                <Label htmlFor="content">Content <span className="text-red-500">*</span></Label>
-                <textarea
-                  id="content"
-                  value={form.content}
-                  onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
-                  placeholder="Write your article content here..."
-                  rows={10}
-                  className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"
-                />
-              </div>
-
-              <div className="col-span-2 flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="isPublished"
-                  checked={form.isPublished}
-                  onChange={e => setForm(f => ({ ...f, isPublished: e.target.checked }))}
-                  className="w-4 h-4 rounded border-gray-300 accent-primary cursor-pointer"
-                />
-                <Label htmlFor="isPublished" className="cursor-pointer">Publish immediately</Label>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsFormOpen(false)} disabled={submitting}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit} disabled={submitting}>
-              {submitting ? 'Saving...' : editingPost ? 'Update Article' : 'Create Article'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Delete Confirmation */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
