@@ -44,6 +44,10 @@ import { AdminSettings } from '@/features/admin-settings/pages/AdminSettings';
 import { Admin2FASetup } from '@/features/admin-settings/pages/Admin2FASetup';
 import { BannerManagement } from '@/features/banners/pages/BannerManagement';
 import { BlogManagement } from '@/features/blog/pages/BlogManagement';
+import { AnalyticsPlatformStats } from '@/features/analytics/pages/AnalyticsPlatformStats';
+import { MarketingStats } from '@/features/analytics/pages/MarketingStats';
+import { TopTraders } from '@/features/analytics/pages/TopTraders';
+import { TokenVolume } from '@/features/analytics/pages/TokenVolume';
 import { TransactionDetail } from '@/features/dashboard/pages/TransactionDetail';
 
 export const router = createBrowserRouter([
@@ -210,6 +214,22 @@ export const router = createBrowserRouter([
           {
             path: 'blog',
             element: <BlogManagement />,
+          },
+          {
+            path: 'analytics/platform-stats',
+            element: <AnalyticsPlatformStats />,
+          },
+          {
+            path: 'analytics/marketing',
+            element: <MarketingStats />,
+          },
+          {
+            path: 'analytics/top-traders',
+            element: <TopTraders />,
+          },
+          {
+            path: 'analytics/tokens',
+            element: <TokenVolume />,
           },
           {
             path: 'admin-settings',

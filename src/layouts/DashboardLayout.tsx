@@ -23,6 +23,7 @@ import {
   BarChart3,
   Image as ImageIcon,
   BookOpen,
+  PieChart,
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -119,6 +120,18 @@ const navItems: NavItem[] = [
     path: '/blog',
     icon: <BookOpen className="w-4 h-4" />,
     featureKey: 'blog',
+  },
+  {
+    title: 'Analytics',
+    path: '/analytics',
+    icon: <PieChart className="w-4 h-4" />,
+    featureKey: 'analytics',
+    sub_menu: [
+      { title: 'Platform Stats', path: '/analytics/platform-stats' },
+      { title: 'Marketing Stats', path: '/analytics/marketing' },
+      { title: 'Top Traders', path: '/analytics/top-traders' },
+      { title: 'Token Volume', path: '/analytics/tokens' },
+    ],
   },
   {
     title: 'Funding & Balances',
