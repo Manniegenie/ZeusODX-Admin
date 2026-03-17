@@ -9,6 +9,7 @@ import axios from '@/core/services/axios';
 const defaultFeatureAccess: FeatureAccess = {
   dashboard: true,
   platformStats: false,
+  analytics: false,
   userManagement: false,
   kycReview: false,
   feesAndRates: false,
@@ -63,6 +64,7 @@ export function usePermissions() {
         const superAdminAccess: FeatureAccess = {
           dashboard: true,
           platformStats: true,
+          analytics: true,
           userManagement: true,
           kycReview: true,
           feesAndRates: true,
@@ -96,6 +98,7 @@ export function usePermissions() {
         const adminAccess: FeatureAccess = {
           dashboard: true,
           platformStats: false,
+          analytics: false,
           userManagement: true,
           kycReview: true,
           feesAndRates: false,
