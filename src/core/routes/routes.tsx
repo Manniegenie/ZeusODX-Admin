@@ -31,6 +31,7 @@ import { Summary } from '@/features/users/pages/Summary';
 import { UserActions } from '@/features/users/pages/UserActions';
 import { BlockUser } from '@/features/users/pages/BlockUser';
 import { UnlockPin } from '@/features/users/pages/UnlockPin';
+import { ResetUserPin } from '@/features/users/pages/ResetUserPin';
 import { KYCReview } from '@/features/kyc/pages/KYCReview';
 import { KYCDetail } from '@/features/kyc/pages/KYCDetail';
 import { NotificationsManagement } from '@/features/notifications/pages/NotificationsManagement';
@@ -127,6 +128,10 @@ export const router = createBrowserRouter([
           {
             path: 'user-management/unlock-pin',
             element: <UnlockPin />,
+          },
+          {
+            path: 'user-management/reset-pin',
+            element: <ResetUserPin />,
           },
           {
             path: 'fees-rates',

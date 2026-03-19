@@ -37,6 +37,14 @@ export async function deleteUser(email: string) : Promise<{ success: boolean; me
   return res.data;
 }
 
+export async function resetUserPin(email: string) {
+  const token = localStorage.getItem('token');
+  const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/usermanagement/users/reset-pin`, { email }, {
+    headers: { Authorization: token ? `Bearer ${token}` : undefined },
+  });
+  return res.data;
+}
+
 export async function removePasswordPin(email: string) : Promise<RemovePasswordResponse> {
   const token = localStorage.getItem('token');
   const res = await axios.patch(`${BASE_URL}/delete-pin/remove-passwordpin`, { email }, {
