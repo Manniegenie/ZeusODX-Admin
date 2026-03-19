@@ -24,6 +24,7 @@ import {
   Image as ImageIcon,
   BookOpen,
   PieChart,
+  TrendingUp,
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -128,10 +129,15 @@ const navItems: NavItem[] = [
     featureKey: 'analytics',
     sub_menu: [
       { title: 'Platform Stats', path: '/analytics/platform-stats' },
-      { title: 'Marketing Stats', path: '/analytics/marketing' },
       { title: 'Top Traders', path: '/analytics/top-traders' },
       { title: 'Token Volume', path: '/analytics/tokens' },
     ],
+  },
+  {
+    title: 'Marketing Stats',
+    path: '/analytics/marketing',
+    icon: <TrendingUp className="w-4 h-4" />,
+    featureKey: 'marketingStats',
   },
   {
     title: 'Funding & Balances',

@@ -19,6 +19,7 @@ export interface FeatureAccess {
   dashboard: boolean;
   platformStats: boolean;
   analytics: boolean;
+  marketingStats: boolean;
   userManagement: boolean;
   kycReview: boolean;
   feesAndRates: boolean;

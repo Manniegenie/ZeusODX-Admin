@@ -78,3 +78,12 @@ class UserService {
 }
 
 export const userService = new UserService();
+
+export async function unlockUserPin(userId: string) {
+  try {
+    const response = await axios.post(`${BASE_URL}/usermanagement/users/${userId}/unlock-pin`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Failed to unlock PIN account');
+  }
+}

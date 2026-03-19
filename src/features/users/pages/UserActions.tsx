@@ -10,7 +10,8 @@ import {
   Loader2,
   MinusCircle,
   Trash2,
-  Ban
+  Ban,
+  LockOpen
 } from 'lucide-react';
 import type { User } from '../types/user';
 
@@ -69,6 +70,14 @@ export function UserActions() {
           path: '/user-management/remove-password',
           color: 'text-red-600',
           bgColor: 'bg-red-50'
+        },
+        {
+          icon: LockOpen,
+          label: 'Unlock PIN Account',
+          description: 'Clear PIN lock after too many failed attempts',
+          path: '/user-management/unlock-pin',
+          color: 'text-green-600',
+          bgColor: 'bg-green-50'
         }
       ]
     },
@@ -274,6 +283,10 @@ export function UserActions() {
               <div className="grid grid-cols-[120px_1fr] gap-4">
                 <span className="text-green-600 font-semibold">POST</span>
                 <span>/blockuser/unblock</span>
+              </div>
+              <div className="grid grid-cols-[120px_1fr] gap-4">
+                <span className="text-green-600 font-semibold">POST</span>
+                <span>/usermanagement/users/:userId/unlock-pin</span>
               </div>
               <div className="grid grid-cols-[120px_1fr] gap-4">
                 <span className="text-red-600 font-semibold">DELETE</span>
