@@ -36,7 +36,7 @@ export function EditFee() {
     ]);
   }, [titleCtx]);
 
-  const currencies = ['BTC', 'ETH', 'USDT'];
+  const currencies = ['BTC', 'ETH', 'SOL', 'USDT', 'USDC', 'BNB', 'MATIC', 'TRX', 'TON'];
   const networks = DEPOSIT_NETWORK_OPTIONS;
 
   const handleSave = async () => {

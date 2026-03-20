@@ -7,6 +7,7 @@ export const DEPOSIT_NETWORK_OPTIONS = [
   'SOL',      // Solana Native
   'ARBITRUM', // Arbitrum One
   'AVAXC',    // Avalanche C-Chain
+  'TON',      // TON Network (Toncoin)
 ];
 
 

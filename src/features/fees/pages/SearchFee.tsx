@@ -42,7 +42,7 @@ export function SearchFee({ initialFee, loading = false, error, viewOnly = false
     }
   }, [initialFee]);
 
-  const currencies = ['BTC', 'ETH', 'USDT'];
+  const currencies = ['BTC', 'ETH', 'SOL', 'USDT', 'USDC', 'BNB', 'MATIC', 'TRX', 'TON'];
   const networks = DEPOSIT_NETWORK_OPTIONS;
 
   const handleSearch = () => {
