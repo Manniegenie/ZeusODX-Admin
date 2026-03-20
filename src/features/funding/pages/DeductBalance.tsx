@@ -116,7 +116,7 @@ export function DeductBalance() {
                   <SelectValue placeholder={currency} />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  {['BTC', 'ETH', 'SOL', 'USDT', 'USDC', 'NGNZ', 'BNB', 'MATIC', 'TRX'].map(c => (
+                  {['BTC', 'ETH', 'SOL', 'USDT', 'USDC', 'NGNZ', 'BNB', 'MATIC', 'TRX', 'TON'].map(c => (
                     <SelectItem key={c} value={c}>{c}</SelectItem>
                   ))}
                 </SelectContent>

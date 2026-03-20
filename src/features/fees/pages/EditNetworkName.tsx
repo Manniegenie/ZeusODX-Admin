@@ -31,7 +31,7 @@ export function EditNetworkName() {
       }, [titleCtx]);
   
     // TODO: Replace with actual data from your API
-    const currencies = ['BTC', 'ETH', 'USDT'];
+    const currencies = ['BTC', 'ETH', 'SOL', 'USDT', 'USDC', 'BNB', 'MATIC', 'TRX', 'TON'];
     const networks = ['Bitcoin', 'Ethereum', 'Tron'];
   
     // No separate search helper — page pre-fills from router state or user input
