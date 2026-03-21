@@ -40,6 +40,7 @@ import type { FeatureAccess } from '@/core/types/auth.types';
 interface SubMenuItem {
   title: string;
   path: string;
+  superAdminOnly?: boolean;
 }
 
 interface NavItem {
@@ -128,7 +129,7 @@ const navItems: NavItem[] = [
     icon: <PieChart className="w-4 h-4" />,
     featureKey: 'analytics',
     sub_menu: [
-      { title: 'Platform Stats', path: '/analytics/platform-stats' },
+      { title: 'Platform Stats', path: '/analytics/platform-stats', superAdminOnly: true },
       { title: 'Top Traders', path: '/analytics/top-traders' },
       { title: 'Token Volume', path: '/analytics/tokens' },
     ],
@@ -294,7 +295,7 @@ export function DashboardLayout() {
                   }
                   content={
                     <div className="p-1 rounded-none shadow-none">
-                      {item.sub_menu.map((sub) => (
+                      {item.sub_menu.filter(sub => !sub.superAdminOnly || user?.role === 'super_admin').map((sub) => (
                         <Link
                           key={sub.path}
                           to={sub.path}
