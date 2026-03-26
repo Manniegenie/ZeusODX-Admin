@@ -41,19 +41,12 @@ export interface TopTrader {
   email: string;
   firstname: string;
   lastname: string;
-  /** Raw NGNZ amount transacted */
+  /** Raw NGNZ amount (naira) */
   ngnzVolume: number;
-  /** NGNZ volume converted to USD */
-  ngnzVolumeUsd: number;
-  /** Crypto withdrawal volume in USD */
-  cryptoWithdrawalUsd: number;
-  /** Internal transfer / swap volume in USD */
-  internalTransferUsd: number;
   /** Combined total volume in USD */
   totalVolumeUsd: number;
-  tradeCount: number;
-  currencies: string[];
-  lastTradeAt: string;
+  /** Top 3 tokens by USD volume */
+  topTokens: string[];
 }
 
 export interface TopTradersResponse {
