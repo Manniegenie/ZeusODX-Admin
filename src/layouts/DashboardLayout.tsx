@@ -129,7 +129,6 @@ const navItems: NavItem[] = [
     icon: <PieChart className="w-4 h-4" />,
     featureKey: 'analytics',
     sub_menu: [
-      { title: 'Platform Stats', path: '/analytics/platform-stats', superAdminOnly: true },
       { title: 'Top Traders', path: '/analytics/top-traders' },
       { title: 'Token Volume', path: '/analytics/tokens' },
     ],
