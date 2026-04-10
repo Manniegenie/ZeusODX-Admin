@@ -156,6 +156,10 @@ const navItems: NavItem[] = [
     path: '/audit',
     icon: <LineChart className="w-4 h-4" />,
     featureKey: 'auditAndMonitoring',
+    sub_menu: [
+      { title: 'Monitoring', path: '/audit' },
+      { title: 'Audit Logs', path: '/audit/logs', superAdminOnly: true },
+    ],
   },
   {
     title: 'Admin Settings',

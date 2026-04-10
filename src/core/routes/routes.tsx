@@ -17,6 +17,7 @@ import { AddCryptoFee } from '@/features/fees/pages/AddCryptoFee';
 import { FundingAndBalances } from '@/features/funding/pages/FundingAndBalances';
 import { Security } from '@/features/security/pages/Security';
 import { AuditAndMonitoring } from '@/features/audit/pages/AuditAndMonitoring';
+import { AuditLogs } from '@/features/audit/pages/AuditLogs';
 import { Settings } from '@/features/settings/pages/Settings';
 import { Disable2Fa } from '@/features/users/pages/Disable2Fa';
 import { RemovePassword } from '@/features/users/pages/RemovePassword';
@@ -204,6 +205,10 @@ export const router = createBrowserRouter([
           {
             path: 'audit',
             element: <AuditAndMonitoring />,
+          },
+          {
+            path: 'audit/logs',
+            element: <AuditLogs />,
           },
           {
             path: 'notifications',
