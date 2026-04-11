@@ -87,3 +87,12 @@ export async function unlockUserPin(userId: string) {
     throw new Error(error.response?.data?.message || 'Failed to unlock PIN account');
   }
 }
+
+export async function unlock2FALock(userId: string) {
+  try {
+    const response = await axios.post(`${BASE_URL}/usermanagement/users/${userId}/unlock-2fa`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Failed to unlock 2FA lock');
+  }
+}
