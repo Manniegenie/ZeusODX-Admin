@@ -101,7 +101,7 @@ export function usePermissions() {
           dashboard: true,
           platformStats: false,
           analytics: false,
-          marketingStats: false,
+          marketingStats: true,
           userManagement: true,
           kycReview: true,
           feesAndRates: false,
@@ -155,6 +155,7 @@ export function usePermissions() {
         if (user?.role === 'admin') {
           const adminOnlyFeatures: (keyof FeatureAccess)[] = [
             'dashboard',
+            'marketingStats',
             'userManagement',
             'kycReview',
             'giftCards',
