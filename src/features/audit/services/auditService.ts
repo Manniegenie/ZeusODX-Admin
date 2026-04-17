@@ -12,6 +12,9 @@ export interface AuditLog {
   route: string;
   action: string;
   requestBody?: Record<string, unknown>;
+  targetUserId?: string;
+  targetUserEmail?: string;
+  details?: string;
   statusCode: number;
   ipAddress: string;
   userAgent: string;

@@ -212,6 +212,8 @@ export function AuditLogs() {
                 <TableHead className="text-xs">Role</TableHead>
                 <TableHead className="text-xs">Method</TableHead>
                 <TableHead className="text-xs">Action</TableHead>
+                <TableHead className="text-xs">Target</TableHead>
+                <TableHead className="text-xs">Details</TableHead>
                 <TableHead className="text-xs">Route</TableHead>
                 <TableHead className="text-xs">Status</TableHead>
                 <TableHead className="text-xs">IP</TableHead>
@@ -221,13 +223,13 @@ export function AuditLogs() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-10 text-sm text-gray-400">
+                  <TableCell colSpan={11} className="text-center py-10 text-sm text-gray-400">
                     Loading...
                   </TableCell>
                 </TableRow>
               ) : logs.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-10 text-sm text-gray-400">
+                  <TableCell colSpan={11} className="text-center py-10 text-sm text-gray-400">
                     No audit logs found.
                   </TableCell>
                 </TableRow>
@@ -249,6 +251,18 @@ export function AuditLogs() {
                     </TableCell>
                     <TableCell className="font-medium max-w-[160px] truncate" title={log.action}>
                       {log.action}
+                    </TableCell>
+                    <TableCell className="max-w-[140px]">
+                      {log.targetUserEmail ? (
+                        <div className="truncate text-gray-700" title={log.targetUserEmail}>{log.targetUserEmail}</div>
+                      ) : log.targetUserId ? (
+                        <div className="truncate font-mono text-gray-400" title={log.targetUserId}>{log.targetUserId}</div>
+                      ) : (
+                        <span className="text-gray-300">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="max-w-[220px] truncate text-gray-600" title={log.details || ''}>
+                      {log.details || <span className="text-gray-300">—</span>}
                     </TableCell>
                     <TableCell className="text-gray-500 max-w-[180px] truncate font-mono" title={log.route}>
                       {log.route}
