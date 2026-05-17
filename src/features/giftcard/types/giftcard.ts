@@ -217,7 +217,7 @@ export interface GiftCardSubmission {
   paymentRate?: number;
   paymentAmount?: number;
   paidAt?: string;
-  transactionId?: string;
+  transactionId?: string | { _id: string; [key: string]: unknown };
   reviewedBy?: string;
   reviewedAt?: string;
   reviewNotes?: string;

@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { GiftCardService } from '../services/giftcardService';
 import type { GiftCardSubmission, RejectionReason } from '../types/giftcard';
-import { SuccessModal } from '@/components/ui/SuccessModal';
+import { SuccessModal, type SuccessDetail } from '@/components/ui/SuccessModal';
 
 // Helper function to format time ago
 const formatTimeAgo = (date: Date): string => {
@@ -74,7 +74,11 @@ export function GiftCardSubmissionDetail() {
 
   // Success modal state
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successModalData, setSuccessModalData] = useState({
+  const [successModalData, setSuccessModalData] = useState<{
+    title: string;
+    message: string;
+    details?: SuccessDetail[];
+  }>({
     title: '',
     message: '',
   });
@@ -163,9 +167,19 @@ export function GiftCardSubmissionDetail() {
 
       if (response.success) {
         setShowApproveDialog(false);
+        const txId = typeof response.data.transactionId === 'object'
+          ? (response.data.transactionId as any)?._id
+          : response.data.transactionId;
         setSuccessModalData({
-          title: 'Submission Approved',
-          message: `Successfully approved submission and credited user with ₦${response.data.paymentAmount.toLocaleString()}`,
+          title: 'Gift Card Approved!',
+          message: 'The submission has been approved and the user has been credited.',
+          details: [
+            { label: 'Amount Credited', value: `₦${response.data.paymentAmount.toLocaleString()}`, highlight: true },
+            { label: 'Card Type', value: submission?.cardType ?? '' },
+            { label: 'Approved Value', value: `${submission?.currency} ${approvedValue}` },
+            { label: 'Payment Rate', value: `₦${paymentRate}/${submission?.currency}` },
+            { label: 'Transaction ID', value: txId ?? '—' },
+          ],
         });
         setShowSuccessModal(true);
         await loadSubmission();
@@ -462,7 +476,9 @@ export function GiftCardSubmissionDetail() {
               <div>
                 <Label className="text-gray-500">Transaction ID</Label>
                 <div className="font-mono text-xs text-gray-600 break-all">
-                  {submission.transactionId}
+                  {typeof submission.transactionId === 'object'
+                    ? submission.transactionId._id
+                    : submission.transactionId}
                 </div>
               </div>
             )}
@@ -725,8 +741,9 @@ export function GiftCardSubmissionDetail() {
         onClose={() => setShowSuccessModal(false)}
         title={successModalData.title}
         message={successModalData.message}
+        details={successModalData.details}
         redirectTo="/giftcards/submissions"
-        autoRedirectDelay={3000}
+        autoRedirectDelay={5000}
         redirectButtonText="Back to Submissions"
       />
     </div>
