@@ -373,25 +373,41 @@ export function PlatformStats() {
       {/* PNL — Super Admin Only */}
       {isSuperAdmin && (
         <div className="space-y-8 pt-4 border-t">
-          <div className="flex items-center justify-between">
+          {/* Section header with top-level date filter */}
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
             <div>
               <h2 className="text-xl font-bold text-gray-900">Operator PNL</h2>
               <p className="text-xs text-gray-400 mt-0.5">
-                {lastSnapshotAt ? `Last refreshed: ${lastSnapshotAt}` : 'Fetching…'}
-                {snapshot?.offrampRate && ` · Rate: ₦${pnlFormatNumber(snapshot.offrampRate, 2)}/$`}
+                Live balance snapshot · Fee revenue filtered by date range
               </p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => dispatch(fetchPnlSnapshot())}
-              disabled={snapshotLoading}
-              className="gap-1.5"
-            >
-              <RefreshCw className={`h-4 w-4 ${snapshotLoading ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
+            <div className="flex items-center gap-2">
+              <DateRangeFilter
+                dateFrom={pnlDateFrom}
+                dateTo={pnlDateTo}
+                onFromChange={setPnlDateFrom}
+                onToChange={setPnlDateTo}
+                onApply={() => dispatch(fetchPnlRevenue({ dateFrom: pnlDateFrom || undefined, dateTo: pnlDateTo || undefined }))}
+                onClear={() => { setPnlDateFrom(''); setPnlDateTo(''); dispatch(fetchPnlRevenue({})); }}
+                loading={revenueLoading}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => dispatch(fetchPnlSnapshot())}
+                disabled={snapshotLoading}
+                className="gap-1.5 shrink-0"
+              >
+                <RefreshCw className={`h-4 w-4 ${snapshotLoading ? 'animate-spin' : ''}`} />
+                Refresh snapshot
+              </Button>
+            </div>
           </div>
+          {lastSnapshotAt && (
+            <p className="text-xs text-gray-400 -mt-4">
+              Last refreshed: {lastSnapshotAt}{snapshot?.offrampRate ? ` · Rate: ₦${pnlFormatNumber(snapshot.offrampRate, 2)}/$` : ''}
+            </p>
+          )}
 
           {snapshotLoading && !snapshot ? (
             <div className="flex items-center justify-center py-16">
@@ -478,20 +494,11 @@ export function PlatformStats() {
 
           {/* Fee Revenue */}
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">Fee Revenue</h2>
-                <p className="text-xs text-gray-400 mt-0.5">Withdrawal fees collected in the selected period</p>
-              </div>
-              <DateRangeFilter
-                dateFrom={pnlDateFrom}
-                dateTo={pnlDateTo}
-                onFromChange={setPnlDateFrom}
-                onToChange={setPnlDateTo}
-                onApply={() => dispatch(fetchPnlRevenue({ dateFrom: pnlDateFrom || undefined, dateTo: pnlDateTo || undefined }))}
-                onClear={() => { setPnlDateFrom(''); setPnlDateTo(''); dispatch(fetchPnlRevenue({})); }}
-                loading={revenueLoading}
-              />
+            <div>
+              <h3 className="text-base font-semibold text-gray-800">Fee Revenue</h3>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Withdrawal fees collected{pnlDateFrom || pnlDateTo ? ` · ${pnlDateFrom || '—'} → ${pnlDateTo || 'now'}` : ' · All time'}
+              </p>
             </div>
 
             {revenueLoading && !revenue ? (
@@ -564,11 +571,6 @@ export function PlatformStats() {
                   </Card>
                 )}
 
-                {(pnlDateFrom || pnlDateTo) && (
-                  <p className="text-xs text-blue-600 bg-blue-50 px-3 py-1.5 rounded-md inline-block">
-                    Revenue filtered: {pnlDateFrom || '—'} → {pnlDateTo || 'now'}
-                  </p>
-                )}
               </>
             ) : null}
           </div>
