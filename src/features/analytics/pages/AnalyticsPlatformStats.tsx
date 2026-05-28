@@ -2,11 +2,11 @@ import { useContext, useEffect, useState } from 'react';
 import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { DateRangeFilter } from '@/components/ui/DateRangeFilter';
 import { toast } from 'sonner';
-import { RefreshCw, Wallet, Zap, TrendingUp, DollarSign, Settings, CalendarDays } from 'lucide-react';
+import { RefreshCw, Wallet, Zap, TrendingUp, DollarSign, Settings } from 'lucide-react';
 import { AnalyticsService } from '../services/analyticsService';
+import { formatCurrency, formatNumber } from '@/core/utils/dateUtils';
 import type { PlatformStatsResponse } from '@/features/dashboard/services/analyticsService';
 
 export function AnalyticsPlatformStats() {
@@ -44,17 +44,6 @@ export function AnalyticsPlatformStats() {
     fetchStats();
   }, []);
 
-  const formatCurrency = (amount: number, currency: 'USD' | 'NGN' = 'USD') => {
-    if (currency === 'NGN') {
-      return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 2 }).format(amount);
-    }
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(amount);
-  };
-
-  const formatNumber = (num: number, decimals: number = 2) => {
-    if (num < 0.00001 && num > 0) return num.toExponential(4);
-    return num.toLocaleString(undefined, { maximumFractionDigits: decimals });
-  };
 
   if (loading && !stats) {
     return (
@@ -72,40 +61,16 @@ export function AnalyticsPlatformStats() {
           <h1 className="text-2xl font-bold text-gray-900">Platform Statistics</h1>
           <p className="text-sm text-gray-500">{lastUpdated && `Last updated: ${lastUpdated}`}</p>
         </div>
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="dateFrom" className="text-xs text-gray-500">From</Label>
-            <Input
-              id="dateFrom"
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              className="h-8 text-sm w-36"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="dateTo" className="text-xs text-gray-500">To</Label>
-            <Input
-              id="dateTo"
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              className="h-8 text-sm w-36"
-            />
-          </div>
-          <Button onClick={fetchStats} disabled={loading} variant="outline" className="flex items-center gap-2 h-8">
-            {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <CalendarDays className="h-4 w-4" />}
-            Apply
-          </Button>
-          {(dateFrom || dateTo) && (
-            <Button
-              onClick={() => { setDateFrom(''); setDateTo(''); }}
-              variant="ghost"
-              className="h-8 text-xs text-gray-500"
-            >
-              Clear
-            </Button>
-          )}
+        <div className="flex flex-wrap items-end gap-2">
+          <DateRangeFilter
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            onFromChange={setDateFrom}
+            onToChange={setDateTo}
+            onApply={fetchStats}
+            onClear={() => { setDateFrom(''); setDateTo(''); }}
+            loading={loading}
+          />
           <Button onClick={fetchStats} disabled={loading} variant="outline" size="icon" className="h-8 w-8">
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </Button>

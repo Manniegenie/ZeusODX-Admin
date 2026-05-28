@@ -42,6 +42,8 @@ import { ScheduledGiftCardNotifications } from '@/features/notifications/pages/S
 import { PriceMarkdown } from '@/features/fees/pages/PriceMarkdown';
 import { OnrampManagement } from '@/features/fees/pages/OnrampManagement';
 import { OfframpManagement } from '@/features/fees/pages/OfframpManagement';
+import { MinimumWithdrawal } from '@/features/fees/pages/MinimumWithdrawal';
+import { PnlDashboard } from '@/features/pnl/pages/PnlDashboard';
 import { GiftCardSubmissions } from '@/features/giftcard/pages/GiftCardSubmissions';
 import { GiftCardSubmissionDetail } from '@/features/giftcard/pages/GiftCardSubmissionDetail';
 import { AdminSettings } from '@/features/admin-settings/pages/AdminSettings';
@@ -180,6 +182,10 @@ export const router = createBrowserRouter([
             element: <PriceCalculator />,
           },
           {
+            path: 'fees-rates/min-withdrawals',
+            element: <MinimumWithdrawal />,
+          },
+          {
             path: 'fees-rates/edit-fee',
             element: <EditFee />,
           },
@@ -250,6 +256,10 @@ export const router = createBrowserRouter([
           {
             path: 'analytics/tokens',
             element: <TokenVolume />,
+          },
+          {
+            path: 'analytics/pnl',
+            element: <PnlDashboard />,
           },
           {
             path: 'admin-settings',

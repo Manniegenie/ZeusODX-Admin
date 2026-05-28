@@ -88,6 +88,7 @@ const navItems: NavItem[] = [
       { title: 'Off-ramp management', path: '/fees-rates/offramp-management' },
       { title: 'Price markdown', path: '/fees-rates/price-markdown' },
       { title: 'Price calculator', path: '/fees-rates/price-calculator' },
+      { title: 'Min. withdrawal limits', path: '/fees-rates/min-withdrawals' },
     ]
   },
   {
@@ -131,6 +132,7 @@ const navItems: NavItem[] = [
     sub_menu: [
       { title: 'Top Traders', path: '/analytics/top-traders' },
       { title: 'Token Volume', path: '/analytics/tokens' },
+      { title: 'PNL Dashboard', path: '/analytics/pnl' },
     ],
   },
   {
