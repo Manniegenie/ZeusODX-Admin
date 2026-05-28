@@ -1,21 +1,52 @@
 import { useContext, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { DateRangeFilter } from '@/components/ui/DateRangeFilter';
 import { getPlatformStats, type PlatformStatsResponse } from '../services/analyticsService';
+import { fetchPnlSnapshot, fetchPnlRevenue } from '@/features/pnl/store/pnlSlice';
+import { formatCurrency as pnlFormatCurrency, formatNumber as pnlFormatNumber, formatDate as pnlFormatDate, pnlColor } from '@/core/utils/dateUtils';
 import { toast } from 'sonner';
-import { RefreshCw, Wallet, Zap, TrendingUp, DollarSign, Settings } from 'lucide-react';
+import { RefreshCw, Wallet, Zap, TrendingUp, TrendingDown, Minus, DollarSign, Settings } from 'lucide-react';
+import type { AppDispatch, RootState } from '@/core/store/store';
+import type { TokenPnl } from '@/features/pnl/services/pnlService';
+
+const TOKEN_ORDER = ['BTC', 'ETH', 'SOL', 'USDT', 'USDC', 'BNB', 'MATIC', 'TRX', 'TON', 'NGNZ'];
+
+function PnlIndicator({ value }: { value: number | null }) {
+  if (value === null) return <Minus className="h-3.5 w-3.5 text-gray-400" />;
+  if (value > 0) return <TrendingUp className="h-3.5 w-3.5 text-green-600" />;
+  if (value < 0) return <TrendingDown className="h-3.5 w-3.5 text-red-600" />;
+  return <Minus className="h-3.5 w-3.5 text-gray-400" />;
+}
 
 export function PlatformStats() {
   const titleCtx = useContext(DashboardTitleContext);
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { snapshot, revenue, snapshotLoading, revenueLoading, lastSnapshotAt } = useSelector(
+    (state: RootState) => state.pnl
+  );
+  const isSuperAdmin = user?.role === 'super_admin';
+
   const [stats, setStats] = useState<PlatformStatsResponse['data'] | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [pnlDateFrom, setPnlDateFrom] = useState('');
+  const [pnlDateTo, setPnlDateTo] = useState('');
 
   useEffect(() => {
     titleCtx?.setTitle('Platform Statistics');
     titleCtx?.setBreadcrumb(['Dashboard', 'Platform Stats']);
   }, [titleCtx]);
+
+  useEffect(() => {
+    if (isSuperAdmin) {
+      dispatch(fetchPnlSnapshot());
+      dispatch(fetchPnlRevenue({}));
+    }
+  }, [dispatch, isSuperAdmin]);
 
   const fetchStats = async () => {
     try {
@@ -337,6 +368,211 @@ export function PlatformStats() {
             </CardContent>
           </Card>
         </>
+      )}
+
+      {/* PNL — Super Admin Only */}
+      {isSuperAdmin && (
+        <div className="space-y-8 pt-4 border-t">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Operator PNL</h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {lastSnapshotAt ? `Last refreshed: ${lastSnapshotAt}` : 'Fetching…'}
+                {snapshot?.offrampRate && ` · Rate: ₦${pnlFormatNumber(snapshot.offrampRate, 2)}/$`}
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => dispatch(fetchPnlSnapshot())}
+              disabled={snapshotLoading}
+              className="gap-1.5"
+            >
+              <RefreshCw className={`h-4 w-4 ${snapshotLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
+
+          {snapshotLoading && !snapshot ? (
+            <div className="flex items-center justify-center py-16">
+              <RefreshCw className="h-8 w-8 animate-spin text-gray-300" />
+            </div>
+          ) : snapshot?.summary ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  { label: 'Provider Balance (Obiex)', usd: snapshot.summary.providerTotalUsd, ngn: snapshot.summary.providerTotalNgn },
+                  { label: 'Platform Liability (User Balances)', usd: snapshot.summary.platformTotalUsd, ngn: snapshot.summary.platformTotalNgn },
+                  { label: 'Net PNL (Provider − Platform)', usd: snapshot.summary.pnlTotalUsd, ngn: snapshot.summary.pnlTotalNgn, highlight: true },
+                ].map(({ label, usd, ngn, highlight }) => (
+                  <Card key={label} className={highlight ? 'border-primary/30 bg-primary/5' : ''}>
+                    <CardContent className="p-5 space-y-1">
+                      <p className="text-xs text-gray-500 uppercase tracking-wide">{label}</p>
+                      <p className={`text-2xl font-bold ${highlight ? (usd >= 0 ? 'text-green-700' : 'text-red-700') : 'text-gray-900'}`}>
+                        {pnlFormatCurrency(usd, 'USD')}
+                      </p>
+                      <p className="text-sm text-gray-500">{pnlFormatCurrency(ngn, 'NGN')}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400">
+                Covering {snapshot.userCount?.toLocaleString()} users · Snapshot taken {pnlFormatDate(snapshot.fetchedAt)}
+              </p>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold text-gray-700">Token-by-token breakdown</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="border-b bg-gray-50 text-gray-500 uppercase tracking-wide">
+                          <th className="py-3 px-4 text-left">Token</th>
+                          <th className="py-3 px-4 text-right">Provider (Obiex)</th>
+                          <th className="py-3 px-4 text-right">Platform Users</th>
+                          <th className="py-3 px-4 text-right">PNL (token)</th>
+                          <th className="py-3 px-4 text-right">PNL (USD)</th>
+                          <th className="py-3 px-4 text-right">PNL (NGN)</th>
+                          <th className="py-3 px-4 text-center">Trend</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {TOKEN_ORDER.filter(t => (snapshot.breakdown ?? {})[t]).map(currency => {
+                          const row: TokenPnl = (snapshot.breakdown ?? {})[currency];
+                          return (
+                            <tr key={currency} className="hover:bg-gray-50">
+                              <td className="py-3 px-4 font-semibold text-gray-800">{currency}</td>
+                              <td className="py-3 px-4 text-right text-gray-600">
+                                {row.providerAvailable !== null ? pnlFormatNumber(row.providerAvailable, 8) : <span className="text-gray-300 italic">N/A</span>}
+                              </td>
+                              <td className="py-3 px-4 text-right text-gray-600">
+                                {pnlFormatNumber(row.platformAvailable, 8)}
+                                {row.platformPending > 0 && (
+                                  <span className="text-gray-400 ml-1">(+{pnlFormatNumber(row.platformPending, 4)} pending)</span>
+                                )}
+                              </td>
+                              <td className={`py-3 px-4 text-right font-medium ${pnlColor(row.pnlAmount ?? 0)}`}>
+                                {row.pnlAmount !== null ? pnlFormatNumber(row.pnlAmount, 8) : '—'}
+                              </td>
+                              <td className={`py-3 px-4 text-right font-medium ${pnlColor(row.pnlUsd ?? 0)}`}>
+                                {row.pnlUsd !== null ? pnlFormatCurrency(row.pnlUsd) : '—'}
+                              </td>
+                              <td className={`py-3 px-4 text-right font-medium ${pnlColor(row.pnlNgn ?? 0)}`}>
+                                {row.pnlNgn !== null ? pnlFormatCurrency(row.pnlNgn, 'NGN') : '—'}
+                              </td>
+                              <td className="py-3 px-4 flex justify-center">
+                                <PnlIndicator value={row.pnlUsd} />
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          ) : null}
+
+          {/* Fee Revenue */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Fee Revenue</h2>
+                <p className="text-xs text-gray-400 mt-0.5">Withdrawal fees collected in the selected period</p>
+              </div>
+              <DateRangeFilter
+                dateFrom={pnlDateFrom}
+                dateTo={pnlDateTo}
+                onFromChange={setPnlDateFrom}
+                onToChange={setPnlDateTo}
+                onApply={() => dispatch(fetchPnlRevenue({ dateFrom: pnlDateFrom || undefined, dateTo: pnlDateTo || undefined }))}
+                onClear={() => { setPnlDateFrom(''); setPnlDateTo(''); dispatch(fetchPnlRevenue({})); }}
+                loading={revenueLoading}
+              />
+            </div>
+
+            {revenueLoading && !revenue ? (
+              <div className="flex items-center justify-center py-10">
+                <RefreshCw className="h-6 w-6 animate-spin text-gray-300" />
+              </div>
+            ) : revenue ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <Card>
+                    <CardContent className="p-5 space-y-1">
+                      <p className="text-xs text-gray-500 uppercase tracking-wide flex items-center gap-1">
+                        <DollarSign className="h-3.5 w-3.5" /> Total Fee Revenue
+                      </p>
+                      <p className="text-2xl font-bold text-gray-900">{pnlFormatCurrency(revenue.withdrawalFees.totalUsd)}</p>
+                      <p className="text-sm text-gray-500">{pnlFormatCurrency(revenue.withdrawalFees.totalNgn, 'NGN')}</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-5 space-y-1">
+                      <p className="text-xs text-gray-500 uppercase tracking-wide flex items-center gap-1">
+                        <Wallet className="h-3.5 w-3.5" /> Withdrawals Processed
+                      </p>
+                      <p className="text-2xl font-bold text-gray-900">{revenue.activitySummary.withdrawalCount.toLocaleString()}</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-5 space-y-1">
+                      <p className="text-xs text-gray-500 uppercase tracking-wide flex items-center gap-1">
+                        <Wallet className="h-3.5 w-3.5" /> Deposits Received
+                      </p>
+                      <p className="text-2xl font-bold text-gray-900">{revenue.activitySummary.depositCount.toLocaleString()}</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {Object.keys(revenue.withdrawalFees.breakdown).length > 0 && (
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-semibold text-gray-700">Fee breakdown by token</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead>
+                            <tr className="border-b bg-gray-50 text-gray-500 uppercase tracking-wide">
+                              <th className="py-3 px-4 text-left">Token</th>
+                              <th className="py-3 px-4 text-right">Fee (token)</th>
+                              <th className="py-3 px-4 text-right">Fee (USD)</th>
+                              <th className="py-3 px-4 text-right">Fee (NGN)</th>
+                              <th className="py-3 px-4 text-right">Withdrawals</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {Object.entries(revenue.withdrawalFees.breakdown)
+                              .sort(([, a], [, b]) => b.feeUsd - a.feeUsd)
+                              .map(([currency, data]) => (
+                                <tr key={currency} className="hover:bg-gray-50">
+                                  <td className="py-3 px-4 font-semibold text-gray-800">{currency}</td>
+                                  <td className="py-3 px-4 text-right text-gray-600">{pnlFormatNumber(data.totalFee, 8)}</td>
+                                  <td className="py-3 px-4 text-right text-gray-700 font-medium">{pnlFormatCurrency(data.feeUsd)}</td>
+                                  <td className="py-3 px-4 text-right text-gray-700 font-medium">{pnlFormatCurrency(data.feeNgn, 'NGN')}</td>
+                                  <td className="py-3 px-4 text-right text-gray-500">{data.count.toLocaleString()}</td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {(pnlDateFrom || pnlDateTo) && (
+                  <p className="text-xs text-blue-600 bg-blue-50 px-3 py-1.5 rounded-md inline-block">
+                    Revenue filtered: {pnlDateFrom || '—'} → {pnlDateTo || 'now'}
+                  </p>
+                )}
+              </>
+            ) : null}
+          </div>
+        </div>
       )}
     </div>
   );
