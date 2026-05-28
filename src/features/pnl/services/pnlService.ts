@@ -42,18 +42,21 @@ export interface TokenPnl {
   note?: string;
 }
 
+export interface PnlSummary {
+  providerTotalUsd: number;
+  providerTotalNgn: number;
+  platformTotalUsd: number;
+  platformTotalNgn: number;
+  pnlTotalUsd: number;
+  pnlTotalNgn: number;
+}
+
 export interface PnlSnapshot {
   fetchedAt: string;
   offrampRate: number;
   userCount: number;
-  summary: {
-    providerTotalUsd: number;
-    providerTotalNgn: number;
-    platformTotalUsd: number;
-    platformTotalNgn: number;
-    pnlTotalUsd: number;
-    pnlTotalNgn: number;
-  };
+  summary: PnlSummary;
+  previousDay: (PnlSummary & { recordedAt: string }) | null;
   breakdown: Record<string, TokenPnl>;
 }
 

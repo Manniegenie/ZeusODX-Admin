@@ -8,11 +8,27 @@ import { getPlatformStats, type PlatformStatsResponse } from '../services/analyt
 import { fetchPnlSnapshot, fetchPnlRevenue } from '@/features/pnl/store/pnlSlice';
 import { formatCurrency as pnlFormatCurrency, formatNumber as pnlFormatNumber, formatDate as pnlFormatDate, pnlColor } from '@/core/utils/dateUtils';
 import { toast } from 'sonner';
-import { RefreshCw, Wallet, Zap, TrendingUp, TrendingDown, Minus, DollarSign, Settings } from 'lucide-react';
+import { RefreshCw, Wallet, Zap, TrendingUp, TrendingDown, Minus, DollarSign, Settings, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import type { AppDispatch, RootState } from '@/core/store/store';
 import type { TokenPnl } from '@/features/pnl/services/pnlService';
 
 const TOKEN_ORDER = ['BTC', 'ETH', 'SOL', 'USDT', 'USDC', 'BNB', 'MATIC', 'TRX', 'TON', 'NGNZ'];
+
+function pctChange(current: number, previous: number | undefined): number | null {
+  if (previous === undefined || previous === null || previous === 0) return null;
+  return ((current - previous) / Math.abs(previous)) * 100;
+}
+
+function PctBadge({ pct }: { pct: number | null }) {
+  if (pct === null) return <span className="text-xs text-gray-400">vs yesterday: —</span>;
+  const up = pct >= 0;
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${up ? 'text-green-600' : 'text-red-600'}`}>
+      {up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+      {up ? '+' : ''}{pct.toFixed(2)}% vs yesterday
+    </span>
+  );
+}
 
 function PnlIndicator({ value }: { value: number | null }) {
   if (value === null) return <Minus className="h-3.5 w-3.5 text-gray-400" />;
@@ -417,10 +433,26 @@ export function PlatformStats() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
-                  { label: 'Provider Balance (Obiex)', usd: snapshot.summary.providerTotalUsd, ngn: snapshot.summary.providerTotalNgn },
-                  { label: 'Platform Liability (User Balances)', usd: snapshot.summary.platformTotalUsd, ngn: snapshot.summary.platformTotalNgn },
-                  { label: 'Net PNL (Provider − Platform)', usd: snapshot.summary.pnlTotalUsd, ngn: snapshot.summary.pnlTotalNgn, highlight: true },
-                ].map(({ label, usd, ngn, highlight }) => (
+                  {
+                    label: 'Provider Balance (Obiex)',
+                    usd: snapshot.summary.providerTotalUsd,
+                    ngn: snapshot.summary.providerTotalNgn,
+                    prevUsd: snapshot.previousDay?.providerTotalUsd,
+                  },
+                  {
+                    label: 'Platform Liability (User Balances)',
+                    usd: snapshot.summary.platformTotalUsd,
+                    ngn: snapshot.summary.platformTotalNgn,
+                    prevUsd: snapshot.previousDay?.platformTotalUsd,
+                  },
+                  {
+                    label: 'Net PNL (Provider − Platform)',
+                    usd: snapshot.summary.pnlTotalUsd,
+                    ngn: snapshot.summary.pnlTotalNgn,
+                    prevUsd: snapshot.previousDay?.pnlTotalUsd,
+                    highlight: true,
+                  },
+                ].map(({ label, usd, ngn, prevUsd, highlight }) => (
                   <Card key={label} className={highlight ? 'border-primary/30 bg-primary/5' : ''}>
                     <CardContent className="p-5 space-y-1">
                       <p className="text-xs text-gray-500 uppercase tracking-wide">{label}</p>
@@ -428,6 +460,7 @@ export function PlatformStats() {
                         {pnlFormatCurrency(usd, 'USD')}
                       </p>
                       <p className="text-sm text-gray-500">{pnlFormatCurrency(ngn, 'NGN')}</p>
+                      <PctBadge pct={pctChange(usd, prevUsd)} />
                     </CardContent>
                   </Card>
                 ))}
