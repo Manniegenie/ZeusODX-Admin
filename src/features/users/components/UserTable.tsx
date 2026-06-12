@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import type { User } from "../types/user";
 
 interface DataTableProps {
@@ -24,6 +25,8 @@ interface DataTableProps {
 }
 
 export function DataTable({ data, loading, pagination, onPageChange }: DataTableProps) {
+  const navigate = useNavigate();
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -91,7 +94,11 @@ export function DataTable({ data, loading, pagination, onPageChange }: DataTable
                 <TableCell>{getStatusBadge(user.emailVerified, user.bvnVerified)}</TableCell>
                 <TableCell>{formatDate(user.createdAt)}</TableCell>
                 <TableCell className="text-right">
-                  <Button  size="icon">
+                  <Button
+                    size="icon"
+                    onClick={() => navigate('/user-management/user-summary', { state: { user: { email: user.email } } })}
+                    title="View user summary"
+                  >
                     <Eye className="h-4 w-4" />
                   </Button>
                 </TableCell>

@@ -474,7 +474,7 @@ export function Summary() {
                 </label>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <Button
                   onClick={handleRegenerate}
                   disabled={regenLoading || regenPolling || !userEmail}
@@ -485,8 +485,18 @@ export function Summary() {
                   ) : regenPolling ? (
                     <><RefreshCcw className="h-4 w-4 mr-2 animate-spin" /> Generating...</>
                   ) : (
-                    <><Wallet className="h-4 w-4 mr-2" /> Generate Wallets</>
+                    <><Wallet className="h-4 w-4 mr-2" /> Generate All Wallets</>
                   )}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-10"
+                  onClick={() => navigate('/user-management/regenerate-wallet-by-phone', {
+                    state: { user: { email: userEmail, phonenumber: userData?.phonenumber } }
+                  })}
+                  disabled={!userEmail}
+                >
+                  Select Specific Wallets
                 </Button>
                 {regenPolling && (
                   <span className="text-sm text-yellow-600">Running in background — do not close this page</span>

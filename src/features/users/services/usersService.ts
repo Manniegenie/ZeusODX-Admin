@@ -80,9 +80,14 @@ export async function deductBalance(email: string, currency: string, amount: num
   return res.data as DeductBalanceResponse;
 }
 
-export async function regenerateWalletsByPhone(phonenumber: string, tokens: string[], force = false) {
+export async function regenerateWalletsByPhone(identifier: string, tokens: string[], force = false) {
   const token = localStorage.getItem('token');
-  const res = await axios.patch(`${BASE_URL}/updateuseraddress/regenerate-by-phone`, { phonenumber, tokens, force }, {
+  // identifier can be a phone number or email — server accepts either
+  const isEmail = identifier.includes('@');
+  const payload = isEmail
+    ? { email: identifier, tokens, force }
+    : { phonenumber: identifier, tokens, force };
+  const res = await axios.patch(`${BASE_URL}/updateuseraddress/regenerate-by-phone`, payload, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: token ? `Bearer ${token}` : undefined,
