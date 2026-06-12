@@ -102,10 +102,32 @@ export async function generateWalletsByPhone(phonenumber: string, force = false)
   return res.data;
 }
 
+export async function generateWalletsByEmail(email: string, force = false) {
+  const token = localStorage.getItem('token');
+  const res = await axios.post(`${BASE_URL}/updateuseraddress/generate-wallets-by-phone`, { email, force }, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+  });
+  return res.data;
+}
+
 export async function statusByPhone(phonenumber: string) {
   const token = localStorage.getItem('token');
   const res = await axios.get(`${BASE_URL}/updateuseraddress/status-by-phone`, {
     params: { phonenumber },
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+  });
+  return res.data;
+}
+
+export async function statusByEmail(email: string) {
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${BASE_URL}/updateuseraddress/status-by-phone`, {
+    params: { email },
     headers: {
       Authorization: token ? `Bearer ${token}` : undefined,
     },

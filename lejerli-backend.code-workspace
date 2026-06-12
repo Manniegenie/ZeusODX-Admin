@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"path": "../ZeusODX-web/lejerli-backend"
+		},
+		{
+			"path": "../Lejerli-app"
+		},
+		{
+			"path": "../ZeusODX"
+		},
+		{
+			"path": "../Chatbramp-app"
+		},
+		{
+			"path": "../ZeusODX-server"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../Bramp-Server"
+		},
+		{
+			"path": "../Chatbot"
+		}
+	],
+	"settings": {}
+}

@@ -1,12 +1,12 @@
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { RefreshCcw, ChevronLeft, ChevronRight } from "lucide-react";
+import { RefreshCcw, ChevronLeft, ChevronRight, Wallet } from "lucide-react";
 import { DashboardTitleContext } from "@/layouts/DashboardTitleContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { FetchWalletsResponse } from "@/features/users/types/userApi.types";
 import { WalletListGrouped } from "@/features/funding/components/WalletListGrouped";
-import { getCompleteUserSummary, getUserTransactions } from "@/features/users/services/usersService";
+import { getCompleteUserSummary, getUserTransactions, generateWalletsByEmail, statusByEmail } from "@/features/users/services/usersService";
 import { toast } from "sonner";
 import { DataTable } from "@/features/dashboard/components/data-table";
 import { columns } from "@/features/dashboard/components/columns";
@@ -25,6 +25,18 @@ export function Summary() {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string>("—");
+
+  // Wallet regeneration state
+  const [regenLoading, setRegenLoading] = useState(false);
+  const [regenForce, setRegenForce] = useState(false);
+  const [regenPolling, setRegenPolling] = useState(false);
+  const [regenProgress, setRegenProgress] = useState<{
+    walletsGenerated?: number;
+    totalWallets?: number;
+    isComplete?: boolean;
+    status?: string;
+  } | null>(null);
+  const pollRef = useRef<number | null>(null);
 
   // Transaction states
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -142,6 +154,63 @@ export function Summary() {
 
     fetchTransactions();
   }, [userEmail]);
+
+  // Wallet regeneration handlers
+  const handleRegenerate = useCallback(async () => {
+    if (!userEmail) return;
+    try {
+      setRegenLoading(true);
+      setRegenProgress(null);
+      const res = await generateWalletsByEmail(userEmail, regenForce);
+      toast.success(res?.message || 'Wallet generation started');
+      if (res?.walletGenerationStatus === 'in_progress') {
+        setRegenPolling(true);
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || err?.response?.data?.error || 'Failed to start wallet generation');
+    } finally {
+      setRegenLoading(false);
+    }
+  }, [userEmail, regenForce]);
+
+  useEffect(() => {
+    if (!regenPolling || !userEmail) return;
+    const start = Date.now();
+    const poll = async () => {
+      try {
+        const s = await statusByEmail(userEmail);
+        setRegenProgress({
+          walletsGenerated: s?.walletsGenerated,
+          totalWallets: s?.totalWallets,
+          isComplete: s?.isComplete,
+          status: s?.walletGenerationStatus,
+        });
+        if (s?.isComplete) {
+          setRegenPolling(false);
+          if (pollRef.current) window.clearInterval(pollRef.current);
+          toast.success('Wallets generated successfully');
+          // Refresh summary to show new addresses
+          const response = await getCompleteUserSummary(userEmail);
+          if (response.success && response.data) {
+            setUserData(response.data.user);
+            setWalletData({ email: response.data.user.email, wallets: response.data.wallets, balances: response.data.balances });
+          }
+        }
+        if (Date.now() - start > 10 * 60 * 1000) {
+          setRegenPolling(false);
+          if (pollRef.current) window.clearInterval(pollRef.current);
+        }
+      } catch (err) {
+        console.error('Wallet status poll error', err);
+      }
+    };
+    poll();
+    pollRef.current = window.setInterval(poll, 3000);
+    return () => {
+      if (pollRef.current) window.clearInterval(pollRef.current);
+      pollRef.current = null;
+    };
+  }, [regenPolling, userEmail]);
 
   // Pagination
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
@@ -367,6 +436,93 @@ export function Summary() {
         <div className="lg:col-span-2">
           <WalletListGrouped data={walletData} />
         </div>
+      </div>
+
+      {/* Wallet Regeneration Panel */}
+      <div className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Wallet className="h-5 w-5" />
+              Wallet Address Management
+            </CardTitle>
+            <CardDescription>
+              Generate or regenerate wallet addresses for this user.
+              {userData?.walletGenerationStatus && (
+                <span className={`ml-2 font-medium ${
+                  userData.walletGenerationStatus === 'completed' ? 'text-green-600' :
+                  userData.walletGenerationStatus === 'in_progress' ? 'text-yellow-600' :
+                  userData.walletGenerationStatus === 'failed' ? 'text-red-600' :
+                  'text-gray-500'
+                }`}>
+                  Status: {userData.walletGenerationStatus}
+                </span>
+              )}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={regenForce}
+                    onChange={(e) => setRegenForce(e.target.checked)}
+                    className="h-4 w-4"
+                  />
+                  Force regenerate (overwrite existing addresses)
+                </label>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={handleRegenerate}
+                  disabled={regenLoading || regenPolling || !userEmail}
+                  className="h-10"
+                >
+                  {regenLoading ? (
+                    <><RefreshCcw className="h-4 w-4 mr-2 animate-spin" /> Starting...</>
+                  ) : regenPolling ? (
+                    <><RefreshCcw className="h-4 w-4 mr-2 animate-spin" /> Generating...</>
+                  ) : (
+                    <><Wallet className="h-4 w-4 mr-2" /> Generate Wallets</>
+                  )}
+                </Button>
+                {regenPolling && (
+                  <span className="text-sm text-yellow-600">Running in background — do not close this page</span>
+                )}
+              </div>
+
+              {/* Progress bar */}
+              {regenProgress && (
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>
+                      {regenProgress.walletsGenerated ?? 0} / {regenProgress.totalWallets ?? 12} wallets generated
+                    </span>
+                    <span className={
+                      regenProgress.isComplete ? 'text-green-600 font-medium' :
+                      regenProgress.status === 'failed' ? 'text-red-600' :
+                      'text-yellow-600'
+                    }>
+                      {regenProgress.isComplete ? 'Complete' : regenProgress.status ?? 'In progress'}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-500 ${regenProgress.isComplete ? 'bg-green-500' : 'bg-primary'}`}
+                      style={{
+                        width: `${regenProgress.totalWallets
+                          ? Math.min(100, ((regenProgress.walletsGenerated ?? 0) / regenProgress.totalWallets) * 100)
+                          : 0}%`
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Transaction History Section */}
