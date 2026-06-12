@@ -290,7 +290,7 @@ export function Summary() {
                 <RefreshCcw
                   className={`h-4 w-4 text-white cursor-pointer hover:opacity-70 transition-opacity ${loading ? 'animate-spin' : ''}`}
                   onClick={() => !loading && setRefreshKey(k => k + 1)}
-                  title="Refresh wallet data"
+                  aria-label="Refresh wallet data"
                 />
               </span>
               <span>Total Portfolio Value</span>
