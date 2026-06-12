@@ -5,7 +5,7 @@ import { DashboardTitleContext } from "@/layouts/DashboardTitleContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { regenerateWalletsByPhone } from "@/features/users/services/usersService";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 
 // All valid wallet schema keys grouped by currency
@@ -54,6 +54,7 @@ export function RegenerateWalletByPhone() {
   const titleCtx = useContext(DashboardTitleContext);
 
   const location = useLocation();
+  const navigate = useNavigate();
   const stateUser = (location.state as any)?.user;
 
   const [phonenumber, setPhonenumber] = useState<string>(stateUser?.phonenumber || "");
@@ -100,6 +101,14 @@ export function RegenerateWalletByPhone() {
       const res = await regenerateWalletsByPhone(phonenumber || email, selectedTokens, force);
       setResult(res);
       toast.success(res?.message || 'Wallets regenerated successfully');
+      // If we came from a user summary, navigate back so the page re-fetches with fresh addresses
+      if (stateUser?.email) {
+        setTimeout(() => {
+          navigate('/user-management/user-summary', {
+            state: { user: { email: stateUser.email }, refresh: true }
+          });
+        }, 1500);
+      }
     } catch (err: any) {
       console.error('Regenerate failed', err);
       const msg = err?.response?.data?.message || err?.response?.data?.error || 'Failed to regenerate wallets';

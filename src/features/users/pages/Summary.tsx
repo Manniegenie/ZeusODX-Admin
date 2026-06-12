@@ -16,15 +16,23 @@ export function Summary() {
   const titleCtx = useContext(DashboardTitleContext);
   const location = useLocation();
   const navigate = useNavigate();
-  const navState = (location.state ?? {}) as { user?: { email?: string } };
+  const navState = (location.state ?? {}) as { user?: { email?: string }; refresh?: boolean };
 
   const [userEmail] = useState<string>(
     () => navState.user?.email ?? ""
   );
+
+  // If navigated back from regen page with refresh flag, trigger a re-fetch
+  useEffect(() => {
+    if (navState.refresh) {
+      setRefreshKey(k => k + 1);
+    }
+  }, [navState.refresh]);
   const [walletData, setWalletData] = useState<FetchWalletsResponse | null>(null);
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string>("—");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Wallet regeneration state
   const [regenLoading, setRegenLoading] = useState(false);
@@ -96,7 +104,7 @@ export function Summary() {
     };
 
     fetchSummary();
-  }, [userEmail]);
+  }, [userEmail, refreshKey]);
 
   // Fetch user transactions
   useEffect(() => {
@@ -189,12 +197,7 @@ export function Summary() {
           setRegenPolling(false);
           if (pollRef.current) window.clearInterval(pollRef.current);
           toast.success('Wallets generated successfully');
-          // Refresh summary to show new addresses
-          const response = await getCompleteUserSummary(userEmail);
-          if (response.success && response.data) {
-            setUserData(response.data.user);
-            setWalletData({ email: response.data.user.email, wallets: response.data.wallets, balances: response.data.balances });
-          }
+          setRefreshKey(k => k + 1);
         }
         if (Date.now() - start > 10 * 60 * 1000) {
           setRegenPolling(false);
@@ -278,7 +281,9 @@ export function Summary() {
                   )}
                 </span>
                 <RefreshCcw
-                  className={`h-4 w-4 text-white ${loading ? 'animate-spin' : ''}`}
+                  className={`h-4 w-4 text-white cursor-pointer hover:opacity-70 transition-opacity ${loading ? 'animate-spin' : ''}`}
+                  onClick={() => !loading && setRefreshKey(k => k + 1)}
+                  title="Refresh wallet data"
                 />
               </span>
               <span>Total Portfolio Value</span>
