@@ -9,6 +9,7 @@ import { fundUserThunk } from "../store/funding.slice";
 import type { RootState, AppDispatch } from "@/core/store/store";
 import { toast } from "sonner";
 import { DashboardTitleContext } from "@/layouts/DashboardTitleContext";
+import { TwoFAModal } from "@/components/TwoFAModal";
 
 export function FundUserForm() {
   const dispatch = useDispatch<AppDispatch>();
@@ -16,6 +17,7 @@ export function FundUserForm() {
   // confirmation dialog state
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [twoFAOpen, setTwoFAOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [successResult, setSuccessResult] = useState<{ newBalance?: number; message?: string } | null>(null);
   const [form, setForm] = useState({
@@ -46,13 +48,20 @@ export function FundUserForm() {
     setConfirmOpen(true);
   };
 
-  const handleConfirm = async () => {
+  const openTwoFA = () => {
+    setConfirmOpen(false);
+    setTwoFAOpen(true);
+  };
+
+  const handleConfirm = async (twoFAToken: string) => {
+    setTwoFAOpen(false);
     setConfirmLoading(true);
     try {
       const result = await dispatch(fundUserThunk({
         email: form.email,
         currency: form.currency,
-        amount: Number(form.amount)
+        amount: Number(form.amount),
+        twoFAToken,
       }));
       
       if ('error' in result) {
@@ -164,13 +173,22 @@ export function FundUserForm() {
           </div>
           <DialogFooter>
             <div className="flex gap-2">
-              <Button className="text-red-500 border border-red-500"  onClick={() => setConfirmOpen(false)}>Cancel</Button>
-              <Button className="text-white" disabled={confirmLoading} onClick={handleConfirm}>{confirmLoading ? 'Funding...' : 'Confirm and Fund'}</Button>
+              <Button className="text-red-500 border border-red-500" onClick={() => setConfirmOpen(false)}>Cancel</Button>
+              <Button className="text-white" disabled={confirmLoading} onClick={openTwoFA}>{confirmLoading ? 'Funding...' : 'Confirm and Fund'}</Button>
             </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
       
+      <TwoFAModal
+        open={twoFAOpen}
+        title="Confirm fund operation"
+        description={`You are about to fund ${form.email} with ${form.amount} ${form.currency}.`}
+        loading={confirmLoading}
+        onClose={() => setTwoFAOpen(false)}
+        onConfirm={handleConfirm}
+      />
+
       <Dialog open={successOpen} onOpenChange={(v) => setSuccessOpen(v)}>
         <DialogContent className="bg-white border border-gray-200 shadow-lg max-w-md">
           <DialogHeader>

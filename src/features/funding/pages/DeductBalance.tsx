@@ -10,6 +10,7 @@ import { deductBalance } from "@/features/users/services/usersService";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { MinusCircle } from "lucide-react";
+import { TwoFAModal } from "@/components/TwoFAModal";
 
 export function DeductBalance() {
   const titleCtx = useContext(DashboardTitleContext);
@@ -24,6 +25,7 @@ export function DeductBalance() {
   const [currency, setCurrency] = useState<string>('BTC');
   const [amount, setAmount] = useState<string>('');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [twoFAOpen, setTwoFAOpen] = useState(false);
 
   useEffect(() => {
     titleCtx?.setTitle("Deduct Balance");
@@ -49,20 +51,22 @@ export function DeductBalance() {
     setConfirmOpen(true);
   };
 
-  const handleDeductConfirmed = async () => {
-    if (!userEmail || !currency || !amount) {
-      setConfirmOpen(false);
-      return;
-    }
+  const openTwoFA = () => {
+    setConfirmOpen(false);
+    setTwoFAOpen(true);
+  };
+
+  const handleDeductConfirmed = async (twoFAToken: string) => {
+    if (!userEmail || !currency || !amount) return;
     try {
       setDeductLoading(true);
-      const res = await deductBalance(userEmail, currency, parseFloat(amount));
+      setTwoFAOpen(false);
+      const res = await deductBalance(userEmail, currency, parseFloat(amount), twoFAToken);
       toast.success(res?.message ?? 'Balance deducted successfully');
-      setConfirmOpen(false);
       setAmount('');
     } catch (err: any) {
       console.error('deduct failed', err);
-      const errorMessage = err?.response?.data?.error || 'Failed to deduct balance';
+      const errorMessage = err?.response?.data?.error || err?.response?.data?.message || 'Failed to deduct balance';
       toast.error(errorMessage);
     } finally {
       setDeductLoading(false);
@@ -190,15 +194,24 @@ export function DeductBalance() {
               Cancel
             </Button>
             <Button
-              onClick={handleDeductConfirmed}
+              onClick={openTwoFA}
               className='bg-red-600 hover:bg-red-700 text-white'
               disabled={deductLoading}
             >
-              {deductLoading ? 'Deducting...' : 'Confirm Deduction'}
+              Confirm Deduction
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <TwoFAModal
+        open={twoFAOpen}
+        title="Confirm balance deduction"
+        description={`You are about to deduct ${amount} ${currency} from ${userEmail}.`}
+        loading={deductLoading}
+        onClose={() => setTwoFAOpen(false)}
+        onConfirm={handleDeductConfirmed}
+      />
     </div>
   );
 }

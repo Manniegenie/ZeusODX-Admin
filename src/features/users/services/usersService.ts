@@ -25,13 +25,14 @@ export async function getUsers(params?: Record<string, string | number | boolean
   return res.data as import('../types/user').GetUsersResponse;
 }
 
-export async function deleteUser(email: string) : Promise<{ success: boolean; message: string; deletedUser: { email: string; _id: string } }> {
+export async function deleteUser(email: string, twoFAToken?: string) : Promise<{ success: boolean; message: string; deletedUser: { email: string; _id: string } }> {
   const token = localStorage.getItem('token');
   const res = await axios.delete(`${BASE_URL}/deleteuser/user`, {
     data: { email },
     headers: {
       'Content-Type': 'application/json',
       Authorization: token ? `Bearer ${token}` : undefined,
+      ...(twoFAToken ? { 'X-2FA-Token': twoFAToken } : {}),
     },
   });
   return res.data;
@@ -69,20 +70,20 @@ export async function fetchUserWallets(email: string) : Promise<FetchWalletsResp
   return res.data as FetchWalletsResponse;
 }
 
-export async function deductBalance(email: string, currency: string, amount: number) : Promise<DeductBalanceResponse> {
+export async function deductBalance(email: string, currency: string, amount: number, twoFAToken?: string) : Promise<DeductBalanceResponse> {
   const token = localStorage.getItem('token');
   const res = await axios.post(`${BASE_URL}/pending/deduct`, { email, currency, amount }, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: token ? `Bearer ${token}` : undefined,
+      ...(twoFAToken ? { 'X-2FA-Token': twoFAToken } : {}),
     },
   });
   return res.data as DeductBalanceResponse;
 }
 
-export async function regenerateWalletsByPhone(identifier: string, tokens: string[], force = false) {
+export async function regenerateWalletsByPhone(identifier: string, tokens: string[], force = false, twoFAToken?: string) {
   const token = localStorage.getItem('token');
-  // identifier can be a phone number or email — server accepts either
   const isEmail = identifier.includes('@');
   const payload = isEmail
     ? { email: identifier, tokens, force }
@@ -91,6 +92,7 @@ export async function regenerateWalletsByPhone(identifier: string, tokens: strin
     headers: {
       'Content-Type': 'application/json',
       Authorization: token ? `Bearer ${token}` : undefined,
+      ...(twoFAToken ? { 'X-2FA-Token': twoFAToken } : {}),
     },
   });
   return res.data;
@@ -107,12 +109,13 @@ export async function generateWalletsByPhone(phonenumber: string, force = false)
   return res.data;
 }
 
-export async function generateWalletsByEmail(email: string, force = false) {
+export async function generateWalletsByEmail(email: string, force = false, twoFAToken?: string) {
   const token = localStorage.getItem('token');
   const res = await axios.post(`${BASE_URL}/updateuseraddress/generate-wallets-by-phone`, { email, force }, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: token ? `Bearer ${token}` : undefined,
+      ...(twoFAToken ? { 'X-2FA-Token': twoFAToken } : {}),
     },
   });
   return res.data;

@@ -2,29 +2,31 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { fundUser, deductUser } from '../services/funding.service';
 import type { FundUserRequest, FundUserResponse } from '../types/funding.types';
 
-export const fundUserThunk = createAsyncThunk<FundUserResponse, FundUserRequest, { rejectValue: string }>(
+export const fundUserThunk = createAsyncThunk<FundUserResponse, FundUserRequest & { twoFAToken?: string }, { rejectValue: string }>(
   'funding/fundUser',
   async (data, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No auth token');
-      return await fundUser(data, token);
+      const { twoFAToken, ...fundData } = data;
+      return await fundUser(fundData, token, twoFAToken);
     } catch (err: any) {
-      const message = err?.response?.data?.message || err?.message || 'Funding failed';
+      const message = err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Funding failed';
       return rejectWithValue(String(message));
     }
   }
 );
 
-export const deductUserThunk = createAsyncThunk<FundUserResponse, FundUserRequest, { rejectValue: string }>(
+export const deductUserThunk = createAsyncThunk<FundUserResponse, FundUserRequest & { twoFAToken?: string }, { rejectValue: string }>(
   'funding/deductUser',
   async (data, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No auth token');
-      return await deductUser(data, token);
+      const { twoFAToken, ...deductData } = data;
+      return await deductUser(deductData, token, twoFAToken);
     } catch (err: any) {
-      const message = err?.response?.data?.message || err?.message || 'Deduction failed';
+      const message = err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Deduction failed';
       return rejectWithValue(String(message));
     }
   }

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { regenerateWalletsByPhone } from "@/features/users/services/usersService";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
+import { TwoFAModal } from "@/components/TwoFAModal";
 
 // All valid wallet schema keys grouped by currency
 const TOKEN_GROUPS = [
@@ -63,6 +64,7 @@ export function RegenerateWalletByPhone() {
   const [force, setForce] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<unknown | null>(null);
+  const [twoFAOpen, setTwoFAOpen] = useState(false);
 
   useEffect(() => {
     titleCtx?.setTitle("Regenerate Wallets");
@@ -84,7 +86,7 @@ export function RegenerateWalletByPhone() {
     });
   };
 
-  const handleRegenerate = async () => {
+  const handleRegenerate = () => {
     if (!phonenumber && !email) {
       toast.error('Phone number or email is required');
       return;
@@ -93,15 +95,17 @@ export function RegenerateWalletByPhone() {
       toast.error('Select at least one wallet to regenerate');
       return;
     }
+    setTwoFAOpen(true);
+  };
 
+  const handleRegenerate2FAConfirm = async (twoFAToken: string) => {
+    setTwoFAOpen(false);
     try {
       setLoading(true);
       setResult(null);
-      // server accepts phonenumber OR email — send whichever is available
-      const res = await regenerateWalletsByPhone(phonenumber || email, selectedTokens, force);
+      const res = await regenerateWalletsByPhone(phonenumber || email, selectedTokens, force, twoFAToken);
       setResult(res);
       toast.success(res?.message || 'Wallets regenerated successfully');
-      // If we came from a user summary, navigate back so the page re-fetches with fresh addresses
       if (stateUser?.email) {
         setTimeout(() => {
           navigate('/user-management/user-summary', {
@@ -232,6 +236,15 @@ export function RegenerateWalletByPhone() {
           )}
         </CardContent>
       </Card>
+
+      <TwoFAModal
+        open={twoFAOpen}
+        title="Confirm wallet regeneration"
+        description={`Regenerating ${selectedTokens.length} wallet(s) for ${email || phonenumber}.`}
+        loading={loading}
+        onClose={() => setTwoFAOpen(false)}
+        onConfirm={handleRegenerate2FAConfirm}
+      />
     </div>
   );
 }

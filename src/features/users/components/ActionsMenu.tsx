@@ -6,10 +6,13 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/core/store/store';
-import { removeUser, fetchUsers } from '../store/usersSlice';
+import { fetchUsers } from '../store/usersSlice';
+import { deleteUser } from '../services/usersService';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 import { createPortal } from 'react-dom';
+import { TwoFAModal } from '@/components/TwoFAModal';
+import { toast } from 'sonner';
 
 export function ActionsMenu({ row }: { row: Row<User> }) {
   const [open, setOpen] = React.useState(false);
@@ -17,12 +20,27 @@ export function ActionsMenu({ row }: { row: Row<User> }) {
   const [pos, setPos] = React.useState<{ left: number; top: number } | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [twoFAOpen, setTwoFAOpen] = React.useState(false);
+  const [deleteLoading, setDeleteLoading] = React.useState(false);
   const navigate = useNavigate();
 
-  const onConfirmDelete = async () => {
-    await dispatch(removeUser(row.original.email));
-    await dispatch(fetchUsers());
+  const onConfirmDelete = () => {
     setConfirmOpen(false);
+    setTwoFAOpen(true);
+  };
+
+  const onTwoFAConfirm = async (code: string) => {
+    setDeleteLoading(true);
+    try {
+      await deleteUser(row.original.email, code);
+      toast.success('User deleted successfully');
+      setTwoFAOpen(false);
+      await dispatch(fetchUsers());
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || err?.response?.data?.error || 'Delete failed');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   React.useEffect(() => {
@@ -109,6 +127,15 @@ export function ActionsMenu({ row }: { row: Row<User> }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <TwoFAModal
+        open={twoFAOpen}
+        title="Confirm user deletion"
+        description={`Enter your 2FA code to permanently delete ${row.original.email}.`}
+        loading={deleteLoading}
+        onClose={() => setTwoFAOpen(false)}
+        onConfirm={onTwoFAConfirm}
+      />
     </div>
   );
 }

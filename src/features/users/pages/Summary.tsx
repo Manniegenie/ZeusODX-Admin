@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import type { FetchWalletsResponse } from "@/features/users/types/userApi.types";
 import { WalletListGrouped } from "@/features/funding/components/WalletListGrouped";
 import { getCompleteUserSummary, getUserTransactions, generateWalletsByEmail, statusByEmail } from "@/features/users/services/usersService";
+import { TwoFAModal } from "@/components/TwoFAModal";
 import { toast } from "sonner";
 import { DataTable } from "@/features/dashboard/components/data-table";
 import { columns } from "@/features/dashboard/components/columns";
@@ -38,6 +39,7 @@ export function Summary() {
   const [regenLoading, setRegenLoading] = useState(false);
   const [regenForce, setRegenForce] = useState(false);
   const [regenPolling, setRegenPolling] = useState(false);
+  const [regenTwoFAOpen, setRegenTwoFAOpen] = useState(false);
   const [regenProgress, setRegenProgress] = useState<{
     walletsGenerated?: number;
     totalWallets?: number;
@@ -164,12 +166,17 @@ export function Summary() {
   }, [userEmail]);
 
   // Wallet regeneration handlers
-  const handleRegenerate = useCallback(async () => {
+  const handleRegenerate = useCallback(() => {
     if (!userEmail) return;
+    setRegenTwoFAOpen(true);
+  }, [userEmail]);
+
+  const handleRegenerate2FAConfirm = useCallback(async (twoFAToken: string) => {
+    setRegenTwoFAOpen(false);
     try {
       setRegenLoading(true);
       setRegenProgress(null);
-      const res = await generateWalletsByEmail(userEmail, regenForce);
+      const res = await generateWalletsByEmail(userEmail, regenForce, twoFAToken);
       toast.success(res?.message || 'Wallet generation started');
       if (res?.walletGenerationStatus === 'in_progress') {
         setRegenPolling(true);
@@ -539,6 +546,15 @@ export function Summary() {
           </CardContent>
         </Card>
       </div>
+
+      <TwoFAModal
+        open={regenTwoFAOpen}
+        title="Confirm wallet generation"
+        description={`Generate all wallets for ${userEmail}.`}
+        loading={regenLoading}
+        onClose={() => setRegenTwoFAOpen(false)}
+        onConfirm={handleRegenerate2FAConfirm}
+      />
 
       {/* Transaction History Section */}
       <div className="mt-8">
