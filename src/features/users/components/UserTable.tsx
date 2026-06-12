@@ -96,7 +96,7 @@ export function DataTable({ data, loading, pagination, onPageChange }: DataTable
                 <TableCell className="text-right">
                   <Button
                     size="icon"
-                    onClick={() => navigate('/user-management/user-summary', { state: { user: { email: user.email } } })}
+                    onClick={() => navigate('/user-management/summary', { state: { user: { email: user.email } } })}
                     title="View user summary"
                   >
                     <Eye className="h-4 w-4" />

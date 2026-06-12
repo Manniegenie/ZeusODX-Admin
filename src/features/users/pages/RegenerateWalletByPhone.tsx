@@ -108,7 +108,7 @@ export function RegenerateWalletByPhone() {
       toast.success(res?.message || 'Wallets regenerated successfully');
       if (stateUser?.email) {
         setTimeout(() => {
-          navigate('/user-management/user-summary', {
+          navigate('/user-management/summary', {
             state: { user: { email: stateUser.email }, refresh: true }
           });
         }, 1500);
