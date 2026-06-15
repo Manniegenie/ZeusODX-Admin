@@ -26,7 +26,7 @@ const CARD_TYPES = [
   'SEPHORA', 'FOOTLOCKER', 'XBOX', 'EBAY'
 ];
 
-const COUNTRIES = ['US', 'CANADA', 'AUSTRALIA', 'SWITZERLAND'];
+const COUNTRIES = ['US', 'CANADA', 'GB', 'AUSTRALIA', 'SWITZERLAND', 'EUROPE'];
 const VANILLA_TYPES = ['4097', '4118'];
 const CURRENCIES = ['USD', 'NGN', 'GBP', 'EUR', 'CAD'];
 
@@ -35,8 +35,10 @@ const getCountryFlag = (country: string) => {
   const flags: { [key: string]: string } = {
     'US': '🇺🇸',
     'CANADA': '🇨🇦',
+    'GB': '🇬🇧',
     'AUSTRALIA': '🇦🇺',
-    'SWITZERLAND': '🇨🇭'
+    'SWITZERLAND': '🇨🇭',
+    'EUROPE': '🇪🇺'
   };
   return flags[country] || '🌍';
 };

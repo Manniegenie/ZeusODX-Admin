@@ -45,8 +45,10 @@ export function GiftCardDataTable({
     const flags: { [key: string]: string } = {
       'US': '🇺🇸',
       'CANADA': '🇨🇦',
+      'GB': '🇬🇧',
       'AUSTRALIA': '🇦🇺',
-      'SWITZERLAND': '🇨🇭'
+      'SWITZERLAND': '🇨🇭',
+      'EUROPE': '🇪🇺'
     };
     return flags[country] || '🌍';
   };

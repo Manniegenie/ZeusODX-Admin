@@ -54,7 +54,7 @@ const CARD_TYPES = [
   "XBOX",
   "EBAY"
 ]
-const COUNTRIES = ["US", "CANADA", "AUSTRALIA", "SWITZERLAND"]
+const COUNTRIES = ["US", "CANADA", "GB", "AUSTRALIA", "SWITZERLAND", "EUROPE"]
 
 interface Pagination {
   currentPage: number
