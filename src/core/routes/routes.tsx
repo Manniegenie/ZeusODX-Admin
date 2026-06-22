@@ -19,6 +19,7 @@ import { Security } from '@/features/security/pages/Security';
 import { AuditAndMonitoring } from '@/features/audit/pages/AuditAndMonitoring';
 import { AuditLogs } from '@/features/audit/pages/AuditLogs';
 import { Settings } from '@/features/settings/pages/Settings';
+import { ProfilePage } from '@/features/settings/pages/ProfilePage';
 import { Disable2Fa } from '@/features/users/pages/Disable2Fa';
 import { RemovePassword } from '@/features/users/pages/RemovePassword';
 import { UserWallet } from '@/features/funding/pages/UserWallet';
@@ -268,6 +269,10 @@ export const router = createBrowserRouter([
           {
             path: 'settings',
             element: <Settings />,
+          },
+          {
+            path: 'profile',
+            element: <ProfilePage />,
           },
           {
             path: 'transaction/:transactionId',

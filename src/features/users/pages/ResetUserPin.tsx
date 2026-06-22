@@ -9,6 +9,7 @@ import { KeyRound } from 'lucide-react';
 import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { toast } from 'sonner';
 import { resetUserPin } from '@/features/users/services/usersService';
+import { SuccessModal } from '@/components/ui/SuccessModal';
 
 export function ResetUserPin() {
   const titleCtx = useContext(DashboardTitleContext);
@@ -19,6 +20,7 @@ export function ResetUserPin() {
   const [emailValue, setEmailValue] = useState(stateUser?.email || '');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
 
   useEffect(() => {
     titleCtx?.setTitle('Reset User PIN');
@@ -35,14 +37,13 @@ export function ResetUserPin() {
     try {
       const resp = await resetUserPin(email);
       if (resp?.success) {
-        toast.success(resp.message || 'PIN reset successfully');
         setConfirmOpen(false);
-        navigate(-1);
+        setSuccessOpen(true);
       } else {
         toast.error(resp?.message || 'Failed to reset PIN');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to reset PIN');
+      toast.error(err?.response?.data?.message || err?.message || 'Failed to reset PIN');
     } finally {
       setLoading(false);
     }
@@ -62,12 +63,13 @@ export function ResetUserPin() {
                 className="w-full h-12 border border-gray-200 shadow-none"
                 value={emailValue}
                 onChange={(e) => setEmailValue(e.target.value)}
+                disabled={loading}
               />
             </div>
 
             <Button
               onClick={() => setConfirmOpen(true)}
-              disabled={!emailValue.trim()}
+              disabled={!emailValue.trim() || loading}
               className="flex h-12 w-full text-white items-center gap-2"
             >
               <KeyRound className="h-4 w-4" />
@@ -77,7 +79,7 @@ export function ResetUserPin() {
         </CardContent>
       </Card>
 
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <Dialog open={confirmOpen} onOpenChange={(v) => { if (!loading) setConfirmOpen(v); }}>
         <DialogContent className="bg-white text-black/90 border border-gray-200 shadow-lg max-w-md">
           <DialogHeader>
             <DialogTitle>Confirm PIN Reset</DialogTitle>
@@ -108,6 +110,16 @@ export function ResetUserPin() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <SuccessModal
+        isOpen={successOpen}
+        onClose={() => { setSuccessOpen(false); navigate(-1); }}
+        title="PIN Reset Successful"
+        message="The user's PIN has been cleared. They will set a new PIN next time they log in."
+        details={[{ label: 'User', value: emailValue }]}
+        redirectTo={undefined}
+        showRedirectButton={false}
+      />
     </div>
   );
 }

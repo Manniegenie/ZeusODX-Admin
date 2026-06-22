@@ -50,7 +50,7 @@ export const Popover: React.FC<PopoverProps> = ({ trigger, content, position = '
       </div>
       {open && (
         <div
-          className={`absolute ${popoverPosition} min-w-[200px] bg-white text-black rounded-lg shadow-lg border border-gray-200 z-50 transition-opacity duration-200`}
+          className={`absolute ${popoverPosition} min-w-[200px] bg-card text-foreground rounded-lg shadow-lg border border-border z-50 transition-opacity duration-200`}
         >
           {content}
         </div>

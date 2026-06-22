@@ -27,16 +27,16 @@ export function TwoFAModal({ open, title = 'Confirm with 2FA', description, load
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="bg-white border border-gray-200 shadow-lg max-w-sm">
+      <DialogContent className="bg-card border border-border shadow-lg max-w-sm">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-foreground">
             <ShieldCheck className="h-5 w-5 text-primary" />
             {title}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-3 py-2">
-          {description && <p className="text-sm text-gray-600">{description}</p>}
-          <p className="text-sm text-gray-500">Enter the 6-digit code from your authenticator app to proceed.</p>
+          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          <p className="text-sm text-muted-foreground">Enter the 6-digit code from your authenticator app to proceed.</p>
           <Input
             type="text"
             inputMode="numeric"

@@ -9,6 +9,7 @@ import { ShieldOff } from 'lucide-react';
 import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { toast } from 'sonner';
 import { unlock2FALock } from '@/features/users/services/userService';
+import { SuccessModal } from '@/components/ui/SuccessModal';
 
 export function Unlock2FA() {
   const titleCtx = useContext(DashboardTitleContext);
@@ -20,6 +21,7 @@ export function Unlock2FA() {
   const [userId, setUserId] = useState(stateUser?._id || stateUser?.id || '');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
 
   useEffect(() => {
     titleCtx?.setTitle('Unlock 2FA Lock');
@@ -35,14 +37,13 @@ export function Unlock2FA() {
     try {
       const resp = await unlock2FALock(userId.trim());
       if (resp?.success) {
-        toast.success(resp.message || '2FA lock cleared successfully');
         setConfirmOpen(false);
-        navigate(-1);
+        setSuccessOpen(true);
       } else {
         toast.error(resp?.message || 'Failed to unlock 2FA lock');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to unlock 2FA lock');
+      toast.error(err?.response?.data?.message || err?.message || 'Failed to unlock 2FA lock');
     } finally {
       setLoading(false);
     }
@@ -63,6 +64,7 @@ export function Unlock2FA() {
                 className="w-full h-12 border border-gray-200 shadow-none"
                 value={emailValue}
                 onChange={(e) => setEmailValue(e.target.value)}
+                disabled={loading}
               />
             </div>
 
@@ -75,6 +77,7 @@ export function Unlock2FA() {
                 className="w-full h-12 border border-gray-200 shadow-none"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
+                disabled={loading}
               />
               <p className="text-xs text-gray-500">
                 Pre-filled when navigating from the user actions page. Clears the 2FA rate-limit lock set after 5 failed attempts.
@@ -83,7 +86,7 @@ export function Unlock2FA() {
 
             <Button
               onClick={() => setConfirmOpen(true)}
-              disabled={!userId.trim()}
+              disabled={!userId.trim() || loading}
               className="flex h-12 w-full text-white items-center gap-2"
             >
               <ShieldOff className="h-4 w-4" />
@@ -93,7 +96,7 @@ export function Unlock2FA() {
         </CardContent>
       </Card>
 
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <Dialog open={confirmOpen} onOpenChange={(v) => { if (!loading) setConfirmOpen(v); }}>
         <DialogContent className="bg-white text-black/90 border border-gray-200 shadow-lg max-w-md">
           <DialogHeader>
             <DialogTitle>Confirm 2FA Unlock</DialogTitle>
@@ -124,6 +127,18 @@ export function Unlock2FA() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <SuccessModal
+        isOpen={successOpen}
+        onClose={() => { setSuccessOpen(false); navigate(-1); }}
+        title="2FA Lock Cleared"
+        message="The 2FA rate-limit lock has been removed. The user can now attempt 2FA-protected actions again."
+        details={[
+          { label: 'User', value: emailValue || userId },
+        ]}
+        redirectTo={undefined}
+        showRedirectButton={false}
+      />
     </div>
   );
 }

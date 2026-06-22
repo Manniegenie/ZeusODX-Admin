@@ -81,39 +81,71 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dark mode */
+/* ============================================
+   Dark Mode — Light Navy Slate palette
+   Soft, readable, not harsh black
+   ============================================ */
 .dark {
-  --background: #1A1A1A;
-  --foreground: #F5F5F5;
-  --card: #2A2A2A;
-  --card-foreground: #F5F5F5;
-  --popover: #2A2A2A;
-  --popover-foreground: #F5F5F5;
-  --primary: #7C6BFF;
+  color-scheme: dark;
+
+  /* Backgrounds — layered navy-slate */
+  --background: #1B2333;
+  --foreground: #D0D9E8;
+
+  /* Card — slightly lighter than page bg */
+  --card: #22304A;
+  --card-foreground: #D0D9E8;
+
+  /* Popover */
+  --popover: #22304A;
+  --popover-foreground: #D0D9E8;
+
+  /* Primary — brighter purple so it pops on dark */
+  --primary: #8B7CF6;
   --primary-foreground: #FFFFFF;
+
+  /* Secondary */
   --secondary: #35297F;
   --secondary-foreground: #FFFFFF;
-  --muted: #6B6B6B;
-  --muted-foreground: #9B9B9B;
+
+  /* Muted */
+  --muted: #2E3F5C;
+  --muted-foreground: #7A93B4;
+
+  /* Accent */
   --accent: #FF6B9D;
   --accent-foreground: #FFFFFF;
-  --destructive: #FF4444;
-  --border: #3A3A3A;
-  --input: #3A3A3A;
-  --ring: #7C6BFF;
-  --chart-1: #7C6BFF;
-  --chart-2: #35297F;
+
+  /* Destructive */
+  --destructive: #FF5555;
+  --destructive-foreground: #FFFFFF;
+
+  /* Border & Input */
+  --border: #2C3F5A;
+  --input: #2A3A55;
+  --ring: #8B7CF6;
+
+  /* Status — unchanged, still readable */
+  --success: #00C851;
+  --warning: #FF8800;
+  --error: #FF5555;
+
+  /* Charts */
+  --chart-1: #8B7CF6;
+  --chart-2: #5B4FCF;
   --chart-3: #FF6B9D;
   --chart-4: #00C851;
   --chart-5: #FF8800;
-  --sidebar: #2A2A2A;
-  --sidebar-foreground: #F5F5F5;
-  --sidebar-primary: #7C6BFF;
+
+  /* Sidebar — slightly darker than page bg */
+  --sidebar: #161F2E;
+  --sidebar-foreground: #D0D9E8;
+  --sidebar-primary: #8B7CF6;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #35297F;
+  --sidebar-accent: #5B4FCF;
   --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #3A3A3A;
-  --sidebar-ring: #7C6BFF;
+  --sidebar-border: #243047;
+  --sidebar-ring: #8B7CF6;
 }
 
 /* Tailwind theme mapping */
@@ -163,7 +195,7 @@
   }
   html {
     height: 100%;
-    font-size: 15px; /* Base font size for compact UI */
+    font-size: 15px;
   }
   body {
     @apply bg-background text-foreground text-sm;
@@ -176,5 +208,85 @@
     width: 100%;
     min-height: 100%;
     height: auto;
+  }
+}
+
+/* ============================================
+   Dark mode — remap hardcoded Tailwind classes
+   Handles the 150+ files that use bg-white /
+   text-black directly instead of semantic vars.
+   Scoped to .dark so light mode is untouched.
+   ============================================ */
+@layer utilities {
+  /* Backgrounds */
+  .dark .bg-white {
+    background-color: var(--card) !important;
+  }
+  .dark .bg-gray-50 {
+    background-color: color-mix(in srgb, var(--background) 60%, var(--card)) !important;
+  }
+  .dark .bg-gray-100 {
+    background-color: var(--muted) !important;
+    background-color: color-mix(in srgb, var(--card) 70%, var(--border)) !important;
+  }
+  .dark .bg-gray-200 {
+    background-color: var(--border) !important;
+  }
+
+  /* Text */
+  .dark .text-black {
+    color: var(--foreground) !important;
+  }
+  .dark .text-gray-900 {
+    color: var(--foreground) !important;
+  }
+  .dark .text-gray-800 {
+    color: color-mix(in srgb, var(--foreground) 85%, transparent) !important;
+  }
+  .dark .text-gray-700 {
+    color: color-mix(in srgb, var(--foreground) 75%, transparent) !important;
+  }
+  .dark .text-gray-600 {
+    color: var(--muted-foreground) !important;
+  }
+  .dark .text-gray-500 {
+    color: var(--muted-foreground) !important;
+  }
+  .dark .text-gray-400 {
+    color: color-mix(in srgb, var(--muted-foreground) 70%, transparent) !important;
+  }
+
+  /* Borders */
+  .dark .border-gray-100 {
+    border-color: color-mix(in srgb, var(--border) 60%, transparent) !important;
+  }
+  .dark .border-gray-200 {
+    border-color: var(--border) !important;
+  }
+  .dark .border-gray-300 {
+    border-color: color-mix(in srgb, var(--border) 130%, var(--card)) !important;
+  }
+
+  /* Hover states */
+  .dark .hover\:bg-gray-100:hover {
+    background-color: color-mix(in srgb, var(--card) 70%, var(--border)) !important;
+  }
+  .dark .hover\:bg-gray-50:hover {
+    background-color: color-mix(in srgb, var(--background) 60%, var(--card)) !important;
+  }
+
+  /* Inputs & selects */
+  .dark input:not([class*="bg-"]),
+  .dark select:not([class*="bg-"]),
+  .dark textarea:not([class*="bg-"]) {
+    background-color: var(--input);
+    color: var(--foreground);
+    border-color: var(--border);
+  }
+
+  /* Table rows */
+  .dark .hover\:bg-gray-50:hover tr,
+  .dark tr.hover\:bg-gray-50:hover {
+    background-color: color-mix(in srgb, var(--card) 80%, var(--border)) !important;
   }
 }

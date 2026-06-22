@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { MinusCircle } from "lucide-react";
 import { TwoFAModal } from "@/components/TwoFAModal";
+import { SuccessModal } from "@/components/ui/SuccessModal";
 
 export function DeductBalance() {
   const titleCtx = useContext(DashboardTitleContext);
@@ -26,6 +27,8 @@ export function DeductBalance() {
   const [amount, setAmount] = useState<string>('');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [twoFAOpen, setTwoFAOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [successDetail, setSuccessDetail] = useState<{ amount: string; currency: string } | null>(null);
 
   useEffect(() => {
     titleCtx?.setTitle("Deduct Balance");
@@ -62,8 +65,9 @@ export function DeductBalance() {
       setDeductLoading(true);
       setTwoFAOpen(false);
       const res = await deductBalance(userEmail, currency, parseFloat(amount), twoFAToken);
-      toast.success(res?.message ?? 'Balance deducted successfully');
+      setSuccessDetail({ amount, currency });
       setAmount('');
+      setSuccessOpen(true);
     } catch (err: any) {
       console.error('deduct failed', err);
       const errorMessage = err?.response?.data?.error || err?.response?.data?.message || 'Failed to deduct balance';
@@ -211,6 +215,19 @@ export function DeductBalance() {
         loading={deductLoading}
         onClose={() => setTwoFAOpen(false)}
         onConfirm={handleDeductConfirmed}
+      />
+
+      <SuccessModal
+        isOpen={successOpen}
+        onClose={() => setSuccessOpen(false)}
+        title="Balance Deducted"
+        message="The balance has been successfully deducted from the user's account."
+        details={[
+          { label: 'User', value: userEmail },
+          { label: 'Amount deducted', value: `${successDetail?.amount ?? ''} ${successDetail?.currency ?? ''}`, highlight: true },
+        ]}
+        redirectTo={undefined}
+        showRedirectButton={false}
       />
     </div>
   );

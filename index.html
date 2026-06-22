@@ -7,6 +7,17 @@
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
     <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet" />
     <title>Zeusodx - Welcome</title>
+    <!-- Prevent flash of wrong theme on first load -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('zeus-theme');
+          if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (_) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

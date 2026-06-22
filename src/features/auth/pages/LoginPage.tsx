@@ -19,12 +19,12 @@ export function LoginPage() {
             className="mx-auto h-12 w-auto"
             // style={{ filter: 'invert(1)' }}
           />
-        <div className="w-full p-6 bg-white rounded-xl shadow-lg space-y-12">
+        <div className="w-full p-6 bg-card rounded-xl shadow-lg space-y-12 border border-border">
           <div>
-          <h2 className="mt-6 text-center text-[24px] font-semibold text-gray-900">
+          <h2 className="mt-6 text-center text-[24px] font-semibold text-foreground">
             Welcome back!
           </h2>
-          <p className="text-[14px] font-light text-center text-black">Log in to your ZeusODX Dashboard to continue.</p>
+          <p className="text-[14px] font-light text-center text-muted-foreground">Log in to your ZeusODX Dashboard to continue.</p>
         </div>
         <LoginForm />
         <div className="text-center">

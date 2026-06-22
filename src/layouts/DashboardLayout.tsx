@@ -3,6 +3,7 @@ import { DashboardTitleContext } from './DashboardTitleContext';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { usePermissions } from '@/core/hooks/usePermissions';
+import { useTheme } from '@/core/hooks/useTheme';
 import {
   LayoutDashboard,
   Users,
@@ -25,6 +26,8 @@ import {
   BookOpen,
   PieChart,
   TrendingUp,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -179,6 +182,7 @@ const navItems: NavItem[] = [
 export function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
+  const { isDark, toggle: toggleTheme } = useTheme();
   const { user } = useSelector((state: RootState) => state.auth);
   const { hasFeatureAccess } = usePermissions();
   const [title, setTitle] = useState(() => {
@@ -248,7 +252,7 @@ export function DashboardLayout() {
 
   return (
     <DashboardTitleContext.Provider value={ctxValue}>
-      <div className="w-screen flex min-h-screen bg-white dark:bg-white text-gray-900 dark:text-gray-900">
+      <div className="w-screen flex min-h-screen bg-background text-foreground">
         {/* Sidebar */}
         <aside
           className={`${isSidebarOpen ? 'w-56' : 'w-16'} min-h-screen sticky top-0 bg-primary shadow-lg transition-all duration-300 z-30 text-white flex flex-col justify-between`}
@@ -303,7 +307,7 @@ export function DashboardLayout() {
                         <Link
                           key={sub.path}
                           to={sub.path}
-                          className="block hover:bg-gray-100 px-2 py-2 border-b border-gray-100 cursor-pointer text-sm"
+                          className="block hover:bg-muted/40 px-2 py-2 border-b border-border cursor-pointer text-sm text-foreground"
                         >
                           {sub.title}
                         </Link>
@@ -346,7 +350,7 @@ export function DashboardLayout() {
               position="top"
               background="bg-transparent"
               nameColor="text-white"
-              emailColor="text-gray-300"
+              emailColor="text-white/60"
               icon={MoreVertical}
             />
           </div>
@@ -375,33 +379,45 @@ export function DashboardLayout() {
               <div className='w-fit flex flex-col items-start justify-start'>
                 {/* Breadcrumbs (not shown on dashboard) */}
                 {location.pathname !== '/dashboard' && breadcrumb.length > 0 && (
-                  <nav className="flex text-xs text-[#475467] items-center space-x-1.5 mb-1">
+                  <nav className="flex text-xs text-muted-foreground items-center space-x-1.5 mb-1">
                     {breadcrumb.map((crumb, idx) => (
                       <span key={idx} className="flex items-center">
                         {crumb}
                         {idx < breadcrumb.length - 1 && (
-                          <ChevronRightIcon className="mx-1.5 w-3.5 h-3.5 text-gray-400" />
+                          <ChevronRightIcon className="mx-1.5 w-3.5 h-3.5 text-muted-foreground" />
                         )}
                       </span>
                     ))}
                   </nav>
                 )}
-                <h1 className="text-lg font-medium text-[#2B2B2B]">{title}</h1>
+                <h1 className="text-lg font-medium text-foreground">{title}</h1>
               </div>
-              <ProfileDropdown
-                user={{
-                  name: user?.name && user?.name.trim() !== '' ? user.name : user?.adminName || '',
-                  email: user?.email || '',
-                }}
-                isOpen={isHeaderDropdownOpen}
-                onToggle={() => setIsHeaderDropdownOpen((prev) => !prev)}
-                onLogout={handleLogout}
-                position="bottom"
-                background="bg-gray-200"
-                nameColor="text-black"
-                emailColor="text-gray-500"
-                icon={ChevronDown}
-              />
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={toggleTheme}
+                  title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-border bg-card text-foreground text-xs font-medium shadow-sm hover:shadow transition-all"
+                >
+                  {isDark
+                    ? <><Sun className="w-3.5 h-3.5 text-yellow-400" /><span>Light</span></>
+                    : <><Moon className="w-3.5 h-3.5 text-primary" /><span>Dark</span></>
+                  }
+                </button>
+                <ProfileDropdown
+                  user={{
+                    name: user?.name && user?.name.trim() !== '' ? user.name : user?.adminName || '',
+                    email: user?.email || '',
+                  }}
+                  isOpen={isHeaderDropdownOpen}
+                  onToggle={() => setIsHeaderDropdownOpen((prev) => !prev)}
+                  onLogout={handleLogout}
+                  position="bottom"
+                  background="bg-muted/30 hover:bg-muted/50"
+                  nameColor="text-foreground"
+                  emailColor="text-muted-foreground"
+                  icon={ChevronDown}
+                />
+              </div>
             </div>
           </header>
 

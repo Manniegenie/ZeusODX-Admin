@@ -10,6 +10,7 @@ import type { RootState, AppDispatch } from "@/core/store/store";
 import { toast } from "sonner";
 import { DashboardTitleContext } from "@/layouts/DashboardTitleContext";
 import { TwoFAModal } from "@/components/TwoFAModal";
+import { SuccessModal } from "@/components/ui/SuccessModal";
 
 export function FundUserForm() {
   const dispatch = useDispatch<AppDispatch>();
@@ -189,24 +190,17 @@ export function FundUserForm() {
         onConfirm={handleConfirm}
       />
 
-      <Dialog open={successOpen} onOpenChange={(v) => setSuccessOpen(v)}>
-        <DialogContent className="bg-white border border-gray-200 shadow-lg max-w-md">
-          <DialogHeader>
-            <DialogTitle>Funding successful</DialogTitle>
-          </DialogHeader>
-          <div className="p-4 text-sm">
-            <div className="space-y-2">
-              <div>{successResult?.message ?? 'Funding completed'}</div>
-              <div><strong>New balance:</strong> {successResult?.newBalance ?? '—'}</div>
-            </div>
-          </div>
-          <DialogFooter>
-            <div className="flex gap-2">
-              <Button onClick={() => setSuccessOpen(false)}>Close</Button>
-            </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <SuccessModal
+        isOpen={successOpen}
+        onClose={() => setSuccessOpen(false)}
+        title="Funding Successful"
+        message={successResult?.message ?? 'The user account has been funded successfully.'}
+        details={[
+          { label: 'New balance', value: successResult?.newBalance != null ? String(successResult.newBalance) : '—', highlight: true },
+        ]}
+        redirectTo={undefined}
+        showRedirectButton={false}
+      />
     </Card>
   );
 }

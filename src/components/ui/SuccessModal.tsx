@@ -56,7 +56,7 @@ export function SuccessModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md !bg-white !text-black p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-md bg-card text-foreground p-0 overflow-hidden border border-border">
         {/* Green header band */}
         <div className="bg-[#00C851] px-6 pt-8 pb-6 flex flex-col items-center gap-3">
           <div className="rounded-full bg-white/20 p-3">
@@ -71,12 +71,12 @@ export function SuccessModal({
           <div className="px-6 py-4 space-y-3">
             {details.map((d, i) => (
               <div key={i} className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">{d.label}</span>
+                <span className="text-sm text-muted-foreground">{d.label}</span>
                 <span
                   className={
                     d.highlight
                       ? 'text-lg font-bold text-[#00C851]'
-                      : 'text-sm font-medium text-gray-800 font-mono text-right max-w-[55%] truncate'
+                      : 'text-sm font-medium text-foreground font-mono text-right max-w-[55%] truncate'
                   }
                 >
                   {d.value}
@@ -88,7 +88,7 @@ export function SuccessModal({
 
         {/* Countdown */}
         {autoRedirectDelay && redirectTo && (
-          <p className="text-center text-xs text-gray-400 pb-2">
+          <p className="text-center text-xs text-muted-foreground pb-2">
             Redirecting in {Math.ceil(autoRedirectDelay / 1000)} seconds...
           </p>
         )}

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { blockUser, unblockUser, checkUserBlocked } from "../services/usersService";
 import { Ban, CheckCircle, AlertCircle } from "lucide-react";
 import type { User } from "../types/user";
+import { SuccessModal } from "@/components/ui/SuccessModal";
 
 export function BlockUser() {
   const titleCtx = useContext(DashboardTitleContext);
@@ -25,6 +26,8 @@ export function BlockUser() {
     blockReason?: string;
     blockedAt?: string;
   }>({ isBlocked: false });
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [successAction, setSuccessAction] = useState<'blocked' | 'unblocked'>('blocked');
 
   useEffect(() => {
     titleCtx?.setTitle("Block/Unblock User");
@@ -72,13 +75,14 @@ export function BlockUser() {
     try {
       const response = await blockUser(userEmail, reason);
       if (response.success) {
-        toast.success("User blocked successfully");
         setBlockStatus({
           isBlocked: true,
           blockReason: reason,
           blockedAt: new Date().toISOString()
         });
         setReason("");
+        setSuccessAction('blocked');
+        setSuccessOpen(true);
       }
     } catch (error: any) {
       console.error('Error blocking user:', error);
@@ -98,9 +102,10 @@ export function BlockUser() {
     try {
       const response = await unblockUser(userEmail);
       if (response.success) {
-        toast.success("User unblocked successfully");
         setBlockStatus({ isBlocked: false });
         setReason("");
+        setSuccessAction('unblocked');
+        setSuccessOpen(true);
       }
     } catch (error: any) {
       console.error('Error unblocking user:', error);
@@ -251,6 +256,23 @@ export function BlockUser() {
           )}
         </CardContent>
       </Card>
+
+      <SuccessModal
+        isOpen={successOpen}
+        onClose={() => setSuccessOpen(false)}
+        title={successAction === 'blocked' ? 'User Blocked' : 'User Unblocked'}
+        message={
+          successAction === 'blocked'
+            ? 'The user has been blocked from performing transactions.'
+            : 'The user has been unblocked and can now perform transactions.'
+        }
+        details={[
+          { label: 'User', value: userEmail },
+          ...(successAction === 'blocked' ? [{ label: 'Reason', value: blockStatus.blockReason || '' }] : []),
+        ]}
+        redirectTo={undefined}
+        showRedirectButton={false}
+      />
     </div>
   );
 }

@@ -9,22 +9,22 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary purple button - white text
-        default: "bg-[#35297F] text-white hover:bg-[#2a1f66] focus-visible:ring-[#7C6BFF]/30",
+        // Primary purple button - uses CSS var so dark mode can shift it brighter
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary/30",
         // Destructive red button - white text
         destructive:
           "bg-[#FF4444] text-white hover:bg-[#cc3636] focus-visible:ring-[#FF4444]/30",
-        // Outline button - white bg, purple border/text
+        // Outline button - card bg, purple border/text, dark mode aware
         outline:
-          "border border-[#35297F] bg-white text-[#35297F] shadow-xs hover:bg-gray-100",
+          "border border-primary bg-card text-primary shadow-xs hover:bg-muted/40 dark:border-primary dark:text-primary dark:bg-card dark:hover:bg-muted/40",
         // Secondary purple button - white text
         secondary:
           "bg-[#7C6BFF] text-white hover:bg-[#6a5be6]",
-        // Ghost button - transparent bg, dark text for visibility
+        // Ghost button - transparent bg, semantic text
         ghost:
-          "bg-transparent text-[#1A1A1A] hover:bg-gray-100",
-        // Link style - dark text
-        link: "text-[#1A1A1A] underline-offset-4 hover:underline",
+          "bg-transparent text-foreground hover:bg-muted/40",
+        // Link style - semantic text
+        link: "text-foreground underline-offset-4 hover:underline",
         // Success button - white text
         success: "bg-[#00C851] text-white hover:bg-[#00a844] focus-visible:ring-[#00C851]/30",
         // Warning button - white text

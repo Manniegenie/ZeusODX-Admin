@@ -9,6 +9,7 @@ import { LockOpen } from 'lucide-react';
 import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { toast } from 'sonner';
 import { unlockUserPin } from '@/features/users/services/userService';
+import { SuccessModal } from '@/components/ui/SuccessModal';
 
 export function UnlockPin() {
   const titleCtx = useContext(DashboardTitleContext);
@@ -20,6 +21,7 @@ export function UnlockPin() {
   const [userId, setUserId] = useState(stateUser?._id || stateUser?.id || '');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
 
   useEffect(() => {
     titleCtx?.setTitle('Unlock PIN Account');
@@ -35,14 +37,13 @@ export function UnlockPin() {
     try {
       const resp = await unlockUserPin(userId.trim());
       if (resp?.success) {
-        toast.success(resp.message || 'PIN lock cleared successfully');
         setConfirmOpen(false);
-        navigate(-1);
+        setSuccessOpen(true);
       } else {
         toast.error(resp?.message || 'Failed to unlock account');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to unlock account');
+      toast.error(err?.response?.data?.message || err?.message || 'Failed to unlock account');
     } finally {
       setLoading(false);
     }
@@ -63,6 +64,7 @@ export function UnlockPin() {
                 className="w-full h-12 border border-gray-200 shadow-none"
                 value={emailValue}
                 onChange={(e) => setEmailValue(e.target.value)}
+                disabled={loading}
               />
             </div>
 
@@ -75,6 +77,7 @@ export function UnlockPin() {
                 className="w-full h-12 border border-gray-200 shadow-none"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
+                disabled={loading}
               />
               <p className="text-xs text-gray-500">
                 The user ID is required to call the unlock endpoint. It is pre-filled when navigating from the user actions page.
@@ -83,7 +86,7 @@ export function UnlockPin() {
 
             <Button
               onClick={() => setConfirmOpen(true)}
-              disabled={!userId.trim()}
+              disabled={!userId.trim() || loading}
               className="flex h-12 w-full text-white items-center gap-2"
             >
               <LockOpen className="h-4 w-4" />
@@ -93,7 +96,7 @@ export function UnlockPin() {
         </CardContent>
       </Card>
 
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <Dialog open={confirmOpen} onOpenChange={(v) => { if (!loading) setConfirmOpen(v); }}>
         <DialogContent className="bg-white text-black/90 border border-gray-200 shadow-lg max-w-md">
           <DialogHeader>
             <DialogTitle>Confirm PIN Unlock</DialogTitle>
@@ -126,6 +129,18 @@ export function UnlockPin() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <SuccessModal
+        isOpen={successOpen}
+        onClose={() => { setSuccessOpen(false); navigate(-1); }}
+        title="PIN Account Unlocked"
+        message="The PIN lock has been cleared. The user can now attempt withdrawals again."
+        details={[
+          { label: 'User', value: emailValue || userId },
+        ]}
+        redirectTo={undefined}
+        showRedirectButton={false}
+      />
     </div>
   );
 }
