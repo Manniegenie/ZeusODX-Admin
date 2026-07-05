@@ -1,0 +1,96 @@
+name: PR Checks — Security & QA
+
+on:
+  pull_request:
+    branches: [main, staging]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-typecheck-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint --if-present
+      - name: Typecheck + build
+        run: npm run build
+      - name: Unit tests
+        run: npm test -- --run
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan diff for committed secrets/keys
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Flag newly introduced vulnerable/malicious dependencies
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Semgrep security scan
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+            p/typescript
+            p/react
+
+  red-flag-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan added lines for high-risk patterns
+        run: |
+          git diff "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" -- '*.ts' '*.tsx' > /tmp/pr.diff || true
+          ADDED=$(grep -E '^\+' /tmp/pr.diff | grep -v '^\+\+\+' || true)
+
+          FLAGGED=0
+          check() {
+            local pattern="$1" label="$2"
+            local hits
+            hits=$(echo "$ADDED" | grep -nE "$pattern" || true)
+            if [ -n "$hits" ]; then
+              echo "::error::Potential red flag — $label"
+              echo "$hits"
+              FLAGGED=1
+            fi
+          }
+
+          check '\beval\(' "use of eval()"
+          check '\bdangerouslySetInnerHTML\b' "dangerouslySetInnerHTML usage (XSS risk)"
+          check '(localStorage|sessionStorage)\.setItem\([^,]*token' "token being written to unencrypted browser storage"
+          check '(disable|skip|bypass)[A-Za-z_]*(2fa|auth|permission)' "possible auth/permission bypass flag"
+          check '(sk_live_|BEGIN (RSA|EC|PGP) PRIVATE KEY)' "possible hardcoded live credential/private key"
+
+          if [ "$FLAGGED" -eq 1 ]; then
+            echo ""
+            echo "One or more high-risk patterns were added in this PR. Manual security review required before merge."
+            exit 1
+          fi
+          echo "No red-flag patterns detected in added lines."
