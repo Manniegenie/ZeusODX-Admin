@@ -352,12 +352,12 @@ export function GiftCardRates() {
   const activeFilterCount = [filters.country, filters.cardType, filters.vanillaType, filters.isActive !== undefined ? 'active' : ''].filter(Boolean).length;
 
   return (
-    <div className="w-full bg-white space-y-6 p-4 rounded" style={{ color: '#1A1A1A' }}>
+    <div className="w-full bg-white space-y-6 p-4 rounded" style={{ color: 'var(--foreground)' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: '#111827' }}>Gift Card Rates</h1>
-          <p style={{ color: '#4B5563' }} className="mt-1">
+          <h1 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>Gift Card Rates</h1>
+          <p style={{ color: 'var(--foreground)' }} className="mt-1">
             Manage gift card exchange rates and pricing ({totalRates} total rates)
           </p>
         </div>
@@ -400,7 +400,7 @@ export function GiftCardRates() {
           <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>Card Type</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--foreground)' }}>Card Type</label>
                 <Select value={filters.cardType} onValueChange={(value) => handleFilterChange('cardType', value)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="All types" />
@@ -415,7 +415,7 @@ export function GiftCardRates() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>Country</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--foreground)' }}>Country</label>
                 <Select value={filters.country} onValueChange={(value) => handleFilterChange('country', value)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="All countries" />
@@ -430,7 +430,7 @@ export function GiftCardRates() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>Vanilla Type</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--foreground)' }}>Vanilla Type</label>
                 <Select value={filters.vanillaType} onValueChange={(value) => handleFilterChange('vanillaType', value)}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="All types" />
@@ -445,7 +445,7 @@ export function GiftCardRates() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>Status</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--foreground)' }}>Status</label>
                 <Select
                   value={filters.isActive === undefined ? 'all' : filters.isActive.toString()}
                   onValueChange={(value) => handleFilterChange('isActive', value === 'all' ? undefined : value === 'true')}
@@ -479,7 +479,7 @@ export function GiftCardRates() {
         <div className="p-4">
           {/* Table Controls */}
           <div className="flex items-center justify-between mb-4">
-            <div className="text-sm" style={{ color: '#4B5563' }}>
+            <div className="text-sm" style={{ color: 'var(--foreground)' }}>
               Showing {((currentPage - 1) * 20) + 1} to {Math.min(currentPage * 20, totalRates)} of {totalRates} rates
             </div>
             <Button
@@ -495,29 +495,29 @@ export function GiftCardRates() {
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-              <span className="ml-2" style={{ color: '#4B5563' }}>Loading rates...</span>
+              <span className="ml-2" style={{ color: 'var(--foreground)' }}>Loading rates...</span>
             </div>
           ) : rates.length === 0 ? (
             <div className="text-center py-8">
               <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2" style={{ color: '#111827' }}>No gift card rates found</h3>
-              <p style={{ color: '#4B5563' }}>Try adjusting your filters or add a new rate.</p>
+              <h3 className="text-lg font-medium mb-2" style={{ color: 'var(--foreground)' }}>No gift card rates found</h3>
+              <p style={{ color: 'var(--foreground)' }}>Try adjusting your filters or add a new rate.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full" style={{ color: '#1A1A1A' }}>
+              <table className="w-full" style={{ color: 'var(--foreground)' }}>
                 <thead>
                   <tr className="bg-gray-50 border-b">
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Card Type</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Country</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Default Rate</th>
-                    <th className="text-left p-3 font-semibold text-center" style={{ color: '#111827' }}>$25-$100</th>
-                    <th className="text-left p-3 font-semibold text-center" style={{ color: '#111827' }}>$100-$200</th>
-                    <th className="text-left p-3 font-semibold text-center" style={{ color: '#111827' }}>$200-$500</th>
-                    <th className="text-left p-3 font-semibold text-center" style={{ color: '#111827' }}>$500-$1,000</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Status</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Last Updated</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Actions</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Card Type</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Country</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Default Rate</th>
+                    <th className="text-left p-3 font-semibold text-center" style={{ color: 'var(--foreground)' }}>$25-$100</th>
+                    <th className="text-left p-3 font-semibold text-center" style={{ color: 'var(--foreground)' }}>$100-$200</th>
+                    <th className="text-left p-3 font-semibold text-center" style={{ color: 'var(--foreground)' }}>$200-$500</th>
+                    <th className="text-left p-3 font-semibold text-center" style={{ color: 'var(--foreground)' }}>$500-$1,000</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Status</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Last Updated</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -525,22 +525,22 @@ export function GiftCardRates() {
                     <tr key={rate.id} className="border-b hover:bg-gray-50">
                       <td className="p-3">
                         <div>
-                          <div className="font-medium" style={{ color: '#111827' }}>{getCardTypeDisplayName(rate.cardType)}</div>
+                          <div className="font-medium" style={{ color: 'var(--foreground)' }}>{getCardTypeDisplayName(rate.cardType)}</div>
                           {rate.vanillaType && (
-                            <div className="text-xs" style={{ color: '#6B7280' }}>Type: {rate.vanillaType}</div>
+                            <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Type: {rate.vanillaType}</div>
                           )}
                         </div>
                       </td>
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           <span className="text-xl">{getCountryFlag(rate.country)}</span>
-                          <span className="font-medium" style={{ color: '#111827' }}>{rate.country}</span>
+                          <span className="font-medium" style={{ color: 'var(--foreground)' }}>{rate.country}</span>
                         </div>
                       </td>
                       <td className="p-3">
                         <div>
-                          <div className="font-medium" style={{ color: '#111827' }}>{rate.rateDisplay}</div>
-                          <div className="text-xs" style={{ color: '#6B7280' }}>
+                          <div className="font-medium" style={{ color: 'var(--foreground)' }}>{rate.rateDisplay}</div>
+                          <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                             {rate.sourceCurrency} → {rate.targetCurrency}
                           </div>
                         </div>
@@ -557,23 +557,23 @@ export function GiftCardRates() {
                             {hasAnyRate ? (
                               <div className="space-y-0.5">
                                 {baseRate && (
-                                  <div className="text-sm font-medium" style={{ color: '#111827' }}>
+                                  <div className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
                                     ₦{baseRate}
                                   </div>
                                 )}
                                 {(physicalRate || ecodeRate) && (
-                                  <div className="text-xs" style={{ color: '#6B7280' }}>
+                                  <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                                     {physicalRate && <span>P: ₦{physicalRate}</span>}
                                     {physicalRate && ecodeRate && ' / '}
                                     {ecodeRate && <span>E: ₦{ecodeRate}</span>}
                                   </div>
                                 )}
                                 {!baseRate && !physicalRate && !ecodeRate && (
-                                  <span style={{ color: '#D1D5DB' }}>—</span>
+                                  <span style={{ color: 'var(--muted-foreground)' }}>—</span>
                                 )}
                               </div>
                             ) : (
-                              <span style={{ color: '#D1D5DB' }}>—</span>
+                              <span style={{ color: 'var(--muted-foreground)' }}>—</span>
                             )}
                           </td>
                         );
@@ -593,7 +593,7 @@ export function GiftCardRates() {
                         </div>
                       </td>
                       <td className="p-3">
-                        <span className="text-sm" style={{ color: '#6B7280' }}>
+                        <span className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                           {rate.lastUpdated ? formatDate(rate.lastUpdated) : formatDate(rate.createdAt)}
                         </span>
                       </td>
@@ -646,7 +646,7 @@ export function GiftCardRates() {
           {/* Pagination */}
           {rates.length > 0 && (
             <div className="flex items-center justify-between mt-4">
-              <div className="text-sm" style={{ color: '#4B5563' }}>
+              <div className="text-sm" style={{ color: 'var(--foreground)' }}>
                 Page {currentPage} of {totalPages}
               </div>
               <div className="flex items-center gap-2">
@@ -678,12 +678,12 @@ export function GiftCardRates() {
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle style={{ color: '#111827' }}>Create New Gift Card Rate</DialogTitle>
+            <DialogTitle style={{ color: 'var(--foreground)' }}>Create New Gift Card Rate</DialogTitle>
           </DialogHeader>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label style={{ color: '#374151' }}>Card Type *</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Card Type *</Label>
               <Select value={formData.cardType} onValueChange={(value) => setFormData({...formData, cardType: value})}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select card type" />
@@ -697,7 +697,7 @@ export function GiftCardRates() {
             </div>
 
             <div>
-              <Label style={{ color: '#374151' }}>Country *</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Country *</Label>
               <Select value={formData.country} onValueChange={(value) => setFormData({...formData, country: value})}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select country" />
@@ -712,7 +712,7 @@ export function GiftCardRates() {
 
             {formData.cardType === 'VANILLA' && (
               <div className="col-span-2">
-                <Label style={{ color: '#374151' }}>Vanilla Type *</Label>
+                <Label style={{ color: 'var(--foreground)' }}>Vanilla Type *</Label>
                 <Select value={formData.vanillaType} onValueChange={(value) => setFormData({...formData, vanillaType: value})}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select vanilla type" />
@@ -727,18 +727,18 @@ export function GiftCardRates() {
             )}
 
             <div>
-              <Label style={{ color: '#374151' }}>Default Rate (₦) *</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Default Rate (₦) *</Label>
               <Input
                 type="number"
                 value={formData.rate}
                 onChange={(e) => setFormData({...formData, rate: parseFloat(e.target.value) || 0})}
                 placeholder="Fallback rate"
               />
-              <p className="text-xs mt-1" style={{ color: '#6B7280' }}>Used when no range-specific rate is set</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Used when no range-specific rate is set</p>
             </div>
 
             <div>
-              <Label style={{ color: '#374151' }}>Currency</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Currency</Label>
               <div className="flex gap-2">
                 <Select value={formData.sourceCurrency} onValueChange={(value) => setFormData({...formData, sourceCurrency: value})}>
                   <SelectTrigger className="w-24">
@@ -766,23 +766,23 @@ export function GiftCardRates() {
 
             {/* Rate Ranges Section */}
             <div className="col-span-2">
-              <Label style={{ color: '#374151' }} className="text-base font-semibold">Rate Ranges</Label>
-              <p className="text-xs mb-3" style={{ color: '#6B7280' }}>Set different rates for each card value range</p>
+              <Label style={{ color: 'var(--foreground)' }} className="text-base font-semibold">Rate Ranges</Label>
+              <p className="text-xs mb-3" style={{ color: 'var(--muted-foreground)' }}>Set different rates for each card value range</p>
 
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Range</th>
-                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Base Rate (₦)</th>
-                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Physical (₦)</th>
-                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>E-Code (₦)</th>
+                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Range</th>
+                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Base Rate (₦)</th>
+                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Physical (₦)</th>
+                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>E-Code (₦)</th>
                     </tr>
                   </thead>
                   <tbody>
                     {RATE_RANGE_KEYS.map(rangeKey => (
                       <tr key={rangeKey} className="border-t">
-                        <td className="p-2 font-medium" style={{ color: '#111827' }}>
+                        <td className="p-2 font-medium" style={{ color: 'var(--foreground)' }}>
                           {RATE_RANGE_LABELS[rangeKey]}
                         </td>
                         <td className="p-2">
@@ -820,7 +820,7 @@ export function GiftCardRates() {
             </div>
 
             <div className="col-span-2">
-              <Label style={{ color: '#374151' }}>Notes</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Notes</Label>
               <Input
                 value={formData.notes}
                 onChange={(e) => setFormData({...formData, notes: e.target.value})}
@@ -844,46 +844,46 @@ export function GiftCardRates() {
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle style={{ color: '#111827' }}>Edit Gift Card Rate</DialogTitle>
+            <DialogTitle style={{ color: 'var(--foreground)' }}>Edit Gift Card Rate</DialogTitle>
           </DialogHeader>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2 p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm" style={{ color: '#4B5563' }}>
-                <strong style={{ color: '#111827' }}>Card:</strong> {formData.cardType} ({formData.country})
+              <p className="text-sm" style={{ color: 'var(--foreground)' }}>
+                <strong style={{ color: 'var(--foreground)' }}>Card:</strong> {formData.cardType} ({formData.country})
                 {formData.vanillaType && ` - Type ${formData.vanillaType}`}
               </p>
-              <p className="text-xs mt-1" style={{ color: '#6B7280' }}>Card type and country cannot be changed</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Card type and country cannot be changed</p>
             </div>
 
             <div>
-              <Label style={{ color: '#374151' }}>Default Rate (₦) *</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Default Rate (₦) *</Label>
               <Input
                 type="number"
                 value={formData.rate}
                 onChange={(e) => setFormData({...formData, rate: parseFloat(e.target.value) || 0})}
               />
-              <p className="text-xs mt-1" style={{ color: '#6B7280' }}>Fallback rate when no range-specific rate is set</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Fallback rate when no range-specific rate is set</p>
             </div>
 
             <div className="col-span-2">
-              <Label style={{ color: '#374151' }} className="text-base font-semibold">Rate Ranges</Label>
-              <p className="text-xs mb-3" style={{ color: '#6B7280' }}>Set different rates for each card value range</p>
+              <Label style={{ color: 'var(--foreground)' }} className="text-base font-semibold">Rate Ranges</Label>
+              <p className="text-xs mb-3" style={{ color: 'var(--muted-foreground)' }}>Set different rates for each card value range</p>
 
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Range</th>
-                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Base Rate (₦)</th>
-                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>Physical (₦)</th>
-                      <th className="text-left p-2 font-medium" style={{ color: '#374151' }}>E-Code (₦)</th>
+                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Range</th>
+                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Base Rate (₦)</th>
+                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Physical (₦)</th>
+                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>E-Code (₦)</th>
                     </tr>
                   </thead>
                   <tbody>
                     {RATE_RANGE_KEYS.map(rangeKey => (
                       <tr key={rangeKey} className="border-t">
-                        <td className="p-2 font-medium" style={{ color: '#111827' }}>
+                        <td className="p-2 font-medium" style={{ color: 'var(--foreground)' }}>
                           {RATE_RANGE_LABELS[rangeKey]}
                         </td>
                         <td className="p-2">
@@ -921,7 +921,7 @@ export function GiftCardRates() {
             </div>
 
             <div className="col-span-2">
-              <Label style={{ color: '#374151' }}>Notes</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Notes</Label>
               <Input
                 value={formData.notes}
                 onChange={(e) => setFormData({...formData, notes: e.target.value})}

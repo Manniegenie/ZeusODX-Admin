@@ -90,15 +90,15 @@
 
   /* Backgrounds — layered navy-slate */
   --background: #1B2333;
-  --foreground: #D0D9E8;
+  --foreground: #FFFFFF;
 
   /* Card — slightly lighter than page bg */
   --card: #22304A;
-  --card-foreground: #D0D9E8;
+  --card-foreground: #FFFFFF;
 
   /* Popover */
   --popover: #22304A;
-  --popover-foreground: #D0D9E8;
+  --popover-foreground: #FFFFFF;
 
   /* Primary — brighter purple so it pops on dark */
   --primary: #8B7CF6;
@@ -139,7 +139,7 @@
 
   /* Sidebar — slightly darker than page bg */
   --sidebar: #161F2E;
-  --sidebar-foreground: #D0D9E8;
+  --sidebar-foreground: #FFFFFF;
   --sidebar-primary: #8B7CF6;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #5B4FCF;
@@ -237,6 +237,22 @@
   .dark .text-black {
     color: var(--foreground) !important;
   }
+  .dark .text-black\/90 {
+    color: var(--foreground) !important;
+  }
+  .dark .text-slate-900 {
+    color: var(--foreground) !important;
+  }
+  .dark .text-\[\#737373\] {
+    color: #FFFFFF !important;
+  }
+  .dark .text-\[\#9B9B9B\] {
+    color: #FFFFFF !important;
+  }
+  /* Dark brand purple is invisible on navy — swap to the bright dark-mode primary */
+  .dark .text-\[\#35297F\] {
+    color: var(--primary) !important;
+  }
   .dark .text-gray-900 {
     color: var(--foreground) !important;
   }
@@ -285,6 +301,12 @@
     background-color: var(--input);
     color: var(--foreground);
     border-color: var(--border);
+  }
+
+  /* Placeholders — beat placeholder:text-gray-* utility classes */
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: #B9C6DA !important;
   }
 
   /* Table rows */

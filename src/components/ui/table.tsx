@@ -9,7 +9,7 @@ const Table = React.forwardRef<
     <table
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}
-      style={{ color: '#1A1A1A' }}
+      style={{ color: 'var(--foreground)' }}
       {...props}
     />
   </div>
@@ -73,7 +73,7 @@ const TableHead = React.forwardRef<
       "h-9 px-3 text-left align-middle text-xs font-medium [&:has([role=checkbox])]:pr-0",
       className
     )}
-    style={{ color: '#1A1A1A' }}
+    style={{ color: 'var(--foreground)' }}
     {...props}
   />
 ));
@@ -86,7 +86,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn("px-3 py-2 align-middle text-sm [&:has([role=checkbox])]:pr-0", className)}
-    style={{ color: '#1A1A1A' }}
+    style={{ color: 'var(--foreground)' }}
     {...props}
   />
 ));
