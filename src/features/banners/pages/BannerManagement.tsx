@@ -248,12 +248,12 @@ export function BannerManagement() {
   const activeFilterCount = [filters.isActive !== undefined ? 'active' : ''].filter(Boolean).length;
 
   return (
-    <div className="w-full bg-white space-y-6 p-4 rounded" style={{ color: '#1A1A1A' }}>
+    <div className="w-full bg-white space-y-6 p-4 rounded" style={{ color: 'var(--foreground)' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: '#111827' }}>Banners</h1>
-          <p style={{ color: '#4B5563' }} className="mt-1">
+          <h1 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>Banners</h1>
+          <p style={{ color: 'var(--foreground)' }} className="mt-1">
             Manage promotional banners for the app ({totalBanners} total, max 4 allowed)
           </p>
         </div>
@@ -310,7 +310,7 @@ export function BannerManagement() {
           <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>Status</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--foreground)' }}>Status</label>
                 <Select
                   value={filters.isActive === undefined ? 'all' : filters.isActive.toString()}
                   onValueChange={(value) => handleFilterChange('isActive', value === 'all' ? undefined : value === 'true')}
@@ -327,7 +327,7 @@ export function BannerManagement() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>Sort By</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--foreground)' }}>Sort By</label>
                 <Select
                   value={filters.sortBy || 'priority'}
                   onValueChange={(value) => handleFilterChange('sortBy', value)}
@@ -344,7 +344,7 @@ export function BannerManagement() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>Sort Order</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--foreground)' }}>Sort Order</label>
                 <Select
                   value={filters.sortOrder || 'desc'}
                   onValueChange={(value) => handleFilterChange('sortOrder', value as 'asc' | 'desc')}
@@ -377,7 +377,7 @@ export function BannerManagement() {
         <div className="p-4">
           {/* Table Controls */}
           <div className="flex items-center justify-between mb-4">
-            <div className="text-sm" style={{ color: '#4B5563' }}>
+            <div className="text-sm" style={{ color: 'var(--foreground)' }}>
               Showing {banners.length > 0 ? ((currentPage - 1) * (filters.limit || 10)) + 1 : 0} to {Math.min(currentPage * (filters.limit || 10), totalBanners)} of {totalBanners} banners
             </div>
             <Button
@@ -393,26 +393,26 @@ export function BannerManagement() {
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-              <span className="ml-2" style={{ color: '#4B5563' }}>Loading banners...</span>
+              <span className="ml-2" style={{ color: 'var(--foreground)' }}>Loading banners...</span>
             </div>
           ) : banners.length === 0 ? (
             <div className="text-center py-8">
               <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2" style={{ color: '#111827' }}>No banners found</h3>
-              <p style={{ color: '#4B5563' }}>Add a new banner to get started.</p>
+              <h3 className="text-lg font-medium mb-2" style={{ color: 'var(--foreground)' }}>No banners found</h3>
+              <p style={{ color: 'var(--foreground)' }}>Add a new banner to get started.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full" style={{ color: '#1A1A1A' }}>
+              <table className="w-full" style={{ color: 'var(--foreground)' }}>
                 <thead>
                   <tr className="bg-gray-50 border-b">
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Priority</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Preview</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Title</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Link</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Status</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Created</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: '#111827' }}>Actions</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Priority</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Preview</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Title</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Link</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Status</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Created</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -421,7 +421,7 @@ export function BannerManagement() {
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           <GripVertical className="w-4 h-4 text-gray-400" />
-                          <span className="font-medium" style={{ color: '#111827' }}>{banner.priority}</span>
+                          <span className="font-medium" style={{ color: 'var(--foreground)' }}>{banner.priority}</span>
                         </div>
                       </td>
                       <td className="p-3">
@@ -443,13 +443,13 @@ export function BannerManagement() {
                         </div>
                       </td>
                       <td className="p-3">
-                        <span className="font-medium" style={{ color: '#111827' }}>{banner.title}</span>
+                        <span className="font-medium" style={{ color: 'var(--foreground)' }}>{banner.title}</span>
                       </td>
                       <td className="p-3">
                         {banner.link ? (
-                          <span className="text-sm" style={{ color: '#6B7280' }}>{banner.link}</span>
+                          <span className="text-sm" style={{ color: 'var(--muted-foreground)' }}>{banner.link}</span>
                         ) : (
-                          <span style={{ color: '#9CA3AF' }}>No link</span>
+                          <span style={{ color: 'var(--muted-foreground)' }}>No link</span>
                         )}
                       </td>
                       <td className="p-3">
@@ -467,7 +467,7 @@ export function BannerManagement() {
                         </div>
                       </td>
                       <td className="p-3">
-                        <span className="text-sm" style={{ color: '#6B7280' }}>
+                        <span className="text-sm" style={{ color: 'var(--muted-foreground)' }}>
                           {formatDate(banner.createdAt)}
                         </span>
                       </td>
@@ -520,7 +520,7 @@ export function BannerManagement() {
           {/* Pagination */}
           {banners.length > 0 && totalPages > 1 && (
             <div className="flex items-center justify-between mt-4">
-              <div className="text-sm" style={{ color: '#4B5563' }}>
+              <div className="text-sm" style={{ color: 'var(--foreground)' }}>
                 Page {currentPage} of {totalPages}
               </div>
               <div className="flex items-center gap-2">
@@ -552,12 +552,12 @@ export function BannerManagement() {
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle style={{ color: '#111827' }}>Create New Banner</DialogTitle>
+            <DialogTitle style={{ color: 'var(--foreground)' }}>Create New Banner</DialogTitle>
           </DialogHeader>
 
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <Label style={{ color: '#374151' }}>Title *</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Title *</Label>
               <Input
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
@@ -566,7 +566,7 @@ export function BannerManagement() {
             </div>
 
             <div>
-              <Label style={{ color: '#374151' }}>Image URL *</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Image URL *</Label>
               <Input
                 value={formData.imageUrl}
                 onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
@@ -587,26 +587,26 @@ export function BannerManagement() {
             </div>
 
             <div>
-              <Label style={{ color: '#374151' }}>Link (optional)</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Link (optional)</Label>
               <Input
                 value={formData.link}
                 onChange={(e) => setFormData({...formData, link: e.target.value})}
                 placeholder="e.g., /user/Swap or https://..."
               />
-              <p className="text-xs mt-1" style={{ color: '#6B7280' }}>
+              <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>
                 Internal path (e.g., /user/Swap) or external URL
               </p>
             </div>
 
             <div>
-              <Label style={{ color: '#374151' }}>Priority</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Priority</Label>
               <Input
                 type="number"
                 value={formData.priority}
                 onChange={(e) => setFormData({...formData, priority: parseInt(e.target.value) || 0})}
                 placeholder="0"
               />
-              <p className="text-xs mt-1" style={{ color: '#6B7280' }}>
+              <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>
                 Higher numbers show first
               </p>
             </div>
@@ -619,7 +619,7 @@ export function BannerManagement() {
                 onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
                 className="w-4 h-4 rounded border-gray-300"
               />
-              <Label htmlFor="isActive" style={{ color: '#374151' }}>Active (visible to users)</Label>
+              <Label htmlFor="isActive" style={{ color: 'var(--foreground)' }}>Active (visible to users)</Label>
             </div>
           </div>
 
@@ -638,12 +638,12 @@ export function BannerManagement() {
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle style={{ color: '#111827' }}>Edit Banner</DialogTitle>
+            <DialogTitle style={{ color: 'var(--foreground)' }}>Edit Banner</DialogTitle>
           </DialogHeader>
 
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <Label style={{ color: '#374151' }}>Title *</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Title *</Label>
               <Input
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
@@ -652,7 +652,7 @@ export function BannerManagement() {
             </div>
 
             <div>
-              <Label style={{ color: '#374151' }}>Image URL *</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Image URL *</Label>
               <Input
                 value={formData.imageUrl}
                 onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
@@ -673,7 +673,7 @@ export function BannerManagement() {
             </div>
 
             <div>
-              <Label style={{ color: '#374151' }}>Link (optional)</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Link (optional)</Label>
               <Input
                 value={formData.link}
                 onChange={(e) => setFormData({...formData, link: e.target.value})}
@@ -682,7 +682,7 @@ export function BannerManagement() {
             </div>
 
             <div>
-              <Label style={{ color: '#374151' }}>Priority</Label>
+              <Label style={{ color: 'var(--foreground)' }}>Priority</Label>
               <Input
                 type="number"
                 value={formData.priority}
@@ -698,7 +698,7 @@ export function BannerManagement() {
                 onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
                 className="w-4 h-4 rounded border-gray-300"
               />
-              <Label htmlFor="editIsActive" style={{ color: '#374151' }}>Active (visible to users)</Label>
+              <Label htmlFor="editIsActive" style={{ color: 'var(--foreground)' }}>Active (visible to users)</Label>
             </div>
           </div>
 
