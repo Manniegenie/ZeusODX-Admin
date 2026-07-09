@@ -64,7 +64,7 @@ export function DeductBalance() {
     try {
       setDeductLoading(true);
       setTwoFAOpen(false);
-      const res = await deductBalance(userEmail, currency, parseFloat(amount), twoFAToken);
+      await deductBalance(userEmail, currency, parseFloat(amount), twoFAToken);
       setSuccessDetail({ amount, currency });
       setAmount('');
       setSuccessOpen(true);
