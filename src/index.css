@@ -110,7 +110,7 @@
 
   /* Muted */
   --muted: #2E3F5C;
-  --muted-foreground: #7A93B4;
+  --muted-foreground: #FFFFFF;
 
   /* Accent */
   --accent: #FF6B9D;
@@ -241,19 +241,22 @@
     color: var(--foreground) !important;
   }
   .dark .text-gray-800 {
-    color: color-mix(in srgb, var(--foreground) 85%, transparent) !important;
+    color: #FFFFFF !important;
   }
   .dark .text-gray-700 {
-    color: color-mix(in srgb, var(--foreground) 75%, transparent) !important;
+    color: #FFFFFF !important;
   }
   .dark .text-gray-600 {
-    color: var(--muted-foreground) !important;
+    color: #FFFFFF !important;
   }
   .dark .text-gray-500 {
-    color: var(--muted-foreground) !important;
+    color: #FFFFFF !important;
   }
   .dark .text-gray-400 {
-    color: color-mix(in srgb, var(--muted-foreground) 70%, transparent) !important;
+    color: #FFFFFF !important;
+  }
+  .dark .text-gray-300 {
+    color: #FFFFFF !important;
   }
 
   /* Borders */
