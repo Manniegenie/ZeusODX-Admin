@@ -9,16 +9,47 @@ import { Label } from '@/components/ui/label';
 import { Filter, Plus, RefreshCw, ChevronLeft, ChevronRight, Edit, Trash2, ToggleLeft, ToggleRight, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { GiftCardService } from '../services/giftcardService';
-import type { GiftCardRate, FilterParams, CreateRateRequest, UpdateRateRequest, RateRangeKey } from '../types/giftcard';
+import type { GiftCardRate, FilterParams, CreateRateRequest, UpdateRateRequest, RateRangeKey, OddRateRangeKey, RateCategory, RateRangeValues } from '../types/giftcard';
 
-// Rate ranges configuration (matches backend)
+// Rate ranges configuration (matches backend). Display labels are non-overlapping
+// even though the underlying backend keys (range25_100, etc) stay the same.
+// Used for the flat/non-Apple shape, and for the VERTICAL/HORIZONTAL Apple categories.
 const RATE_RANGE_KEYS: RateRangeKey[] = ['range25_100', 'range100_200', 'range200_500', 'range500_1000'];
 const RATE_RANGE_LABELS: Record<RateRangeKey, string> = {
-  range25_100: '$25 - $100',
-  range100_200: '$100 - $200',
-  range200_500: '$200 - $500',
-  range500_1000: '$500 - $1,000'
+  range25_100: '$25 – $99',
+  range100_200: '$100 – $199',
+  range200_500: '$200 – $499',
+  range500_1000: '$500 – $1,000'
 };
+
+// The ODD (odd number / custom amount) Apple category uses its own distinct
+// backend bucket keys - do not reuse RATE_RANGE_KEYS/RATE_RANGE_LABELS for it.
+// Boundary labels below mirror the backend's bucket naming (rangeOdd1_25, etc);
+// exact inclusivity at each boundary is inferred from the key names and has not
+// been confirmed against models/giftcardPrice.js - verify before relying on it.
+const ODD_RANGE_KEYS: OddRateRangeKey[] = ['rangeOdd1_25', 'rangeOdd25_75', 'rangeOdd75_150', 'rangeOdd150_500'];
+const ODD_RANGE_LABELS: Record<OddRateRangeKey, string> = {
+  rangeOdd1_25: '$1 – $24',
+  rangeOdd25_75: '$25 – $74',
+  rangeOdd75_150: '$75 – $149',
+  rangeOdd150_500: '$150 – $500'
+};
+
+// Category buckets currently only apply to Apple. See types/giftcard.ts for
+// the backend-shape caveat around the ODD key.
+const RATE_CATEGORIES: RateCategory[] = ['VERTICAL', 'HORIZONTAL', 'ODD'];
+const CATEGORY_LABELS: Record<RateCategory, string> = {
+  VERTICAL: 'Vertical Card',
+  HORIZONTAL: 'Horizontal Card',
+  ODD: 'Odd Number / Custom Amount'
+};
+const CATEGORY_SHORT_LABELS: Record<RateCategory, string> = {
+  VERTICAL: 'Vertical',
+  HORIZONTAL: 'Horizontal',
+  ODD: 'Odd'
+};
+const ODD_CATEGORY_HELP_TEXT = 'Use this for Apple card values that are not standard increments of 50, such as $72, $97, $102, or $152.';
+const APPLE_CARD_TYPE = 'APPLE';
 
 const CARD_TYPES = [
   'APPLE', 'STEAM', 'NORDSTROM', 'MACY', 'NIKE', 'GOOGLE_PLAY',
@@ -194,6 +225,12 @@ export function GiftCardRates() {
 
   // Handle create rate
   const handleCreate = async () => {
+    const validationError = validateRateForm();
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await GiftCardService.createRate(formData);
@@ -240,6 +277,12 @@ export function GiftCardRates() {
   // Handle update rate
   const handleUpdate = async () => {
     if (!selectedRate) return;
+
+    const validationError = validateRateForm();
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -333,7 +376,7 @@ export function GiftCardRates() {
     });
   };
 
-  // Helper to update rate range values
+  // Helper to update rate range values (flat/legacy shape - non-Apple card types)
   const updateRateRange = (rangeKey: RateRangeKey, field: 'rate' | 'physicalRate' | 'ecodeRate', value: string) => {
     const numValue = value === '' ? null : parseFloat(value);
     setFormData(prev => ({
@@ -346,6 +389,224 @@ export function GiftCardRates() {
         }
       }
     }));
+  };
+
+  // Helper to update rate range values within the VERTICAL/HORIZONTAL category buckets.
+  // ODD is intentionally excluded here - it uses different keys, see updateOddRateRange.
+  const updateCategoryRateRange = (
+    category: 'VERTICAL' | 'HORIZONTAL',
+    rangeKey: RateRangeKey,
+    field: 'rate' | 'physicalRate' | 'ecodeRate',
+    value: string
+  ) => {
+    const numValue = value === '' ? null : parseFloat(value);
+    setFormData(prev => ({
+      ...prev,
+      rateRanges: {
+        ...prev.rateRanges,
+        [category]: {
+          ...prev.rateRanges?.[category],
+          [rangeKey]: {
+            ...prev.rateRanges?.[category]?.[rangeKey],
+            [field]: numValue
+          }
+        }
+      }
+    }));
+  };
+
+  // Helper to update rate range values within the ODD category bucket only.
+  // Uses OddRateRangeKey (rangeOdd1_25, etc) to match the backend's ODD-specific keys.
+  const updateOddRateRange = (
+    rangeKey: OddRateRangeKey,
+    field: 'rate' | 'physicalRate' | 'ecodeRate',
+    value: string
+  ) => {
+    const numValue = value === '' ? null : parseFloat(value);
+    setFormData(prev => ({
+      ...prev,
+      rateRanges: {
+        ...prev.rateRanges,
+        ODD: {
+          ...prev.rateRanges?.ODD,
+          [rangeKey]: {
+            ...prev.rateRanges?.ODD?.[rangeKey],
+            [field]: numValue
+          }
+        }
+      }
+    }));
+  };
+
+  // Collects every rate/physicalRate/ecodeRate value currently entered in the
+  // rate-ranges section that's actually visible for the selected card type.
+  const collectVisibleRangeValues = (): number[] => {
+    const values: number[] = [];
+    const pushBucket = (bucket?: RateRangeValues | null) => {
+      if (!bucket) return;
+      if (typeof bucket.rate === 'number') values.push(bucket.rate);
+      if (typeof bucket.physicalRate === 'number') values.push(bucket.physicalRate);
+      if (typeof bucket.ecodeRate === 'number') values.push(bucket.ecodeRate);
+    };
+
+    if (formData.cardType === APPLE_CARD_TYPE) {
+      (['VERTICAL', 'HORIZONTAL'] as const).forEach(category => {
+        RATE_RANGE_KEYS.forEach(rangeKey => pushBucket(formData.rateRanges?.[category]?.[rangeKey]));
+      });
+      ODD_RANGE_KEYS.forEach(rangeKey => pushBucket(formData.rateRanges?.ODD?.[rangeKey]));
+    } else {
+      RATE_RANGE_KEYS.forEach(rangeKey => pushBucket(formData.rateRanges?.[rangeKey]));
+    }
+
+    return values;
+  };
+
+  // Validates the create/edit form. Returns an error message, or null if valid.
+  const validateRateForm = (): string | null => {
+    if (!formData.cardType) return 'Card type is required';
+    if (!formData.country) return 'Country is required';
+    if (formData.cardType === 'VANILLA' && !formData.vanillaType) return 'Vanilla type is required';
+    if (formData.rate === null || formData.rate === undefined || formData.rate <= 0) {
+      return 'Default rate is required';
+    }
+    if (formData.rate < 0) return 'Default rate must be a positive number';
+
+    const visibleRangeValues = collectVisibleRangeValues();
+    const hasAnyRateValue = formData.rate > 0 || visibleRangeValues.length > 0;
+    if (!hasAnyRateValue) {
+      return 'Enter at least one rate value in the default rate or the rate ranges section';
+    }
+    if (visibleRangeValues.some(value => value <= 0)) {
+      return 'Rate range values must be positive numbers';
+    }
+
+    return null;
+  };
+
+  // Renders the range table shared by the flat and per-category sections.
+  // Parameterized by key list + labels so the ODD category (different backend keys)
+  // can reuse the same markup without touching the VERTICAL/HORIZONTAL/flat path.
+  const renderRangeRows = <K extends string,>(
+    keys: K[],
+    labels: Record<K, string>,
+    getValues: (rangeKey: K) => RateRangeValues | null | undefined,
+    onChange: (rangeKey: K, field: 'rate' | 'physicalRate' | 'ecodeRate', value: string) => void
+  ) => (
+    <table className="w-full text-sm">
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Range</th>
+          <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Base/Fallback (₦)</th>
+          <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Physical (₦)</th>
+          <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>E-Code (₦)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {keys.map(rangeKey => {
+          const values = getValues(rangeKey);
+          return (
+            <tr key={rangeKey} className="border-t">
+              <td className="p-2 font-medium" style={{ color: 'var(--foreground)' }}>
+                {labels[rangeKey]}
+              </td>
+              <td className="p-2">
+                <Input
+                  type="number"
+                  min="0"
+                  className="h-8"
+                  value={values?.rate ?? ''}
+                  onChange={(e) => onChange(rangeKey, 'rate', e.target.value)}
+                  placeholder="—"
+                />
+              </td>
+              <td className="p-2">
+                <Input
+                  type="number"
+                  min="0"
+                  className="h-8"
+                  value={values?.physicalRate ?? ''}
+                  onChange={(e) => onChange(rangeKey, 'physicalRate', e.target.value)}
+                  placeholder="—"
+                />
+              </td>
+              <td className="p-2">
+                <Input
+                  type="number"
+                  min="0"
+                  className="h-8"
+                  value={values?.ecodeRate ?? ''}
+                  onChange={(e) => onChange(rangeKey, 'ecodeRate', e.target.value)}
+                  placeholder="—"
+                />
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+
+  // Renders either the flat range table (non-Apple) or the three Apple category
+  // sections (Vertical / Horizontal / Odd Number), each with its own range table.
+  const renderRateRangesSection = () => {
+    if (formData.cardType === APPLE_CARD_TYPE) {
+      return (
+        <div className="space-y-4">
+          {RATE_CATEGORIES.map(category => (
+            <div key={category} className="border rounded-lg overflow-hidden">
+              <div className="bg-gray-50 px-3 py-2 border-b">
+                <div className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>{CATEGORY_LABELS[category]}</div>
+                {category === 'ODD' && (
+                  <p className="text-xs mt-1" style={{ color: 'var(--warning)' }}>{ODD_CATEGORY_HELP_TEXT}</p>
+                )}
+              </div>
+              {category === 'ODD' ? (
+                renderRangeRows(
+                  ODD_RANGE_KEYS,
+                  ODD_RANGE_LABELS,
+                  (rangeKey) => formData.rateRanges?.ODD?.[rangeKey],
+                  (rangeKey, field, value) => updateOddRateRange(rangeKey, field, value)
+                )
+              ) : (
+                renderRangeRows(
+                  RATE_RANGE_KEYS,
+                  RATE_RANGE_LABELS,
+                  (rangeKey) => formData.rateRanges?.[category]?.[rangeKey],
+                  (rangeKey, field, value) => updateCategoryRateRange(category, rangeKey, field, value)
+                )
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className="border rounded-lg overflow-hidden">
+        {renderRangeRows(
+          RATE_RANGE_KEYS,
+          RATE_RANGE_LABELS,
+          (rangeKey) => formData.rateRanges?.[rangeKey],
+          (rangeKey, field, value) => updateRateRange(rangeKey, field, value)
+        )}
+      </div>
+    );
+  };
+
+  // Determines which Apple category buckets have at least one rate value set,
+  // for the compact "categories configured" indicator in the rates table.
+  const getConfiguredCategories = (rate: GiftCardRate): RateCategory[] => {
+    const hasValue = (values?: RateRangeValues | null) => !!(values && (values.rate || values.physicalRate || values.ecodeRate));
+    return RATE_CATEGORIES.filter(category => {
+      if (category === 'ODD') {
+        const bucket = rate.rateRanges?.ODD;
+        if (!bucket) return false;
+        return ODD_RANGE_KEYS.some(rangeKey => hasValue(bucket[rangeKey]));
+      }
+      const bucket = rate.rateRanges?.[category];
+      if (!bucket) return false;
+      return RATE_RANGE_KEYS.some(rangeKey => hasValue(bucket[rangeKey]));
+    });
   };
 
   // Count active filters
@@ -529,6 +790,16 @@ export function GiftCardRates() {
                           {rate.vanillaType && (
                             <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Type: {rate.vanillaType}</div>
                           )}
+                          {rate.cardType === APPLE_CARD_TYPE && (() => {
+                            const configured = getConfiguredCategories(rate);
+                            return configured.length > 0 ? (
+                              <div className="text-xs mt-0.5" style={{ color: '#7C3AED' }}>
+                                Apple categories configured: {configured.map(c => CATEGORY_SHORT_LABELS[c]).join(', ')}
+                              </div>
+                            ) : (
+                              <div className="text-xs mt-0.5" style={{ color: 'var(--muted-foreground)' }}>No Apple category rates set</div>
+                            );
+                          })()}
                         </div>
                       </td>
                       <td className="p-3">
@@ -727,14 +998,18 @@ export function GiftCardRates() {
             )}
 
             <div>
-              <Label style={{ color: 'var(--foreground)' }}>Default Rate (₦) *</Label>
+              <div className="flex items-center gap-2">
+                <Label style={{ color: 'var(--foreground)' }}>Default Rate (₦) *</Label>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium uppercase tracking-wide bg-gray-100" style={{ color: 'var(--muted-foreground)' }}>Fallback / Legacy</span>
+              </div>
               <Input
                 type="number"
+                min="0"
                 value={formData.rate}
                 onChange={(e) => setFormData({...formData, rate: parseFloat(e.target.value) || 0})}
                 placeholder="Fallback rate"
               />
-              <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Used when no range-specific rate is set</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Used only when no range-specific rate below applies</p>
             </div>
 
             <div>
@@ -764,59 +1039,18 @@ export function GiftCardRates() {
               </div>
             </div>
 
-            {/* Rate Ranges Section */}
+            {/* Rate Ranges Section - grouped by category (Vertical/Horizontal/Odd) for Apple, flat for everything else */}
             <div className="col-span-2">
-              <Label style={{ color: 'var(--foreground)' }} className="text-base font-semibold">Rate Ranges</Label>
-              <p className="text-xs mb-3" style={{ color: 'var(--muted-foreground)' }}>Set different rates for each card value range</p>
+              <Label style={{ color: 'var(--foreground)' }} className="text-base font-semibold">
+                {formData.cardType === APPLE_CARD_TYPE ? 'Rate Ranges by Category' : 'Rate Ranges'}
+              </Label>
+              <p className="text-xs mb-3" style={{ color: 'var(--muted-foreground)' }}>
+                {formData.cardType === APPLE_CARD_TYPE
+                  ? 'Apple rates differ by card layout/amount class. Set rates for each category and value range below.'
+                  : 'Set different rates for each card value range'}
+              </p>
 
-              <div className="border rounded-lg overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Range</th>
-                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Base Rate (₦)</th>
-                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Physical (₦)</th>
-                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>E-Code (₦)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {RATE_RANGE_KEYS.map(rangeKey => (
-                      <tr key={rangeKey} className="border-t">
-                        <td className="p-2 font-medium" style={{ color: 'var(--foreground)' }}>
-                          {RATE_RANGE_LABELS[rangeKey]}
-                        </td>
-                        <td className="p-2">
-                          <Input
-                            type="number"
-                            className="h-8"
-                            value={formData.rateRanges?.[rangeKey]?.rate ?? ''}
-                            onChange={(e) => updateRateRange(rangeKey, 'rate', e.target.value)}
-                            placeholder="—"
-                          />
-                        </td>
-                        <td className="p-2">
-                          <Input
-                            type="number"
-                            className="h-8"
-                            value={formData.rateRanges?.[rangeKey]?.physicalRate ?? ''}
-                            onChange={(e) => updateRateRange(rangeKey, 'physicalRate', e.target.value)}
-                            placeholder="—"
-                          />
-                        </td>
-                        <td className="p-2">
-                          <Input
-                            type="number"
-                            className="h-8"
-                            value={formData.rateRanges?.[rangeKey]?.ecodeRate ?? ''}
-                            onChange={(e) => updateRateRange(rangeKey, 'ecodeRate', e.target.value)}
-                            placeholder="—"
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {renderRateRangesSection()}
             </div>
 
             <div className="col-span-2">
@@ -857,67 +1091,30 @@ export function GiftCardRates() {
             </div>
 
             <div>
-              <Label style={{ color: 'var(--foreground)' }}>Default Rate (₦) *</Label>
+              <div className="flex items-center gap-2">
+                <Label style={{ color: 'var(--foreground)' }}>Default Rate (₦) *</Label>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium uppercase tracking-wide bg-gray-100" style={{ color: 'var(--muted-foreground)' }}>Fallback / Legacy</span>
+              </div>
               <Input
                 type="number"
+                min="0"
                 value={formData.rate}
                 onChange={(e) => setFormData({...formData, rate: parseFloat(e.target.value) || 0})}
               />
-              <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Fallback rate when no range-specific rate is set</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Fallback rate used only when no range-specific rate below applies</p>
             </div>
 
             <div className="col-span-2">
-              <Label style={{ color: 'var(--foreground)' }} className="text-base font-semibold">Rate Ranges</Label>
-              <p className="text-xs mb-3" style={{ color: 'var(--muted-foreground)' }}>Set different rates for each card value range</p>
+              <Label style={{ color: 'var(--foreground)' }} className="text-base font-semibold">
+                {formData.cardType === APPLE_CARD_TYPE ? 'Rate Ranges by Category' : 'Rate Ranges'}
+              </Label>
+              <p className="text-xs mb-3" style={{ color: 'var(--muted-foreground)' }}>
+                {formData.cardType === APPLE_CARD_TYPE
+                  ? 'Apple rates differ by card layout/amount class. Set rates for each category and value range below.'
+                  : 'Set different rates for each card value range'}
+              </p>
 
-              <div className="border rounded-lg overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Range</th>
-                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Base Rate (₦)</th>
-                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Physical (₦)</th>
-                      <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>E-Code (₦)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {RATE_RANGE_KEYS.map(rangeKey => (
-                      <tr key={rangeKey} className="border-t">
-                        <td className="p-2 font-medium" style={{ color: 'var(--foreground)' }}>
-                          {RATE_RANGE_LABELS[rangeKey]}
-                        </td>
-                        <td className="p-2">
-                          <Input
-                            type="number"
-                            className="h-8"
-                            value={formData.rateRanges?.[rangeKey]?.rate ?? ''}
-                            onChange={(e) => updateRateRange(rangeKey, 'rate', e.target.value)}
-                            placeholder="—"
-                          />
-                        </td>
-                        <td className="p-2">
-                          <Input
-                            type="number"
-                            className="h-8"
-                            value={formData.rateRanges?.[rangeKey]?.physicalRate ?? ''}
-                            onChange={(e) => updateRateRange(rangeKey, 'physicalRate', e.target.value)}
-                            placeholder="—"
-                          />
-                        </td>
-                        <td className="p-2">
-                          <Input
-                            type="number"
-                            className="h-8"
-                            value={formData.rateRanges?.[rangeKey]?.ecodeRate ?? ''}
-                            onChange={(e) => updateRateRange(rangeKey, 'ecodeRate', e.target.value)}
-                            placeholder="—"
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {renderRateRangesSection()}
             </div>
 
             <div className="col-span-2">

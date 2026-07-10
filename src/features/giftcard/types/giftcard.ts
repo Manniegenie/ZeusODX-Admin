@@ -5,12 +5,32 @@ export interface RateRangeValues {
   ecodeRate: number | null;
 }
 
-// All rate ranges for a gift card
-export interface RateRanges {
-  range25_100?: RateRangeValues | null;   // $25 - $100
-  range100_200?: RateRangeValues | null;  // $100 - $200
-  range200_500?: RateRangeValues | null;  // $200 - $500
-  range500_1000?: RateRangeValues | null; // $500 - $1000
+// The four backend-supported value brackets. Keys are fixed by the backend
+// (GiftCardPrice model) and are not currently admin-configurable.
+export type RateRangeKey = 'range25_100' | 'range100_200' | 'range200_500' | 'range500_1000';
+
+// The ODD (odd number / custom amount) category uses its own distinct set of
+// bucket keys in the backend GiftCardPrice model - confirmed via backend audit,
+// these are NOT the same keys as VERTICAL/HORIZONTAL. See models/giftcardPrice.js.
+export type OddRateRangeKey = 'rangeOdd1_25' | 'rangeOdd25_75' | 'rangeOdd75_150' | 'rangeOdd150_500';
+
+// Bucket map shared by the flat (legacy/non-Apple) shape and the VERTICAL/HORIZONTAL categories.
+export type CategoryRateBuckets = Partial<Record<RateRangeKey, RateRangeValues | null>>;
+
+// Bucket map for the ODD category only - keyed by OddRateRangeKey, not RateRangeKey.
+export type OddCategoryRateBuckets = Partial<Record<OddRateRangeKey, RateRangeValues | null>>;
+
+// Category buckets the backend (GiftCardPrice model) supports for card types
+// whose price depends on card layout/amount class - currently only Apple.
+export type RateCategory = 'VERTICAL' | 'HORIZONTAL' | 'ODD';
+
+// All rate ranges for a gift card. Non-Apple cards use the flat keys directly
+// (range25_100, etc). Apple uses the VERTICAL/HORIZONTAL/ODD category buckets instead,
+// with ODD using its own distinct range keys (OddRateRangeKey).
+export interface RateRanges extends CategoryRateBuckets {
+  VERTICAL?: CategoryRateBuckets | null;
+  HORIZONTAL?: CategoryRateBuckets | null;
+  ODD?: OddCategoryRateBuckets | null;
 }
 
 // Rate range configuration from backend
@@ -26,8 +46,6 @@ export interface RateRangesConfig {
   range200_500: RateRangeConfig;
   range500_1000: RateRangeConfig;
 }
-
-export type RateRangeKey = keyof RateRanges;
 
 export interface GiftCardRate {
   id: string;
