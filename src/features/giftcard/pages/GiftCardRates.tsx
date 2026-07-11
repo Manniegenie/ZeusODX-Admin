@@ -135,13 +135,8 @@ export function GiftCardRates() {
   const [formData, setFormData] = useState<CreateRateRequest>({
     cardType: '',
     country: '',
-    rate: 0,
-    rateRanges: {
-      range25_100: { rate: null, physicalRate: null, ecodeRate: null },
-      range100_200: { rate: null, physicalRate: null, ecodeRate: null },
-      range200_500: { rate: null, physicalRate: null, ecodeRate: null },
-      range500_1000: { rate: null, physicalRate: null, ecodeRate: null }
-    },
+    rate: null,
+    rateRanges: {},
     physicalRate: undefined,
     ecodeRate: undefined,
     sourceCurrency: 'USD',
@@ -254,13 +249,8 @@ export function GiftCardRates() {
     setFormData({
       cardType: rate.cardType,
       country: rate.country,
-      rate: rate.rate,
-      rateRanges: rate.rateRanges || {
-        range25_100: { rate: null, physicalRate: null, ecodeRate: null },
-        range100_200: { rate: null, physicalRate: null, ecodeRate: null },
-        range200_500: { rate: null, physicalRate: null, ecodeRate: null },
-        range500_1000: { rate: null, physicalRate: null, ecodeRate: null }
-      },
+      rate: rate.rate ?? null,
+      rateRanges: rate.rateRanges || {},
       physicalRate: rate.physicalRate,
       ecodeRate: rate.ecodeRate,
       sourceCurrency: rate.sourceCurrency,
@@ -357,13 +347,8 @@ export function GiftCardRates() {
     setFormData({
       cardType: '',
       country: '',
-      rate: 0,
-      rateRanges: {
-        range25_100: { rate: null, physicalRate: null, ecodeRate: null },
-        range100_200: { rate: null, physicalRate: null, ecodeRate: null },
-        range200_500: { rate: null, physicalRate: null, ecodeRate: null },
-        range500_1000: { rate: null, physicalRate: null, ecodeRate: null }
-      },
+      rate: null,
+      rateRanges: {},
       physicalRate: undefined,
       ecodeRate: undefined,
       sourceCurrency: 'USD',

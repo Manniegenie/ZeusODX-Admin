@@ -103,7 +103,8 @@ export interface FilterParams {
 export interface CreateRateRequest {
   cardType: string;
   country: string;
-  rate: number;
+  // Legacy fallback rate — no longer collected by the UI; null for new documents.
+  rate: number | null;
   rateRanges?: RateRanges;
   physicalRate?: number;
   ecodeRate?: number;
@@ -116,7 +117,7 @@ export interface CreateRateRequest {
 }
 
 export interface UpdateRateRequest {
-  rate?: number;
+  rate?: number | null;
   rateRanges?: RateRanges;
   physicalRate?: number;
   ecodeRate?: number;
