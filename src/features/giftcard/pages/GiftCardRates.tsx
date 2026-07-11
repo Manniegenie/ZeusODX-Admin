@@ -442,19 +442,16 @@ export function GiftCardRates() {
   };
 
   // Validates the create/edit form. Returns an error message, or null if valid.
+  // There is no default/base rate anymore — every rate lives per format
+  // (Physical/E-Code) per category (Vertical/Horizontal/Odd) per value range.
   const validateRateForm = (): string | null => {
     if (!formData.cardType) return 'Card type is required';
     if (!formData.country) return 'Country is required';
     if (formData.cardType === 'VANILLA' && !formData.vanillaType) return 'Vanilla type is required';
-    if (formData.rate === null || formData.rate === undefined || formData.rate <= 0) {
-      return 'Default rate is required';
-    }
-    if (formData.rate < 0) return 'Default rate must be a positive number';
 
     const visibleRangeValues = collectVisibleRangeValues();
-    const hasAnyRateValue = formData.rate > 0 || visibleRangeValues.length > 0;
-    if (!hasAnyRateValue) {
-      return 'Enter at least one rate value in the default rate or the rate ranges section';
+    if (visibleRangeValues.length === 0) {
+      return 'Enter at least one Physical or E-Code rate in the category ranges';
     }
     if (visibleRangeValues.some(value => value <= 0)) {
       return 'Rate range values must be positive numbers';
@@ -476,7 +473,6 @@ export function GiftCardRates() {
       <thead className="bg-gray-50">
         <tr>
           <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Range</th>
-          <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Base/Fallback (₦)</th>
           <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>Physical (₦)</th>
           <th className="text-left p-2 font-medium" style={{ color: 'var(--foreground)' }}>E-Code (₦)</th>
         </tr>
@@ -488,16 +484,6 @@ export function GiftCardRates() {
             <tr key={rangeKey} className="border-t">
               <td className="p-2 font-medium" style={{ color: 'var(--foreground)' }}>
                 {labels[rangeKey]}
-              </td>
-              <td className="p-2">
-                <Input
-                  type="number"
-                  min="0"
-                  className="h-8"
-                  value={values?.rate ?? ''}
-                  onChange={(e) => onChange(rangeKey, 'rate', e.target.value)}
-                  placeholder="—"
-                />
               </td>
               <td className="p-2">
                 <Input
@@ -573,6 +559,30 @@ export function GiftCardRates() {
       if (!bucket) return false;
       return RATE_RANGE_KEYS.some(rangeKey => hasValue(bucket[rangeKey]));
     });
+  };
+
+  // Compact "P: ₦a–₦b / E: ₦c–₦d" summary of the physical/ecode rates configured
+  // across a category's range buckets, for the rates list table.
+  const summarizeCategoryRates = (rate: GiftCardRate, category: RateCategory): string => {
+    const buckets: (RateRangeValues | null | undefined)[] =
+      category === 'ODD'
+        ? ODD_RANGE_KEYS.map(k => rate.rateRanges?.ODD?.[k])
+        : RATE_RANGE_KEYS.map(k => rate.rateRanges?.[category]?.[k]);
+
+    const span = (values: number[]): string | null => {
+      if (values.length === 0) return null;
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      return min === max ? `₦${min}` : `₦${min}–₦${max}`;
+    };
+
+    const physical = span(buckets.map(b => b?.physicalRate).filter((v): v is number => typeof v === 'number'));
+    const ecode = span(buckets.map(b => b?.ecodeRate).filter((v): v is number => typeof v === 'number'));
+
+    const parts = [];
+    if (physical) parts.push(`P: ${physical}`);
+    if (ecode) parts.push(`E: ${ecode}`);
+    return parts.length > 0 ? parts.join(' / ') : '—';
   };
 
   // Count active filters
@@ -737,11 +747,7 @@ export function GiftCardRates() {
                   <tr className="bg-gray-50 border-b">
                     <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Card Type</th>
                     <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Country</th>
-                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Default Rate</th>
-                    <th className="text-left p-3 font-semibold text-center" style={{ color: 'var(--foreground)' }}>$25-$100</th>
-                    <th className="text-left p-3 font-semibold text-center" style={{ color: 'var(--foreground)' }}>$100-$200</th>
-                    <th className="text-left p-3 font-semibold text-center" style={{ color: 'var(--foreground)' }}>$200-$500</th>
-                    <th className="text-left p-3 font-semibold text-center" style={{ color: 'var(--foreground)' }}>$500-$1,000</th>
+                    <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Rates (per category)</th>
                     <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Status</th>
                     <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Last Updated</th>
                     <th className="text-left p-3 font-semibold" style={{ color: 'var(--foreground)' }}>Actions</th>
@@ -775,46 +781,27 @@ export function GiftCardRates() {
                         </div>
                       </td>
                       <td className="p-3">
-                        <div>
-                          <div className="font-medium" style={{ color: 'var(--foreground)' }}>{rate.rateDisplay}</div>
+                        <div className="space-y-0.5">
+                          {(() => {
+                            const configured = getConfiguredCategories(rate);
+                            if (configured.length === 0) {
+                              return <span style={{ color: 'var(--muted-foreground)' }}>No rates set</span>;
+                            }
+                            return configured.map(category => {
+                              const summary = summarizeCategoryRates(rate, category);
+                              return (
+                                <div key={category} className="text-xs" style={{ color: 'var(--foreground)' }}>
+                                  <span className="font-semibold">{CATEGORY_SHORT_LABELS[category]}:</span>{' '}
+                                  <span style={{ color: 'var(--muted-foreground)' }}>{summary}</span>
+                                </div>
+                              );
+                            });
+                          })()}
                           <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
                             {rate.sourceCurrency} → {rate.targetCurrency}
                           </div>
                         </div>
                       </td>
-                      {/* Rate Range Columns */}
-                      {RATE_RANGE_KEYS.map(rangeKey => {
-                        const rangeRate = rate.rateRanges?.[rangeKey];
-                        const baseRate = rangeRate?.rate;
-                        const physicalRate = rangeRate?.physicalRate;
-                        const ecodeRate = rangeRate?.ecodeRate;
-                        const hasAnyRate = baseRate || physicalRate || ecodeRate;
-                        return (
-                          <td key={rangeKey} className="p-3 text-center">
-                            {hasAnyRate ? (
-                              <div className="space-y-0.5">
-                                {baseRate && (
-                                  <div className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
-                                    ₦{baseRate}
-                                  </div>
-                                )}
-                                {(physicalRate || ecodeRate) && (
-                                  <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
-                                    {physicalRate && <span>P: ₦{physicalRate}</span>}
-                                    {physicalRate && ecodeRate && ' / '}
-                                    {ecodeRate && <span>E: ₦{ecodeRate}</span>}
-                                  </div>
-                                )}
-                                {!baseRate && !physicalRate && !ecodeRate && (
-                                  <span style={{ color: 'var(--muted-foreground)' }}>—</span>
-                                )}
-                              </div>
-                            ) : (
-                              <span style={{ color: 'var(--muted-foreground)' }}>—</span>
-                            )}
-                          </td>
-                        );
-                      })}
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           {rate.isActive ? (
@@ -964,21 +951,6 @@ export function GiftCardRates() {
             )}
 
             <div>
-              <div className="flex items-center gap-2">
-                <Label style={{ color: 'var(--foreground)' }}>Default Rate (₦) *</Label>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium uppercase tracking-wide bg-gray-100" style={{ color: 'var(--muted-foreground)' }}>Fallback / Legacy</span>
-              </div>
-              <Input
-                type="number"
-                min="0"
-                value={formData.rate}
-                onChange={(e) => setFormData({...formData, rate: parseFloat(e.target.value) || 0})}
-                placeholder="Fallback rate"
-              />
-              <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Used only when no range-specific rate below applies</p>
-            </div>
-
-            <div>
               <Label style={{ color: 'var(--foreground)' }}>Currency</Label>
               <div className="flex gap-2">
                 <Select value={formData.sourceCurrency} onValueChange={(value) => setFormData({...formData, sourceCurrency: value})}>
@@ -1011,7 +983,7 @@ export function GiftCardRates() {
                 Rate Ranges by Category
               </Label>
               <p className="text-xs mb-3" style={{ color: 'var(--muted-foreground)' }}>
-                Rates differ by card layout/amount class. Set rates for each category and value range below.
+                Rates are set per format (Physical / E-Code) within each category and value range.
               </p>
 
               {renderRateRangesSection()}
@@ -1031,7 +1003,7 @@ export function GiftCardRates() {
             <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleCreate} disabled={loading || !formData.cardType || !formData.country || !formData.rate}>
+            <Button onClick={handleCreate} disabled={loading || !formData.cardType || !formData.country}>
               Create Rate
             </Button>
           </DialogFooter>
@@ -1054,26 +1026,12 @@ export function GiftCardRates() {
               <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Card type and country cannot be changed</p>
             </div>
 
-            <div>
-              <div className="flex items-center gap-2">
-                <Label style={{ color: 'var(--foreground)' }}>Default Rate (₦) *</Label>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium uppercase tracking-wide bg-gray-100" style={{ color: 'var(--muted-foreground)' }}>Fallback / Legacy</span>
-              </div>
-              <Input
-                type="number"
-                min="0"
-                value={formData.rate}
-                onChange={(e) => setFormData({...formData, rate: parseFloat(e.target.value) || 0})}
-              />
-              <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)' }}>Fallback rate used only when no range-specific rate below applies</p>
-            </div>
-
             <div className="col-span-2">
               <Label style={{ color: 'var(--foreground)' }} className="text-base font-semibold">
                 Rate Ranges by Category
               </Label>
               <p className="text-xs mb-3" style={{ color: 'var(--muted-foreground)' }}>
-                Rates differ by card layout/amount class. Set rates for each category and value range below.
+                Rates are set per format (Physical / E-Code) within each category and value range.
               </p>
 
               {renderRateRangesSection()}
@@ -1092,7 +1050,7 @@ export function GiftCardRates() {
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleUpdate} disabled={loading || !formData.rate}>
+            <Button onClick={handleUpdate} disabled={loading}>
               Update Rate
             </Button>
           </DialogFooter>
