@@ -48,7 +48,8 @@ const CATEGORY_SHORT_LABELS: Record<RateCategory, string> = {
   HORIZONTAL: 'Horizontal',
   ODD: 'Odd'
 };
-const ODD_CATEGORY_HELP_TEXT = 'Use this for card values that are not standard increments of 50, such as $72, $97, $102, or $152.';
+const ODD_CATEGORY_HELP_TEXT = 'Use this for Apple card values that are not standard increments of 50, such as $72, $97, $102, or $152.';
+const APPLE_CARD_TYPE = 'APPLE';
 
 const CARD_TYPES = [
   'APPLE', 'STEAM', 'NORDSTROM', 'MACY', 'NIKE', 'GOOGLE_PLAY',
@@ -418,10 +419,15 @@ export function GiftCardRates() {
       if (typeof bucket.ecodeRate === 'number') values.push(bucket.ecodeRate);
     };
 
-    (['VERTICAL', 'HORIZONTAL'] as const).forEach(category => {
-      RATE_RANGE_KEYS.forEach(rangeKey => pushBucket(formData.rateRanges?.[category]?.[rangeKey]));
-    });
-    ODD_RANGE_KEYS.forEach(rangeKey => pushBucket(formData.rateRanges?.ODD?.[rangeKey]));
+    if (formData.cardType === APPLE_CARD_TYPE) {
+      (['VERTICAL', 'HORIZONTAL'] as const).forEach(category => {
+        RATE_RANGE_KEYS.forEach(rangeKey => pushBucket(formData.rateRanges?.[category]?.[rangeKey]));
+      });
+      ODD_RANGE_KEYS.forEach(rangeKey => pushBucket(formData.rateRanges?.ODD?.[rangeKey]));
+    } else {
+      // Non-Apple rates live in the VERTICAL bucket (the backend's default category).
+      RATE_RANGE_KEYS.forEach(rangeKey => pushBucket(formData.rateRanges?.VERTICAL?.[rangeKey]));
+    }
 
     return values;
   };
@@ -497,38 +503,54 @@ export function GiftCardRates() {
     </table>
   );
 
-  // Renders the three category sections (Vertical / Horizontal / Odd Number) for
-  // EVERY card type — the backend GiftCardPrice schema only stores category-nested
-  // buckets, so the old flat editor's writes were silently dropped by Mongoose.
-  const renderRateRangesSection = () => (
-    <div className="space-y-4">
-      {RATE_CATEGORIES.map(category => (
-        <div key={category} className="border rounded-lg overflow-hidden">
-          <div className="bg-gray-50 px-3 py-2 border-b">
-            <div className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>{CATEGORY_LABELS[category]}</div>
-            {category === 'ODD' && (
-              <p className="text-xs mt-1" style={{ color: 'var(--warning)' }}>{ODD_CATEGORY_HELP_TEXT}</p>
-            )}
-          </div>
-          {category === 'ODD' ? (
-            renderRangeRows(
-              ODD_RANGE_KEYS,
-              ODD_RANGE_LABELS,
-              (rangeKey) => formData.rateRanges?.ODD?.[rangeKey],
-              (rangeKey, field, value) => updateOddRateRange(rangeKey, field, value)
-            )
-          ) : (
-            renderRangeRows(
-              RATE_RANGE_KEYS,
-              RATE_RANGE_LABELS,
-              (rangeKey) => formData.rateRanges?.[category]?.[rangeKey],
-              (rangeKey, field, value) => updateCategoryRateRange(category, rangeKey, field, value)
-            )
+  // Apple: three category sections (Vertical / Horizontal / Odd Number).
+  // Every other card type: one plain rate table. Its values are stored in the
+  // VERTICAL bucket — the backend's default category and the only shape the
+  // GiftCardPrice schema persists (flat keys get dropped by Mongoose).
+  const renderRateRangesSection = () => {
+    if (formData.cardType !== APPLE_CARD_TYPE) {
+      return (
+        <div className="border rounded-lg overflow-hidden">
+          {renderRangeRows(
+            RATE_RANGE_KEYS,
+            RATE_RANGE_LABELS,
+            (rangeKey) => formData.rateRanges?.VERTICAL?.[rangeKey],
+            (rangeKey, field, value) => updateCategoryRateRange('VERTICAL', rangeKey, field, value)
           )}
         </div>
-      ))}
-    </div>
-  );
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        {RATE_CATEGORIES.map(category => (
+          <div key={category} className="border rounded-lg overflow-hidden">
+            <div className="bg-gray-50 px-3 py-2 border-b">
+              <div className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>{CATEGORY_LABELS[category]}</div>
+              {category === 'ODD' && (
+                <p className="text-xs mt-1" style={{ color: 'var(--warning)' }}>{ODD_CATEGORY_HELP_TEXT}</p>
+              )}
+            </div>
+            {category === 'ODD' ? (
+              renderRangeRows(
+                ODD_RANGE_KEYS,
+                ODD_RANGE_LABELS,
+                (rangeKey) => formData.rateRanges?.ODD?.[rangeKey],
+                (rangeKey, field, value) => updateOddRateRange(rangeKey, field, value)
+              )
+            ) : (
+              renderRangeRows(
+                RATE_RANGE_KEYS,
+                RATE_RANGE_LABELS,
+                (rangeKey) => formData.rateRanges?.[category]?.[rangeKey],
+                (rangeKey, field, value) => updateCategoryRateRange(category, rangeKey, field, value)
+              )
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   // Determines which Apple category buckets have at least one rate value set,
   // for the compact "categories configured" indicator in the rates table.
@@ -747,7 +769,7 @@ export function GiftCardRates() {
                           {rate.vanillaType && (
                             <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Type: {rate.vanillaType}</div>
                           )}
-                          {(() => {
+                          {rate.cardType === APPLE_CARD_TYPE && (() => {
                             const configured = getConfiguredCategories(rate);
                             return configured.length > 0 ? (
                               <div className="text-xs mt-0.5" style={{ color: '#7C3AED' }}>
@@ -768,6 +790,13 @@ export function GiftCardRates() {
                       <td className="p-3">
                         <div className="space-y-0.5">
                           {(() => {
+                            if (rate.cardType !== APPLE_CARD_TYPE) {
+                              // Non-Apple: one rate table (stored in the VERTICAL bucket)
+                              const summary = summarizeCategoryRates(rate, 'VERTICAL');
+                              return summary === '—'
+                                ? <span style={{ color: 'var(--muted-foreground)' }}>No rates set</span>
+                                : <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>{summary}</div>;
+                            }
                             const configured = getConfiguredCategories(rate);
                             if (configured.length === 0) {
                               return <span style={{ color: 'var(--muted-foreground)' }}>No rates set</span>;
@@ -965,10 +994,12 @@ export function GiftCardRates() {
             {/* Rate Ranges Section - grouped by category (Vertical/Horizontal/Odd) for every card type */}
             <div className="col-span-2">
               <Label style={{ color: 'var(--foreground)' }} className="text-base font-semibold">
-                Rate Ranges by Category
+                {formData.cardType === APPLE_CARD_TYPE ? 'Rate Ranges by Category' : 'Rate Ranges'}
               </Label>
               <p className="text-xs mb-3" style={{ color: 'var(--muted-foreground)' }}>
-                Rates are set per format (Physical / E-Code) within each category and value range.
+                {formData.cardType === APPLE_CARD_TYPE
+                  ? 'Apple rates are set per format (Physical / E-Code) within each category and value range.'
+                  : 'Rates are set per format (Physical / E-Code) for each value range.'}
               </p>
 
               {renderRateRangesSection()}
@@ -1013,10 +1044,12 @@ export function GiftCardRates() {
 
             <div className="col-span-2">
               <Label style={{ color: 'var(--foreground)' }} className="text-base font-semibold">
-                Rate Ranges by Category
+                {formData.cardType === APPLE_CARD_TYPE ? 'Rate Ranges by Category' : 'Rate Ranges'}
               </Label>
               <p className="text-xs mb-3" style={{ color: 'var(--muted-foreground)' }}>
-                Rates are set per format (Physical / E-Code) within each category and value range.
+                {formData.cardType === APPLE_CARD_TYPE
+                  ? 'Apple rates are set per format (Physical / E-Code) within each category and value range.'
+                  : 'Rates are set per format (Physical / E-Code) for each value range.'}
               </p>
 
               {renderRateRangesSection()}
