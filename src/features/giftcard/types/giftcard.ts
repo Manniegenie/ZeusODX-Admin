@@ -193,6 +193,7 @@ export type RejectionReason =
   | 'EXPIRED'
   | 'INVALID_ECODE'
   | 'DUPLICATE_ECODE'
+  | 'INFECTED_CARD'
   | 'OTHER';
 
 export interface GiftCardSubmission {
