@@ -43,6 +43,7 @@ const REJECTION_REASONS: { value: RejectionReason; label: string }[] = [
   { value: 'EXPIRED', label: 'Expired Card' },
   { value: 'INVALID_ECODE', label: 'Invalid E-Code' },
   { value: 'DUPLICATE_ECODE', label: 'Duplicate E-Code' },
+  { value: 'INFECTED_CARD', label: 'Infected Card' },
   { value: 'OTHER', label: 'Other Reason' },
 ];
 
@@ -502,7 +503,7 @@ export function GiftCardSubmissionDetail() {
             {submission.imageUrls.map((url, index) => (
               <div
                 key={index}
-                className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 cursor-pointer hover:shadow-lg transition-shadow"
+                className="group relative aspect-square rounded-lg overflow-hidden border border-gray-200 cursor-pointer hover:shadow-lg transition-shadow"
                 onClick={() => {
                   setSelectedImage(url);
                   setShowImageDialog(true);
@@ -513,8 +514,10 @@ export function GiftCardSubmissionDetail() {
                   alt={`Card image ${index + 1}`}
                   className="object-cover w-full h-full"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all flex items-center justify-center">
-                  <Eye className="w-8 h-8 text-white opacity-0 hover:opacity-100 transition-opacity" />
+                {/* bg-black/0 (not the removed v4 bg-opacity-*) — a solid bg-black here
+                    blacked out every thumbnail */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center">
+                  <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             ))}
