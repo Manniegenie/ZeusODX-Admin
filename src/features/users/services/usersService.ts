@@ -209,4 +209,40 @@ export async function checkUserBlocked(email: string) {
   return res.data;
 }
 
+// Admin-granted temporary exception to the daily/monthly KYC spending caps
+// (external transfer, NGNZ withdrawal, internal transfer). Does not bypass
+// KYC level requirements — only the naira ceiling on top of that.
+export async function grantKycLimitBypass(userId: string, durationHours: number, reason: string, twoFAToken?: string) {
+  const token = localStorage.getItem('token');
+  const res = await axios.post(`${BASE_URL}/usermanagement/users/${userId}/kyc-limit-bypass`, { durationHours, reason }, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: token ? `Bearer ${token}` : undefined,
+      ...(twoFAToken ? { 'X-2FA-Token': twoFAToken } : {}),
+    },
+  });
+  return res.data;
+}
+
+export async function revokeKycLimitBypass(userId: string, twoFAToken?: string) {
+  const token = localStorage.getItem('token');
+  const res = await axios.delete(`${BASE_URL}/usermanagement/users/${userId}/kyc-limit-bypass`, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+      ...(twoFAToken ? { 'X-2FA-Token': twoFAToken } : {}),
+    },
+  });
+  return res.data;
+}
+
+export async function getKycLimitBypassStatus(userId: string) {
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${BASE_URL}/usermanagement/users/${userId}/kyc-limit-bypass`, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+  });
+  return res.data;
+}
+
 export default { getUsersSummary, removePasswordPin, fetchUserWallets, deductBalance, getCompleteUserSummary, getUserTransactions, blockUser, unblockUser, checkUserBlocked };

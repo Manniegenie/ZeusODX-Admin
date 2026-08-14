@@ -13,7 +13,8 @@ import {
   Ban,
   LockOpen,
   KeyRound,
-  ShieldOff
+  ShieldOff,
+  ShieldAlert
 } from 'lucide-react';
 import type { User } from '../types/user';
 
@@ -96,6 +97,14 @@ export function UserActions() {
           path: '/user-management/unlock-2fa',
           color: 'text-blue-600',
           bgColor: 'bg-blue-50'
+        },
+        {
+          icon: ShieldAlert,
+          label: 'KYC Limit Bypass',
+          description: 'Grant a temporary exception to daily/monthly spending caps',
+          path: '/user-management/kyc-limit-bypass',
+          color: 'text-orange-700',
+          bgColor: 'bg-orange-100'
         }
       ]
     },
