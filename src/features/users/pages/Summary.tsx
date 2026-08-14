@@ -378,6 +378,16 @@ export function Summary() {
                         </span>
                       </div>
                     </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9 w-full mt-1"
+                      onClick={() => navigate('/user-management/kyc-limit-bypass', {
+                        state: { user: { _id: userData._id, email: userData.email, kycLevel: userData.kycLevel } }
+                      })}
+                    >
+                      Manage KYC Limit Bypass
+                    </Button>
                   </div>
 
                   {/* KYC Details */}
