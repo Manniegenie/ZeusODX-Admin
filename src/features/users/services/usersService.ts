@@ -211,8 +211,10 @@ export async function checkUserBlocked(email: string) {
 
 // Admin-granted temporary exception to the daily/monthly KYC spending caps
 // (external transfer, NGNZ withdrawal, internal transfer). Does not bypass
-// KYC level requirements — only the naira ceiling on top of that.
-export async function grantKycLimitBypass(userId: string, durationHours: number, reason: string, twoFAToken?: string) {
+// KYC level requirements — only the naira ceiling on top of that. Covers both
+// a custom-duration/reason grant and a quick "reset daily limit" (omit reason,
+// backend defaults to 24h with a generic audit note).
+export async function grantKycLimitBypass(userId: string, durationHours: number, reason?: string, twoFAToken?: string) {
   const token = localStorage.getItem('token');
   const res = await axios.post(`${BASE_URL}/usermanagement/users/${userId}/kyc-limit-bypass`, { durationHours, reason }, {
     headers: {

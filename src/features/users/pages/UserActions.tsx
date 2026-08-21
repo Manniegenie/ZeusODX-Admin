@@ -101,7 +101,7 @@ export function UserActions() {
         {
           icon: ShieldAlert,
           label: 'KYC Limit Bypass',
-          description: 'Grant a temporary exception to daily/monthly spending caps',
+          description: 'Quick daily reset or a custom-duration exception to spending caps',
           path: '/user-management/kyc-limit-bypass',
           color: 'text-orange-700',
           bgColor: 'bg-orange-100'

@@ -94,6 +94,13 @@ export function KycLimitBypass() {
     setConfirmOpen(true);
   };
 
+  const handleQuickReset = () => {
+    setDurationHours('24');
+    setReason('Daily KYC limit reset by admin');
+    setPendingAction('grant');
+    setConfirmOpen(true);
+  };
+
   const handleRevokeClick = () => {
     setPendingAction('revoke');
     setConfirmOpen(true);
@@ -179,6 +186,17 @@ export function KycLimitBypass() {
                 Revoke Active Bypass
               </Button>
             )}
+
+            <Button
+              className="w-full h-10 bg-emerald-600 hover:bg-emerald-700 text-white"
+              onClick={handleQuickReset}
+              disabled={actionLoading}
+            >
+              Quick Reset (24h, no form needed)
+            </Button>
+            <p className="text-xs text-gray-500 -mt-3">
+              Same mechanism as below, pre-filled with a 24-hour duration and a generic reason — use this for the common "let them transact again today" case.
+            </p>
 
             <div className="w-full border-t pt-5 space-y-5">
               <div className="w-full space-y-2">
