@@ -135,6 +135,7 @@ const navItems: NavItem[] = [
     sub_menu: [
       { title: 'Top Traders', path: '/analytics/top-traders' },
       { title: 'Token Volume', path: '/analytics/tokens' },
+      { title: 'Referrals', path: '/analytics/referrals' },
     ],
   },
   {

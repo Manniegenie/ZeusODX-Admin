@@ -46,6 +46,8 @@ import { OnrampManagement } from '@/features/fees/pages/OnrampManagement';
 import { OfframpManagement } from '@/features/fees/pages/OfframpManagement';
 import { MinimumWithdrawal } from '@/features/fees/pages/MinimumWithdrawal';
 import { PnlDashboard } from '@/features/pnl/pages/PnlDashboard';
+import { Referrals } from '@/features/referrals/pages/Referrals';
+import { ReferralDetail } from '@/features/referrals/pages/ReferralDetail';
 import { GiftCardSubmissions } from '@/features/giftcard/pages/GiftCardSubmissions';
 import { GiftCardSubmissionDetail } from '@/features/giftcard/pages/GiftCardSubmissionDetail';
 import { AdminSettings } from '@/features/admin-settings/pages/AdminSettings';
@@ -266,6 +268,14 @@ export const router = createBrowserRouter([
           {
             path: 'analytics/pnl',
             element: <PnlDashboard />,
+          },
+          {
+            path: 'analytics/referrals',
+            element: <Referrals />,
+          },
+          {
+            path: 'analytics/referrals/:userId',
+            element: <ReferralDetail />,
           },
           {
             path: 'admin-settings',
