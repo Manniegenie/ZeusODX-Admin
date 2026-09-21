@@ -164,6 +164,7 @@ const navItems: NavItem[] = [
     sub_menu: [
       { title: 'Monitoring', path: '/audit' },
       { title: 'Audit Logs', path: '/audit/logs', superAdminOnly: true },
+      { title: 'Withdrawal Risk Review', path: '/audit/withdrawal-risk', superAdminOnly: true },
     ],
   },
   {

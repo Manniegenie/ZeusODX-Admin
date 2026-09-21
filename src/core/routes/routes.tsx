@@ -18,6 +18,7 @@ import { FundingAndBalances } from '@/features/funding/pages/FundingAndBalances'
 import { Security } from '@/features/security/pages/Security';
 import { AuditAndMonitoring } from '@/features/audit/pages/AuditAndMonitoring';
 import { AuditLogs } from '@/features/audit/pages/AuditLogs';
+import { WithdrawalRiskReview } from '@/features/audit/pages/WithdrawalRiskReview';
 import { Settings } from '@/features/settings/pages/Settings';
 import { ProfilePage } from '@/features/settings/pages/ProfilePage';
 import { Disable2Fa } from '@/features/users/pages/Disable2Fa';
@@ -228,6 +229,10 @@ export const router = createBrowserRouter([
           {
             path: 'audit/logs',
             element: <AuditLogs />,
+          },
+          {
+            path: 'audit/withdrawal-risk',
+            element: <WithdrawalRiskReview />,
           },
           {
             path: 'notifications',
