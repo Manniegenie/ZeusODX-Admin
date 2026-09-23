@@ -10,6 +10,7 @@ export interface AuditLog {
   adminRole: string;
   method: string;
   route: string;
+  category: string;
   action: string;
   requestBody?: Record<string, unknown>;
   targetUserId?: string;
@@ -40,6 +41,7 @@ export async function getAuditLogs(params?: {
   adminEmail?: string;
   adminRole?: string;
   action?: string;
+  category?: string;
   method?: string;
   from?: string;
   to?: string;
@@ -50,4 +52,29 @@ export async function getAuditLogs(params?: {
     headers: { Authorization: token ? `Bearer ${token}` : undefined },
   });
   return res.data as AuditLogsResponse;
+}
+
+export interface AuditBreakdownCategory {
+  _id: string; // category name
+  total: number;
+  lastAt: string;
+  actions: { action: string; count: number }[];
+}
+
+export interface AuditBreakdownAdmin {
+  _id: { adminId: string; adminName: string; adminEmail: string; adminRole: string };
+  count: number;
+  lastAt: string;
+}
+
+export async function getAuditBreakdown(params?: {
+  from?: string;
+  to?: string;
+}): Promise<{ success: boolean; byCategory: AuditBreakdownCategory[]; topAdmins: AuditBreakdownAdmin[] }> {
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${BASE_URL}/audit-logs/breakdown`, {
+    params,
+    headers: { Authorization: token ? `Bearer ${token}` : undefined },
+  });
+  return res.data;
 }

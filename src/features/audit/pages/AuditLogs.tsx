@@ -1,68 +1,52 @@
-import { useContext, useEffect, useState, useCallback } from 'react';
+import { useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { usePermissions } from '@/core/hooks/usePermissions';
-import { getAuditLogs, type AuditLog } from '../services/auditService';
+import { getAuditLogs, getAuditBreakdown, type AuditLog, type AuditBreakdownCategory } from '../services/auditService';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
   Search, RefreshCw, ChevronLeft, ChevronRight,
-  UserX, UserCheck, DollarSign, Shield, Settings,
-  Eye, Trash2, Edit, PlusCircle, Lock, Unlock,
-  AlertTriangle, CheckCircle2, XCircle, ChevronDown, ChevronUp,
-  Wallet, Bell, FileText, Key,
+  UserCog, DollarSign, Shield, Settings,
+  Eye, Trash2, PlusCircle, ShieldAlert,
+  CheckCircle2, XCircle, ChevronDown, ChevronUp,
+  Wallet, Bell, FileText, Users, Gift, Percent,
+  TrendingUp, HeartHandshake, ClipboardList,
 } from 'lucide-react';
 
-// ── Semantic action mapping ──────────────────────────────────────────────────
-// Maps route patterns → { label, icon, category, color }
-type ActionMeta = { label: string; icon: React.ReactNode; category: string; color: string };
+// ── Category presentation — matches the backend's deriveCategory() exactly ──
+type CategoryMeta = { icon: React.ReactNode; color: string };
 
-function getActionMeta(route: string, method: string, action: string): ActionMeta {
-  const r = route.toLowerCase();
+const CATEGORY_META: Record<string, CategoryMeta> = {
+  'User Management':        { icon: <Users className="h-4 w-4" />,          color: 'text-blue-600 bg-blue-50' },
+  'Funding':                { icon: <DollarSign className="h-4 w-4" />,     color: 'text-emerald-600 bg-emerald-50' },
+  'Fees & Rates':           { icon: <Percent className="h-4 w-4" />,        color: 'text-violet-600 bg-violet-50' },
+  'KYC':                    { icon: <UserCog className="h-4 w-4" />,        color: 'text-cyan-600 bg-cyan-50' },
+  'Security':               { icon: <ShieldAlert className="h-4 w-4" />,    color: 'text-rose-600 bg-rose-50' },
+  'Admin Accounts':         { icon: <Shield className="h-4 w-4" />,         color: 'text-red-600 bg-red-50' },
+  'Content':                { icon: <FileText className="h-4 w-4" />,      color: 'text-sky-600 bg-sky-50' },
+  'Notifications':          { icon: <Bell className="h-4 w-4" />,          color: 'text-amber-600 bg-amber-50' },
+  'Gift Cards':             { icon: <Gift className="h-4 w-4" />,          color: 'text-pink-600 bg-pink-50' },
+  'Wallets':                { icon: <Wallet className="h-4 w-4" />,        color: 'text-indigo-600 bg-indigo-50' },
+  'Transactions':           { icon: <ClipboardList className="h-4 w-4" />, color: 'text-slate-600 bg-slate-100' },
+  'Analytics':              { icon: <TrendingUp className="h-4 w-4" />,    color: 'text-teal-600 bg-teal-50' },
+  'Referrals':              { icon: <HeartHandshake className="h-4 w-4" />,color: 'text-orange-600 bg-orange-50' },
+  'Withdrawal Risk Review': { icon: <ShieldAlert className="h-4 w-4" />,    color: 'text-red-700 bg-red-50' },
+  'Audit':                  { icon: <ClipboardList className="h-4 w-4" />, color: 'text-gray-600 bg-gray-100' },
+  'Other':                  { icon: <Settings className="h-4 w-4" />,      color: 'text-gray-500 bg-gray-50' },
+};
+
+function getCategoryMeta(category?: string): CategoryMeta {
+  return CATEGORY_META[category || 'Other'] ?? CATEGORY_META.Other;
+}
+
+function methodIcon(method: string) {
   const m = method.toUpperCase();
-
-  if (r.includes('blockuser') || r.includes('block-user'))
-    return { label: 'Blocked user', icon: <UserX className="h-4 w-4" />, category: 'User', color: 'text-red-600 bg-red-50' };
-  if (r.includes('unlockaccount') || r.includes('unlock-pin') || r.includes('unlock-2fa'))
-    return { label: 'Unlocked account', icon: <Unlock className="h-4 w-4" />, category: 'User', color: 'text-green-600 bg-green-50' };
-  if (r.includes('deleteuser') || r.includes('delete-user'))
-    return { label: 'Deleted user', icon: <Trash2 className="h-4 w-4" />, category: 'User', color: 'text-red-700 bg-red-50' };
-  if (r.includes('delete-pin') || r.includes('deletepin'))
-    return { label: 'Removed PIN', icon: <Key className="h-4 w-4" />, category: 'User', color: 'text-orange-600 bg-orange-50' };
-  if (r.includes('fund') || r.includes('funduser'))
-    return { label: 'Funded user', icon: <DollarSign className="h-4 w-4" />, category: 'Funding', color: 'text-emerald-600 bg-emerald-50' };
-  if (r.includes('deduct') || r.includes('pending'))
-    return { label: 'Adjusted balance', icon: <Wallet className="h-4 w-4" />, category: 'Funding', color: 'text-amber-600 bg-amber-50' };
-  if (r.includes('kyc'))
-    return { label: 'KYC review', icon: <UserCheck className="h-4 w-4" />, category: 'KYC', color: 'text-blue-600 bg-blue-50' };
-  if (r.includes('crypto-fee') || r.includes('set-fee'))
-    return { label: m === 'DELETE' ? 'Deleted fee' : m === 'POST' ? 'Created fee' : 'Updated fee', icon: <Edit className="h-4 w-4" />, category: 'Fees', color: 'text-violet-600 bg-violet-50' };
-  if (r.includes('min-withdrawal'))
-    return { label: 'Updated withdrawal limit', icon: <Shield className="h-4 w-4" />, category: 'Fees', color: 'text-violet-600 bg-violet-50' };
-  if (r.includes('marker') || r.includes('pricemarkdown') || r.includes('price-markdown'))
-    return { label: 'Updated price markdown', icon: <Settings className="h-4 w-4" />, category: 'Fees', color: 'text-violet-600 bg-violet-50' };
-  if (r.includes('swapmarkdown') || r.includes('nairamarkup'))
-    return { label: 'Updated rate/markup', icon: <Settings className="h-4 w-4" />, category: 'Fees', color: 'text-violet-600 bg-violet-50' };
-  if (r.includes('notification') || r.includes('push'))
-    return { label: 'Sent notification', icon: <Bell className="h-4 w-4" />, category: 'Content', color: 'text-sky-600 bg-sky-50' };
-  if (r.includes('banner'))
-    return { label: 'Managed banner', icon: <FileText className="h-4 w-4" />, category: 'Content', color: 'text-sky-600 bg-sky-50' };
-  if (r.includes('blog'))
-    return { label: 'Managed blog', icon: <FileText className="h-4 w-4" />, category: 'Content', color: 'text-sky-600 bg-sky-50' };
-  if (r.includes('2fa') || r.includes('2-fa'))
-    return { label: '2FA action', icon: <Lock className="h-4 w-4" />, category: 'Security', color: 'text-rose-600 bg-rose-50' };
-  if (r.includes('permission'))
-    return { label: 'Updated permissions', icon: <Shield className="h-4 w-4" />, category: 'Security', color: 'text-rose-600 bg-rose-50' };
-  if (r.includes('registeradmin') || r.includes('adminsign'))
-    return { label: 'Admin auth', icon: <Key className="h-4 w-4" />, category: 'Security', color: 'text-rose-600 bg-rose-50' };
-  if (m === 'GET')
-    return { label: action || 'Viewed data', icon: <Eye className="h-4 w-4" />, category: 'Read', color: 'text-gray-500 bg-gray-50' };
-  if (m === 'POST')
-    return { label: action || 'Created record', icon: <PlusCircle className="h-4 w-4" />, category: 'Write', color: 'text-indigo-600 bg-indigo-50' };
-  if (m === 'DELETE')
-    return { label: action || 'Deleted record', icon: <Trash2 className="h-4 w-4" />, category: 'Write', color: 'text-red-600 bg-red-50' };
-  return { label: action || 'Admin action', icon: <Settings className="h-4 w-4" />, category: 'Write', color: 'text-gray-600 bg-gray-50' };
+  if (m === 'GET') return <Eye className="h-3 w-3" />;
+  if (m === 'DELETE') return <Trash2 className="h-3 w-3" />;
+  if (m === 'POST') return <PlusCircle className="h-3 w-3" />;
+  return <Settings className="h-3 w-3" />;
 }
 
 const ROLE_VARIANTS: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
@@ -92,16 +76,86 @@ function fullDate(iso: string): string {
 
 function sanitizeBody(body?: Record<string, unknown>): Record<string, unknown> | null {
   if (!body || Object.keys(body).length === 0) return null;
-  const hidden = new Set(['password', 'passwordpin', 'pin', 'twoFactorCode', 'token', 'secret', 'otp']);
+  const hidden = new Set(['password', 'passwordpin', 'pin', 'twofactorcode', 'token', 'secret', 'otp']);
   return Object.fromEntries(
     Object.entries(body).map(([k, v]) => [k, hidden.has(k.toLowerCase()) ? '••••••' : v])
+  );
+}
+
+// ── Breakdown panel ──────────────────────────────────────────────────────────
+function BreakdownPanel({
+  categories,
+  activeCategory,
+  onSelectCategory,
+}: {
+  categories: AuditBreakdownCategory[];
+  activeCategory: string;
+  onSelectCategory: (category: string) => void;
+}) {
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const grandTotal = categories.reduce((sum, c) => sum + c.total, 0);
+
+  if (categories.length === 0) return null;
+
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-gray-700">Activity by category</h3>
+          <span className="text-xs text-gray-400">{grandTotal.toLocaleString()} total actions · click a card to filter the list below</span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          {categories.map(cat => {
+            const name = cat._id || 'Other';
+            const meta = getCategoryMeta(name);
+            const pct = grandTotal ? Math.round((cat.total / grandTotal) * 100) : 0;
+            const isOpen = expanded === name;
+            const isActive = activeCategory === name;
+            return (
+              <div
+                key={name}
+                className={`text-left rounded-lg border p-3 transition-colors cursor-pointer hover:bg-gray-50/80 ${isActive ? 'ring-2 ring-primary/50 bg-primary/5' : ''}`}
+                onClick={() => onSelectCategory(isActive ? '' : name)}
+              >
+                <div className="flex items-center justify-between">
+                  <span className={`rounded-md p-1.5 ${meta.color}`}>{meta.icon}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-400">{pct}%</span>
+                    <button
+                      type="button"
+                      className="text-gray-300 hover:text-gray-600"
+                      title="Preview top actions"
+                      onClick={e => { e.stopPropagation(); setExpanded(isOpen ? null : name); }}
+                    >
+                      {isOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                    </button>
+                  </div>
+                </div>
+                <p className="text-sm font-semibold text-gray-900 mt-2">{name}</p>
+                <p className="text-xs text-gray-500">{cat.total.toLocaleString()} actions · last {relativeTime(cat.lastAt)}</p>
+                {isOpen && (
+                  <div className="mt-2 pt-2 border-t space-y-1" onClick={e => e.stopPropagation()}>
+                    {cat.actions.slice(0, 6).map(a => (
+                      <div key={a.action} className="flex items-center justify-between text-[11px] text-gray-600">
+                        <span className="truncate mr-2">{a.action}</span>
+                        <span className="text-gray-400 shrink-0">{a.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
 // ── Row component ────────────────────────────────────────────────────────────
 function LogRow({ log }: { log: AuditLog }) {
   const [expanded, setExpanded] = useState(false);
-  const meta = getActionMeta(log.route, log.method, log.action);
+  const meta = getCategoryMeta(log.category);
   const success = log.statusCode < 400;
   const cleanBody = sanitizeBody(log.requestBody);
 
@@ -111,7 +165,7 @@ function LogRow({ log }: { log: AuditLog }) {
         className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 px-4 py-3 cursor-pointer items-start"
         onClick={() => setExpanded(e => !e)}
       >
-        {/* Action icon */}
+        {/* Category icon */}
         <div className={`mt-0.5 rounded-lg p-2 shrink-0 ${meta.color}`}>
           {meta.icon}
         </div>
@@ -119,8 +173,9 @@ function LogRow({ log }: { log: AuditLog }) {
         {/* Main content */}
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold text-gray-900">{meta.label}</span>
-            <Badge variant="outline" className="text-[10px] px-1.5 py-0 capitalize">{meta.category}</Badge>
+            <span className="text-sm font-semibold text-gray-900">{log.action}</span>
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0">{log.category || 'Other'}</Badge>
+            <span className="text-gray-300">{methodIcon(log.method)}</span>
           </div>
           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
             <span className="text-xs text-gray-600 font-medium">{log.adminName || log.adminEmail}</span>
@@ -220,9 +275,11 @@ export function AuditLogs() {
   const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 50, pages: 1 });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [breakdown, setBreakdown] = useState<AuditBreakdownCategory[]>([]);
+  const [breakdownLoading, setBreakdownLoading] = useState(false);
 
   const [filters, setFilters] = useState({
-    adminEmail: '', action: '', method: '', adminRole: '', from: '', to: '',
+    adminEmail: '', action: '', method: '', adminRole: '', category: '', from: '', to: '',
   });
 
   useEffect(() => {
@@ -237,6 +294,7 @@ export function AuditLogs() {
       const params: Record<string, string | number> = { page, limit: pagination.limit };
       if (filters.adminEmail) params.adminEmail = filters.adminEmail;
       if (filters.action)     params.action     = filters.action;
+      if (filters.category)   params.category   = filters.category;
       if (filters.method)     params.method     = filters.method;
       if (filters.adminRole)  params.adminRole  = filters.adminRole;
       if (filters.from)       params.from       = filters.from;
@@ -251,9 +309,38 @@ export function AuditLogs() {
     }
   }, [filters, pagination.limit]);
 
+  const fetchBreakdown = useCallback(async () => {
+    setBreakdownLoading(true);
+    try {
+      const data = await getAuditBreakdown(filters.from || filters.to ? { from: filters.from, to: filters.to } : undefined);
+      setBreakdown(data.byCategory || []);
+    } catch {
+      // Non-critical — the log list still works without the breakdown panel.
+    } finally {
+      setBreakdownLoading(false);
+    }
+  }, [filters.from, filters.to]);
+
   useEffect(() => {
+    if (isSuperAdmin) {
+      fetchLogs(1);
+      fetchBreakdown();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuperAdmin]);
+
+  // Category clicks from the breakdown panel filter immediately, unlike the
+  // other filters which wait for the explicit Search button. Skips the
+  // initial mount — that fetch is already handled by the effect above.
+  const isFirstCategoryRender = useRef(true);
+  useEffect(() => {
+    if (isFirstCategoryRender.current) {
+      isFirstCategoryRender.current = false;
+      return;
+    }
     if (isSuperAdmin) fetchLogs(1);
-  }, [isSuperAdmin, fetchLogs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.category]);
 
   if (!isSuperAdmin) {
     return (
@@ -266,9 +353,12 @@ export function AuditLogs() {
   const handleFilterChange = (key: string, value: string) =>
     setFilters(prev => ({ ...prev, [key]: value }));
 
-  const handleSearch = () => fetchLogs(1);
+  const handleSearch = () => { fetchLogs(1); fetchBreakdown(); };
   const handleClear = () => {
-    setFilters({ adminEmail: '', action: '', method: '', adminRole: '', from: '', to: '' });
+    setFilters({ adminEmail: '', action: '', method: '', adminRole: '', category: '', from: '', to: '' });
+  };
+  const handleCategoryClick = (category: string) => {
+    setFilters(prev => ({ ...prev, category }));
   };
 
   const successCount = logs.filter(l => l.statusCode < 400).length;
@@ -276,6 +366,13 @@ export function AuditLogs() {
 
   return (
     <div className="space-y-4">
+
+      {/* Breakdown by category */}
+      {breakdownLoading && breakdown.length === 0 ? (
+        <Card><CardContent className="p-4 text-xs text-gray-400">Loading breakdown…</CardContent></Card>
+      ) : (
+        <BreakdownPanel categories={breakdown} activeCategory={filters.category} onSelectCategory={handleCategoryClick} />
+      )}
 
       {/* Summary strip */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -295,7 +392,7 @@ export function AuditLogs() {
         </Card>
         <Card className="p-4">
           <p className="text-xs text-gray-500 flex items-center gap-1">
-            <AlertTriangle className="h-3 w-3 text-red-500" /> Failed
+            <XCircle className="h-3 w-3 text-red-500" /> Failed
           </p>
           <p className="text-2xl font-bold text-red-600">{failCount}</p>
         </Card>
@@ -303,7 +400,7 @@ export function AuditLogs() {
 
       {/* Filters */}
       <Card className="p-4">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
             <Input
@@ -321,6 +418,17 @@ export function AuditLogs() {
             onChange={e => handleFilterChange('action', e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSearch()}
           />
+          <select
+            className="w-full h-8 px-3 text-sm border rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-primary"
+            value={filters.category}
+            onChange={e => handleFilterChange('category', e.target.value)}
+          >
+            <option value="">All categories</option>
+            {Object.keys(CATEGORY_META).filter(c => c !== 'Other').map(c => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+            <option value="Other">Other</option>
+          </select>
           <select
             className="w-full h-8 px-3 text-sm border rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-primary"
             value={filters.method}
@@ -356,12 +464,20 @@ export function AuditLogs() {
             onChange={e => handleFilterChange('to', e.target.value)}
           />
         </div>
+        {filters.category && (
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-xs text-gray-400">Filtering by:</span>
+            <Badge variant="outline" className="text-xs cursor-pointer" onClick={() => handleCategoryClick(filters.category)}>
+              {filters.category} ✕
+            </Badge>
+          </div>
+        )}
         <div className="flex gap-2 mt-3">
           <Button size="sm" onClick={handleSearch} disabled={loading}>
             <Search className="w-3.5 h-3.5 mr-1.5" /> Search
           </Button>
           <Button size="sm" variant="outline" onClick={handleClear}>Clear</Button>
-          <Button size="sm" variant="outline" onClick={() => fetchLogs(pagination.page)} disabled={loading}>
+          <Button size="sm" variant="outline" onClick={() => { fetchLogs(pagination.page); fetchBreakdown(); }} disabled={loading}>
             <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
           </Button>
         </div>
