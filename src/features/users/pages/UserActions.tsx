@@ -14,7 +14,8 @@ import {
   LockOpen,
   KeyRound,
   ShieldOff,
-  ShieldAlert
+  ShieldAlert,
+  Mail
 } from 'lucide-react';
 import type { User } from '../types/user';
 
@@ -103,6 +104,14 @@ export function UserActions() {
           label: 'KYC Limit Bypass',
           description: 'Quick daily reset or a custom-duration exception to spending caps',
           path: '/user-management/kyc-limit-bypass',
+          color: 'text-orange-700',
+          bgColor: 'bg-orange-100'
+        },
+        {
+          icon: Mail,
+          label: 'Change Email',
+          description: 'Update the account email address (resets email verification)',
+          path: '/user-management/change-email',
           color: 'text-orange-700',
           bgColor: 'bg-orange-100'
         }

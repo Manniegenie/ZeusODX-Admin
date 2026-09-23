@@ -247,4 +247,19 @@ export async function getKycLimitBypassStatus(userId: string) {
   return res.data;
 }
 
+// Admin override to change a user's email address. Requires 2FA. Resets the
+// user's emailVerified status - they must re-verify the new address through
+// the app's normal flow before it counts toward KYC.
+export async function changeUserEmail(userId: string, newEmail: string, reason: string, twoFAToken?: string) {
+  const token = localStorage.getItem('token');
+  const res = await axios.post(`${BASE_URL}/usermanagement/users/${userId}/email`, { newEmail, reason }, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: token ? `Bearer ${token}` : undefined,
+      ...(twoFAToken ? { 'X-2FA-Token': twoFAToken } : {}),
+    },
+  });
+  return res.data;
+}
+
 export default { getUsersSummary, removePasswordPin, fetchUserWallets, deductBalance, getCompleteUserSummary, getUserTransactions, blockUser, unblockUser, checkUserBlocked };

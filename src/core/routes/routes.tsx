@@ -37,6 +37,7 @@ import { UnlockPin } from '@/features/users/pages/UnlockPin';
 import { Unlock2FA } from '@/features/users/pages/Unlock2FA';
 import { ResetUserPin } from '@/features/users/pages/ResetUserPin';
 import { KycLimitBypass } from '@/features/users/pages/KycLimitBypass';
+import { ChangeUserEmail } from '@/features/users/pages/ChangeUserEmail';
 import { KYCReview } from '@/features/kyc/pages/KYCReview';
 import { KYCDetail } from '@/features/kyc/pages/KYCDetail';
 import { NotificationsManagement } from '@/features/notifications/pages/NotificationsManagement';
@@ -149,6 +150,10 @@ export const router = createBrowserRouter([
           {
             path: 'user-management/kyc-limit-bypass',
             element: <KycLimitBypass />,
+          },
+          {
+            path: 'user-management/change-email',
+            element: <ChangeUserEmail />,
           },
           {
             path: 'fees-rates',
