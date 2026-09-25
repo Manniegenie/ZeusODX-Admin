@@ -262,4 +262,23 @@ export async function changeUserEmail(userId: string, newEmail: string, reason: 
   return res.data;
 }
 
+export async function changeUserName(
+  userId: string,
+  firstname: string,
+  middlename: string,
+  lastname: string,
+  reason: string,
+  twoFAToken?: string
+) {
+  const token = localStorage.getItem('token');
+  const res = await axios.post(`${BASE_URL}/usermanagement/users/${userId}/name`, { firstname, middlename, lastname, reason }, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: token ? `Bearer ${token}` : undefined,
+      ...(twoFAToken ? { 'X-2FA-Token': twoFAToken } : {}),
+    },
+  });
+  return res.data;
+}
+
 export default { getUsersSummary, removePasswordPin, fetchUserWallets, deductBalance, getCompleteUserSummary, getUserTransactions, blockUser, unblockUser, checkUserBlocked };

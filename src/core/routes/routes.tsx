@@ -38,6 +38,7 @@ import { Unlock2FA } from '@/features/users/pages/Unlock2FA';
 import { ResetUserPin } from '@/features/users/pages/ResetUserPin';
 import { KycLimitBypass } from '@/features/users/pages/KycLimitBypass';
 import { ChangeUserEmail } from '@/features/users/pages/ChangeUserEmail';
+import { ChangeUserName } from '@/features/users/pages/ChangeUserName';
 import { KYCReview } from '@/features/kyc/pages/KYCReview';
 import { KYCDetail } from '@/features/kyc/pages/KYCDetail';
 import { NotificationsManagement } from '@/features/notifications/pages/NotificationsManagement';
@@ -154,6 +155,10 @@ export const router = createBrowserRouter([
           {
             path: 'user-management/change-email',
             element: <ChangeUserEmail />,
+          },
+          {
+            path: 'user-management/change-name',
+            element: <ChangeUserName />,
           },
           {
             path: 'fees-rates',

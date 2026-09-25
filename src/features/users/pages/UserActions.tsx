@@ -15,7 +15,8 @@ import {
   KeyRound,
   ShieldOff,
   ShieldAlert,
-  Mail
+  Mail,
+  UserCog
 } from 'lucide-react';
 import type { User } from '../types/user';
 
@@ -112,6 +113,14 @@ export function UserActions() {
           label: 'Change Email',
           description: 'Update the account email address (resets email verification)',
           path: '/user-management/change-email',
+          color: 'text-orange-700',
+          bgColor: 'bg-orange-100'
+        },
+        {
+          icon: UserCog,
+          label: 'Change Name',
+          description: 'Update the legal name on file for this account',
+          path: '/user-management/change-name',
           color: 'text-orange-700',
           bgColor: 'bg-orange-100'
         }
