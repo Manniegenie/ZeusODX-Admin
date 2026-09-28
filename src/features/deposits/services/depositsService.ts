@@ -21,28 +21,35 @@ export async function getWalletBalance(currency?: string): Promise<WalletBalance
 }
 
 export interface ReconciledDeposit {
-  glydeReference: string;
-  merchantReference: string | null;
-  amount: number | null;
-  status: string | null;
-  createdAt: string | null;
-  fee: number | null;
-  credited: boolean;
-  creditedAt: string | null;
-  creditedAmount: number | null;
+  glydeReference?: string | null;
+  amount?: number | null;
+  status?: string | null;
+  createdAt?: string | null;
+  fee?: number | null;
+  credited?: boolean;
+  creditedAt?: string | null;
+  creditedAmount?: number | null;
   user: { id: string; name: string; email: string; phonenumber: string } | null;
   virtualAccountUid: string | null;
+  accountNumber?: string | null;
+  // Present instead of the transaction fields above when this account
+  // couldn't be reached at all on Glyde's side (e.g. an orphaned account).
+  error?: string;
 }
 
 export interface ReconciliationResponse {
   transactions: ReconciledDeposit[];
   uncreditedCount: number;
   page: number;
-  perPage: number;
-  pagination: unknown;
+  limit: number;
+  totalAccounts: number;
+  totalPages: number;
 }
 
-export async function getReconciliation(params?: { page?: number; perPage?: number }): Promise<ReconciliationResponse> {
+// page/limit paginate over OUR virtual accounts (each account's own
+// transaction history is pulled from Glyde per-account, not a global list -
+// see adminRoutes/deposits.js for why).
+export async function getReconciliation(params?: { page?: number; limit?: number }): Promise<ReconciliationResponse> {
   const res = await axios.get(`${BASE_URL}/admin/deposits/reconciliation`, {
     params,
     headers: authHeaders(),

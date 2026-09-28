@@ -79,6 +79,7 @@ function ReconciliationTab() {
   const [data, setData] = useState<ReconciledDeposit[]>([]);
   const [uncreditedCount, setUncreditedCount] = useState(0);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -86,10 +87,11 @@ function ReconciliationTab() {
     setLoading(true);
     setError('');
     try {
-      const res = await getReconciliation({ page: p, perPage: 25 });
+      const res = await getReconciliation({ page: p, limit: 20 });
       setData(res.transactions);
       setUncreditedCount(res.uncreditedCount);
       setPage(res.page);
+      setTotalPages(res.totalPages);
     } catch {
       setError('Failed to load reconciliation data from Glyde.');
     } finally {
@@ -136,10 +138,24 @@ function ReconciliationTab() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.map((row) => (
-                    <tr key={row.glydeReference} className={`border-b last:border-0 ${!row.credited && row.status !== 'failed' ? 'bg-amber-50/60' : ''}`}>
-                      <td className="px-4 py-3 whitespace-nowrap text-gray-600">{formatDate(row.createdAt)}</td>
-                      <td className="px-4 py-3 font-medium">{formatNaira(row.amount)}</td>
+                  {data.map((row, i) => row.error ? (
+                    <tr key={`err-${row.virtualAccountUid}-${i}`} className="border-b last:border-0 bg-red-50/60">
+                      <td className="px-4 py-3 text-gray-500" colSpan={3}>—</td>
+                      <td className="px-4 py-3">
+                        {row.user ? (
+                          <div>
+                            <p className="font-medium">{row.user.name || '—'}</p>
+                            <p className="text-xs text-gray-400">{row.user.email}</p>
+                          </div>
+                        ) : <span className="text-gray-400">Unmatched</span>}
+                        <p className="text-xs text-gray-400">{row.accountNumber}</p>
+                      </td>
+                      <td className="px-4 py-3 text-red-600 text-xs" colSpan={2}>{row.error}</td>
+                    </tr>
+                  ) : (
+                    <tr key={`${row.virtualAccountUid}-${row.glydeReference || i}`} className={`border-b last:border-0 ${!row.credited && row.status !== 'failed' ? 'bg-amber-50/60' : ''}`}>
+                      <td className="px-4 py-3 whitespace-nowrap text-gray-600">{formatDate(row.createdAt ?? null)}</td>
+                      <td className="px-4 py-3 font-medium">{formatNaira(row.amount ?? null)}</td>
                       <td className="px-4 py-3 text-gray-500">{row.fee ? formatNaira(row.fee) : '—'}</td>
                       <td className="px-4 py-3">
                         {row.user ? (
@@ -180,8 +196,8 @@ function ReconciliationTab() {
               <Button size="sm" variant="outline" disabled={page <= 1 || loading} onClick={() => fetchData(page - 1)}>
                 <ChevronLeft className="w-3.5 h-3.5" />
               </Button>
-              <span className="text-xs px-3 py-1.5 text-gray-500">Page {page}</span>
-              <Button size="sm" variant="outline" disabled={loading || data.length < 25} onClick={() => fetchData(page + 1)}>
+              <span className="text-xs px-3 py-1.5 text-gray-500">Page {page} / {totalPages}</span>
+              <Button size="sm" variant="outline" disabled={loading || page >= totalPages} onClick={() => fetchData(page + 1)}>
                 <ChevronRight className="w-3.5 h-3.5" />
               </Button>
             </div>
