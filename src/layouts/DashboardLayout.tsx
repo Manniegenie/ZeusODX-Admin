@@ -28,6 +28,7 @@ import {
   TrendingUp,
   Moon,
   Sun,
+  Landmark,
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -143,6 +144,16 @@ const navItems: NavItem[] = [
     path: '/analytics/marketing',
     icon: <TrendingUp className="w-4 h-4" />,
     featureKey: 'marketingStats',
+  },
+  {
+    title: 'Deposits',
+    path: '/deposits',
+    icon: <Landmark className="w-4 h-4" />,
+    // Reuses the Funding & Balances permission flag - no dedicated
+    // "deposits" flag exists in FeatureAccess yet, and this is the closest
+    // semantic match. Give it its own backend flag later if that access
+    // ever needs to differ from Funding & Balances.
+    featureKey: 'fundingAndBalances',
   },
   {
     title: 'Funding & Balances',
