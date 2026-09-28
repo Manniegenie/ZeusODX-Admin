@@ -176,9 +176,17 @@ function ReconciliationTab() {
                         ) : row.status === 'failed' ? (
                           <span className="text-xs text-gray-400">N/A (failed)</span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-red-600 text-xs font-medium">
-                            <XCircle className="h-3.5 w-3.5" /> Not credited
-                          </span>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="inline-flex items-center gap-1 text-red-600 text-xs font-medium">
+                              <XCircle className="h-3.5 w-3.5" /> Not credited
+                            </span>
+                            {row.blockedReason === 'name_mismatch' && (
+                              <span className="text-[10px] text-red-500 font-semibold uppercase tracking-wide">Sender name mismatch</span>
+                            )}
+                            {row.blockedReason === 'fee_shortfall' && (
+                              <span className="text-[10px] text-gray-400">Amount below fee</span>
+                            )}
+                          </div>
                         )}
                       </td>
                     </tr>
