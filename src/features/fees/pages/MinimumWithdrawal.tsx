@@ -15,25 +15,52 @@ import {
 import type { AppDispatch, RootState } from '@/core/store/store';
 import type { MinimumWithdrawalLimit } from '../services/minimumWithdrawalService';
 
+// These MUST match the real network codes ZeusODX-server's
+// obiex_currency_networks.json actually uses (verified against it directly -
+// confirmed the fees page's DEPOSIT_NETWORK_OPTIONS uses this same
+// vocabulary). The previous version of this list (BITCOIN/ETHEREUM/TRC20/
+// ERC20/POLYGON/BEP20/SOLANA) used a DIFFERENT, invented vocabulary that
+// never matched a real withdrawal request's network field - any limit saved
+// through this page would silently never enforce, since
+// routes/withdraw.js's checkWithdrawalLimits() looks up by the exact
+// currency+network string the client sent.
+//
+// USDC and TON are intentionally left out - they're not present in
+// obiex_currency_networks.json at all right now (a separate, pre-existing
+// gap in the withdrawal config, not something this page can fix).
 const TOKEN_NETWORKS: Record<string, { code: string; label: string }[]> = {
-  BTC:  [{ code: 'BITCOIN',  label: 'Bitcoin (BTC)' }],
-  ETH:  [{ code: 'ETHEREUM', label: 'Ethereum (ERC20)' }],
-  SOL:  [{ code: 'SOLANA',   label: 'Solana' }],
+  BTC: [
+    { code: 'BTC', label: 'Bitcoin Native' },
+    { code: 'BSC', label: 'BSC (BEP20)' },
+  ],
+  ETH: [
+    { code: 'ETH', label: 'Ethereum (ERC20)' },
+    { code: 'BSC', label: 'BSC (BEP20)' },
+    { code: 'ARBITRUM', label: 'Arbitrum One' },
+  ],
+  SOL: [
+    { code: 'SOL', label: 'Solana Native' },
+    { code: 'BSC', label: 'BSC (BEP20)' },
+  ],
   USDT: [
-    { code: 'TRC20',   label: 'Tron (TRC20)' },
-    { code: 'ERC20',   label: 'Ethereum (ERC20)' },
-    { code: 'POLYGON', label: 'Polygon (MATIC)' },
-    { code: 'BEP20',   label: 'BNB Chain (BEP20)' },
+    { code: 'SOL', label: 'Solana' },
+    { code: 'ETH', label: 'Ethereum (ERC20)' },
+    { code: 'BSC', label: 'BSC (BEP20)' },
+    { code: 'TRX', label: 'Tron (TRC20)' },
+    { code: 'MATIC', label: 'Polygon (MATIC)' },
+    { code: 'ARBITRUM', label: 'Arbitrum One' },
+    { code: 'AVAXC', label: 'Avalanche C-Chain' },
   ],
-  USDC: [
-    { code: 'ERC20',   label: 'Ethereum (ERC20)' },
-    { code: 'POLYGON', label: 'Polygon (MATIC)' },
-    { code: 'TRC20',   label: 'Tron (TRC20)' },
+  BNB: [
+    { code: 'BSC', label: 'BSC (BEP20)' },
   ],
-  BNB:  [{ code: 'BEP20',   label: 'BNB Chain (BEP20)' }],
-  MATIC:[{ code: 'POLYGON', label: 'Polygon' }],
-  TRX:  [{ code: 'TRC20',   label: 'Tron (TRC20)' }],
-  TON:  [{ code: 'TON',     label: 'TON' }],
+  TRX: [
+    { code: 'TRX', label: 'Tron (TRC20)' },
+  ],
+  MATIC: [
+    { code: 'ETH', label: 'Ethereum (ERC20)' },
+    { code: 'MATIC', label: 'Polygon Native' },
+  ],
 };
 
 const CURRENCIES = Object.keys(TOKEN_NETWORKS);
