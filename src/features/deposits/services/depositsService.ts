@@ -21,13 +21,16 @@ export async function getWalletBalance(currency?: string): Promise<WalletBalance
 }
 
 export interface ReconciledDeposit {
+  transactionId?: string | null;
   glydeReference?: string | null;
   amount?: number | null;
   status?: string | null;
   createdAt?: string | null;
   fee?: number | null;
   credited?: boolean;
-  blockedReason?: 'name_mismatch' | 'fee_shortfall' | null;
+  blockedReason?: 'name_mismatch' | 'name_unverifiable' | 'fee_shortfall' | null;
+  needsManualReview?: boolean;
+  payerAccountName?: string | null;
   creditedAt?: string | null;
   creditedAmount?: number | null;
   user: { id: string; name: string; email: string; phonenumber: string } | null;
@@ -110,4 +113,23 @@ export async function updateDepositFee(feeAmount: number, isActive?: boolean, de
     headers: authHeaders(),
   });
   return res.data.data as DepositFeeConfig;
+}
+
+// Held-deposit review (name_mismatch / name_unverifiable). Mounted on its
+// own path in the backend with a stricter gate than the rest of
+// /admin/deposits (requireAdmin + canManageBalances + 2FA) since approving
+// one moves real money into a user's balance - a 2FA code is required on
+// every call, same as /fund/fund-user.
+export async function approveHeldDeposit(transactionId: string, twoFAToken: string): Promise<{ success: boolean; message: string }> {
+  const res = await axios.post(`${BASE_URL}/admin/glyde-review/${transactionId}/approve`, {}, {
+    headers: { ...authHeaders(), 'X-2FA-Token': twoFAToken },
+  });
+  return res.data;
+}
+
+export async function rejectHeldDeposit(transactionId: string, twoFAToken: string, reason?: string): Promise<{ success: boolean; message: string }> {
+  const res = await axios.post(`${BASE_URL}/admin/glyde-review/${transactionId}/reject`, { reason }, {
+    headers: { ...authHeaders(), 'X-2FA-Token': twoFAToken },
+  });
+  return res.data;
 }

@@ -6,14 +6,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { TwoFAModal } from '@/components/TwoFAModal';
 import { toast } from 'sonner';
 import {
   RefreshCw, ChevronLeft, ChevronRight, AlertTriangle,
-  CheckCircle2, XCircle, Wallet, Landmark, Percent,
+  CheckCircle2, XCircle, Wallet, Landmark, Percent, ShieldQuestion,
 } from 'lucide-react';
 import {
   getWalletBalance, getReconciliation, getVirtualAccounts, deactivateVirtualAccount,
-  getDepositFee, updateDepositFee,
+  getDepositFee, updateDepositFee, approveHeldDeposit, rejectHeldDeposit,
   type WalletBalance, type ReconciledDeposit, type VirtualAccountRow, type DepositFeeConfig,
 } from '../services/depositsService';
 
@@ -101,6 +103,47 @@ function ReconciliationTab() {
 
   useEffect(() => { fetchData(1); }, [fetchData]);
 
+  // Held-deposit review: a two-step confirm (pick approve or reject, see the
+  // full context) then 2FA (both actions move/withhold real money, so both
+  // require it - matches the backend gate, not just a UI nicety).
+  const [reviewTarget, setReviewTarget] = useState<ReconciledDeposit | null>(null);
+  const [reviewAction, setReviewAction] = useState<'approve' | 'reject' | null>(null);
+  const [twoFAOpen, setTwoFAOpen] = useState(false);
+  const [reviewLoading, setReviewLoading] = useState(false);
+
+  const openReview = (row: ReconciledDeposit, action: 'approve' | 'reject') => {
+    setReviewTarget(row);
+    setReviewAction(action);
+  };
+  const closeReview = () => {
+    setReviewTarget(null);
+    setReviewAction(null);
+  };
+
+  const handleReviewConfirm = async (twoFAToken: string) => {
+    if (!reviewTarget?.transactionId || !reviewAction) return;
+    setReviewLoading(true);
+    try {
+      const result = reviewAction === 'approve'
+        ? await approveHeldDeposit(reviewTarget.transactionId, twoFAToken)
+        : await rejectHeldDeposit(reviewTarget.transactionId, twoFAToken);
+      if (result.success) {
+        toast.success(result.message || (reviewAction === 'approve' ? 'Deposit approved and credited' : 'Deposit rejected'));
+        setTwoFAOpen(false);
+        closeReview();
+        fetchData(page);
+      } else {
+        toast.error(result.message || 'Action failed');
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Action failed');
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
+  const needsReviewCount = data.filter((row) => row.needsManualReview && row.transactionId).length;
+
   return (
     <div className="space-y-4">
       {uncreditedCount > 0 && (
@@ -108,6 +151,14 @@ function ReconciliationTab() {
           <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
           <p className="text-sm text-amber-800">
             <strong>{uncreditedCount}</strong> deposit{uncreditedCount === 1 ? '' : 's'} on this page {uncreditedCount === 1 ? 'is' : 'are'} confirmed by Glyde but not yet credited to a user — check the webhook is registered and working.
+          </p>
+        </div>
+      )}
+      {needsReviewCount > 0 && (
+        <div className="flex items-center gap-2 rounded-lg border border-blue-300 bg-blue-50 px-4 py-3">
+          <ShieldQuestion className="h-4 w-4 text-blue-600 shrink-0" />
+          <p className="text-sm text-blue-800">
+            <strong>{needsReviewCount}</strong> deposit{needsReviewCount === 1 ? '' : 's'} on this page {needsReviewCount === 1 ? 'is' : 'are'} held for manual name review — check the real bank record, then Approve to credit or Reject to dismiss.
           </p>
         </div>
       )}
@@ -135,6 +186,7 @@ function ReconciliationTab() {
                     <th className="px-4 py-2 font-medium">User</th>
                     <th className="px-4 py-2 font-medium">Glyde Status</th>
                     <th className="px-4 py-2 font-medium">Credited</th>
+                    <th className="px-4 py-2 font-medium">Review</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -150,7 +202,7 @@ function ReconciliationTab() {
                         ) : <span className="text-gray-400">Unmatched</span>}
                         <p className="text-xs text-gray-400">{row.accountNumber}</p>
                       </td>
-                      <td className="px-4 py-3 text-red-600 text-xs" colSpan={2}>{row.error}</td>
+                      <td className="px-4 py-3 text-red-600 text-xs" colSpan={3}>{row.error}</td>
                     </tr>
                   ) : (
                     <tr key={`${row.virtualAccountUid}-${row.glydeReference || i}`} className={`border-b last:border-0 ${!row.credited && row.status !== 'failed' ? 'bg-amber-50/60' : ''}`}>
@@ -183,10 +235,32 @@ function ReconciliationTab() {
                             {row.blockedReason === 'name_mismatch' && (
                               <span className="text-[10px] text-red-500 font-semibold uppercase tracking-wide">Sender name mismatch</span>
                             )}
+                            {row.blockedReason === 'name_unverifiable' && (
+                              <span className="text-[10px] text-amber-600 font-semibold uppercase tracking-wide">Sender name unverifiable</span>
+                            )}
                             {row.blockedReason === 'fee_shortfall' && (
                               <span className="text-[10px] text-gray-400">Amount below fee</span>
                             )}
+                            {row.payerAccountName && (row.blockedReason === 'name_mismatch' || row.blockedReason === 'name_unverifiable') && (
+                              <span className="text-[10px] text-gray-400 max-w-[220px] truncate" title={row.payerAccountName}>
+                                "{row.payerAccountName}"
+                              </span>
+                            )}
                           </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {row.needsManualReview && row.transactionId ? (
+                          <div className="flex gap-1.5">
+                            <Button size="sm" variant="outline" className="text-green-700 border-green-200 hover:bg-green-50 h-7 px-2 text-xs" onClick={() => openReview(row, 'approve')}>
+                              Approve
+                            </Button>
+                            <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 h-7 px-2 text-xs" onClick={() => openReview(row, 'reject')}>
+                              Reject
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-300">—</span>
                         )}
                       </td>
                     </tr>
@@ -212,6 +286,50 @@ function ReconciliationTab() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={!!reviewTarget && !twoFAOpen} onOpenChange={(v) => { if (!v) closeReview(); }}>
+        <DialogContent className="bg-white border border-gray-200 shadow-lg max-w-md">
+          <DialogHeader>
+            <DialogTitle>{reviewAction === 'approve' ? 'Approve held deposit' : 'Reject held deposit'}</DialogTitle>
+          </DialogHeader>
+          <div className="p-4 text-sm space-y-2">
+            <p className="text-gray-600">
+              {reviewAction === 'approve'
+                ? 'This credits the user now. Only approve after checking the real bank record (statement/narration) confirms this deposit is legitimate.'
+                : 'This dismisses the deposit without crediting it. Use this when the deposit is confirmed fraudulent or otherwise should not be paid out.'}
+            </p>
+            <ul className="list-disc pl-5 space-y-1 text-gray-700">
+              <li><strong>User:</strong> {reviewTarget?.user?.name || 'Unknown'} ({reviewTarget?.user?.email || '—'})</li>
+              <li><strong>Amount:</strong> {formatNaira(reviewTarget?.amount ?? null)}</li>
+              {reviewTarget?.payerAccountName && (
+                <li><strong>Payer name on record:</strong> "{reviewTarget.payerAccountName}"</li>
+              )}
+            </ul>
+          </div>
+          <DialogFooter>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={closeReview}>Cancel</Button>
+              <Button
+                className={reviewAction === 'approve' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}
+                onClick={() => setTwoFAOpen(true)}
+              >
+                Continue to 2FA
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <TwoFAModal
+        open={twoFAOpen}
+        title={reviewAction === 'approve' ? 'Confirm approval' : 'Confirm rejection'}
+        description={reviewAction === 'approve'
+          ? `You are about to credit ${reviewTarget?.user?.name || 'this user'} ${formatNaira(reviewTarget?.amount ?? null)}.`
+          : `You are about to reject this held deposit for ${reviewTarget?.user?.name || 'this user'} without crediting it.`}
+        loading={reviewLoading}
+        onClose={() => setTwoFAOpen(false)}
+        onConfirm={handleReviewConfirm}
+      />
     </div>
   );
 }
