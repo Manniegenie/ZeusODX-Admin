@@ -28,7 +28,7 @@ export interface ReconciledDeposit {
   createdAt?: string | null;
   fee?: number | null;
   credited?: boolean;
-  blockedReason?: 'name_mismatch' | 'name_unverifiable' | 'fee_shortfall' | null;
+  blockedReason?: 'name_mismatch' | 'name_unverifiable' | 'deposit_limit_exceeded' | 'fee_shortfall' | null;
   needsManualReview?: boolean;
   payerAccountName?: string | null;
   creditedAt?: string | null;

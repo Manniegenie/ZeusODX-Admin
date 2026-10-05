@@ -158,7 +158,7 @@ function ReconciliationTab() {
         <div className="flex items-center gap-2 rounded-lg border border-blue-300 bg-blue-50 px-4 py-3">
           <ShieldQuestion className="h-4 w-4 text-blue-600 shrink-0" />
           <p className="text-sm text-blue-800">
-            <strong>{needsReviewCount}</strong> deposit{needsReviewCount === 1 ? '' : 's'} on this page {needsReviewCount === 1 ? 'is' : 'are'} held for manual name review — check the real bank record, then Approve to credit or Reject to dismiss.
+            <strong>{needsReviewCount}</strong> deposit{needsReviewCount === 1 ? '' : 's'} on this page {needsReviewCount === 1 ? 'is' : 'are'} held for manual review (name verification or over the deposit limit) — check it, then Approve to credit or Reject to dismiss.
           </p>
         </div>
       )}
@@ -237,6 +237,9 @@ function ReconciliationTab() {
                             )}
                             {row.blockedReason === 'name_unverifiable' && (
                               <span className="text-[10px] text-amber-600 font-semibold uppercase tracking-wide">Sender name unverifiable</span>
+                            )}
+                            {row.blockedReason === 'deposit_limit_exceeded' && (
+                              <span className="text-[10px] text-blue-600 font-semibold uppercase tracking-wide">Exceeds deposit limit</span>
                             )}
                             {row.blockedReason === 'fee_shortfall' && (
                               <span className="text-[10px] text-gray-400">Amount below fee</span>
