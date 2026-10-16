@@ -16,6 +16,7 @@ import { CryptoFeesManagement } from '@/features/fees/pages/CryptoFeesManagement
 import { AddCryptoFee } from '@/features/fees/pages/AddCryptoFee';
 import { FundingAndBalances } from '@/features/funding/pages/FundingAndBalances';
 import { Deposits } from '@/features/deposits/pages/Deposits';
+import { Affiliates } from '@/features/affiliates/pages/Affiliates';
 import { Security } from '@/features/security/pages/Security';
 import { AuditAndMonitoring } from '@/features/audit/pages/AuditAndMonitoring';
 import { AuditLogs } from '@/features/audit/pages/AuditLogs';
@@ -228,6 +229,10 @@ export const router = createBrowserRouter([
           {
             path: 'deposits',
             element: <Deposits />,
+          },
+          {
+            path: 'affiliates',
+            element: <Affiliates />,
           },
           {
             path: 'funding',

@@ -29,6 +29,7 @@ import {
   Moon,
   Sun,
   Landmark,
+  Megaphone,
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -53,6 +54,7 @@ interface NavItem {
   icon: React.ReactNode;
   sub_menu?: SubMenuItem[];
   featureKey: keyof FeatureAccess; // Maps to permission key
+  superAdminOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -156,6 +158,15 @@ const navItems: NavItem[] = [
     featureKey: 'fundingAndBalances',
   },
   {
+    title: 'Affiliates',
+    path: '/affiliates',
+    icon: <Megaphone className="w-4 h-4" />,
+    // featureKey is required by NavItem but unused here - superAdminOnly
+    // hides it from everyone else (the backend enforces super admin too).
+    featureKey: 'fundingAndBalances',
+    superAdminOnly: true,
+  },
+  {
     title: 'Funding & Balances',
     path: '/funding',
     icon: <Wallet className="w-4 h-4" />,
@@ -244,6 +255,9 @@ export function DashboardLayout() {
     // Super admins see all
     if (user?.role === 'super_admin') {
       return true;
+    }
+    if (item.superAdminOnly) {
+      return false;
     }
     // Check feature access based on permissions
     const hasAccess = hasFeatureAccess(item.featureKey);
