@@ -8,9 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Copy, KeyRound, Megaphone, Plus, RefreshCw, Users } from 'lucide-react';
+import { Copy, KeyRound, Megaphone, Plus, RefreshCw, TrendingUp, Users } from 'lucide-react';
 import type { RootState } from '@/core/store/store';
 import {
+  AFFILIATE_DOMAIN,
   affiliatesService,
   dashboardUrl,
   type Affiliate,
@@ -31,6 +32,10 @@ async function copy(text: string, label: string) {
   } catch {
     toast.error(`Could not copy ${label.toLowerCase()}`);
   }
+}
+
+function formatUsd(n: number): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n || 0);
 }
 
 function formatDate(iso?: string | null): string {
@@ -152,6 +157,8 @@ export function Affiliates() {
   }
 
   const totalSignups = affiliates.reduce((sum, a) => sum + a.signupCount, 0);
+  const totalFunded = affiliates.reduce((sum, a) => sum + a.fundedCount, 0);
+  const totalVolume = affiliates.reduce((sum, a) => sum + a.tradeVolumeUsd, 0);
   const activeCount = affiliates.filter((a) => a.status === 'active').length;
 
   return (
@@ -183,7 +190,16 @@ export function Affiliates() {
               <Users className="h-3.5 w-3.5" /> Referred sign-ups
             </p>
             <p className="text-2xl font-bold text-gray-900">{totalSignups.toLocaleString()}</p>
-            <p className="text-xs text-gray-500">Across all campaigns</p>
+            <p className="text-xs text-gray-500">{totalFunded.toLocaleString()} funded</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5 space-y-1">
+            <p className="text-xs text-gray-500 uppercase tracking-wide flex items-center gap-1">
+              <TrendingUp className="h-3.5 w-3.5" /> Trade volume
+            </p>
+            <p className="text-2xl font-bold text-gray-900">{formatUsd(totalVolume)}</p>
+            <p className="text-xs text-gray-500">Swaps by referred users, current prices</p>
           </CardContent>
         </Card>
       </div>
@@ -219,7 +235,9 @@ export function Affiliates() {
             <div className="space-y-1.5">
               <Label htmlFor="aff-slug">Slug (optional)</Label>
               <Input id="aff-slug" value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="Derived from the name" />
-              <p className="text-xs text-gray-500">Dashboard: {dashboardUrl(`/affiliate/${slug.trim() || '<slug>'}`)}</p>
+              <p className="text-xs text-gray-500">
+                Dashboard: {dashboardUrl(slug.trim().toLowerCase() || '<slug>')}. Letters, numbers and hyphens only.
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="aff-code">Code (optional)</Label>
@@ -243,7 +261,7 @@ export function Affiliates() {
               </p>
               {[
                 { label: 'Code', value: created.affiliate.code },
-                { label: 'Dashboard link', value: dashboardUrl(created.affiliate.dashboardPath) },
+                { label: 'Dashboard link', value: dashboardUrl(created.affiliate.slug) },
                 { label: 'Password', value: created.password },
               ].map((row) => (
                 <div key={row.label} className="flex items-center gap-2">
@@ -284,6 +302,8 @@ export function Affiliates() {
                     <th className="py-3 px-4 text-left">Code</th>
                     <th className="py-3 px-4 text-left">Dashboard</th>
                     <th className="py-3 px-4 text-right">Sign-ups</th>
+                    <th className="py-3 px-4 text-right">Funded</th>
+                    <th className="py-3 px-4 text-right">Trade volume</th>
                     <th className="py-3 px-4 text-left">Status</th>
                     <th className="py-3 px-4 text-left">Last login</th>
                     <th className="py-3 px-4 text-right">Actions</th>
@@ -309,14 +329,16 @@ export function Affiliates() {
                       <td className="py-3 px-4">
                         <button
                           type="button"
-                          onClick={() => copy(dashboardUrl(a.dashboardPath), 'Dashboard link')}
+                          onClick={() => copy(dashboardUrl(a.slug), 'Dashboard link')}
                           className="text-gray-700 hover:text-blue-600 inline-flex items-center gap-1"
                           title="Copy dashboard link"
                         >
-                          {a.dashboardPath} <Copy className="h-3.5 w-3.5" />
+                          {a.slug}.{AFFILIATE_DOMAIN} <Copy className="h-3.5 w-3.5" />
                         </button>
                       </td>
                       <td className="py-3 px-4 text-right font-semibold text-gray-900">{a.signupCount.toLocaleString()}</td>
+                      <td className="py-3 px-4 text-right text-gray-700">{a.fundedCount.toLocaleString()}</td>
+                      <td className="py-3 px-4 text-right text-gray-700">{formatUsd(a.tradeVolumeUsd)}</td>
                       <td className="py-3 px-4">
                         <span
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${

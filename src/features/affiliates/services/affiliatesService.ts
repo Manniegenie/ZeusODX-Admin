@@ -2,8 +2,9 @@ import axios from '@/core/services/axios';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-// Public site that hosts the campaigner dashboard (/affiliate/<slug>).
-export const AFFILIATE_SITE_URL = (import.meta.env.VITE_AFFILIATE_SITE_URL || 'https://www.zeusodx.com').replace(/\/+$/, '');
+// Each campaign's dashboard is served at https://<slug>.<AFFILIATE_DOMAIN>
+// by ZeusODX-web.
+export const AFFILIATE_DOMAIN = import.meta.env.VITE_AFFILIATE_DOMAIN || 'zeusodx.com';
 
 function authHeaders() {
   const token = localStorage.getItem('token');
@@ -19,6 +20,8 @@ export interface Affiliate {
   code: string;
   status: AffiliateStatus;
   signupCount: number;
+  fundedCount: number;
+  tradeVolumeUsd: number;
   dashboardPath: string;
   createdByEmail?: string;
   lastLoginAt?: string | null;
@@ -43,8 +46,8 @@ export interface CreatedAffiliate {
   createdAt: string;
 }
 
-export function dashboardUrl(dashboardPath: string): string {
-  return `${AFFILIATE_SITE_URL}${dashboardPath}`;
+export function dashboardUrl(slug: string): string {
+  return `https://${slug}.${AFFILIATE_DOMAIN}`;
 }
 
 export const affiliatesService = {
