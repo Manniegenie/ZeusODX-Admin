@@ -7,7 +7,10 @@
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
     <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet" />
     <title>Zeusodx - Welcome</title>
-    <!-- Prevent flash of wrong theme on first load -->
+    <!-- Prevent flash of wrong theme on first load.
+         This script is allowed by its sha256 hash in vercel.json's
+         Content-Security-Policy: ANY edit to it (even whitespace) changes the
+         hash, so recompute it and update vercel.json, or the browser blocks it. -->
     <script>
       (function () {
         try {
