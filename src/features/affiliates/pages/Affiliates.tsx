@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Copy, KeyRound, Megaphone, Plus, RefreshCw, TrendingUp, Users } from 'lucide-react';
+import { Copy, KeyRound, Link2, Megaphone, Plus, RefreshCw, TrendingUp, Unlink, Users } from 'lucide-react';
 import type { RootState } from '@/core/store/store';
 import {
   AFFILIATE_DOMAIN,
@@ -57,6 +57,7 @@ export function Affiliates() {
   const [slug, setSlug] = useState('');
   const [code, setCode] = useState('');
   const [notes, setNotes] = useState('');
+  const [linkUsername, setLinkUsername] = useState('');
   const [creating, setCreating] = useState(false);
   // Shown once after creation - the password can't be retrieved later.
   const [created, setCreated] = useState<{ affiliate: CreatedAffiliate; password: string } | null>(null);
@@ -65,6 +66,8 @@ export function Affiliates() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [resetTarget, setResetTarget] = useState<Affiliate | null>(null);
   const [newPassword, setNewPassword] = useState('');
+  const [linkTarget, setLinkTarget] = useState<Affiliate | null>(null);
+  const [linkInput, setLinkInput] = useState('');
 
   useEffect(() => {
     titleCtx?.setTitle('Affiliates');
@@ -99,6 +102,7 @@ export function Affiliates() {
         slug: slug.trim() || undefined,
         code: code.trim() || undefined,
         notes: notes.trim() || undefined,
+        linkUsername: linkUsername.trim() || undefined,
       });
       setCreated({ affiliate, password });
       setCampaignerName('');
@@ -106,6 +110,7 @@ export function Affiliates() {
       setSlug('');
       setCode('');
       setNotes('');
+      setLinkUsername('');
       toast.success('Affiliate campaign created');
       load();
     } catch (err) {
@@ -141,6 +146,38 @@ export function Affiliates() {
       setNewPassword('');
     } catch (err) {
       toast.error(apiError(err, 'Failed to reset password'));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleLinkUser = async () => {
+    if (!linkTarget) return;
+    const username = linkInput.trim().replace(/^@/, '');
+    if (!username) return toast.error('Enter a username');
+    setBusyId(linkTarget.id);
+    try {
+      await affiliatesService.linkUser(linkTarget.id, username);
+      toast.success(`${linkTarget.campaignerName} is now linked to @${username}`);
+      setLinkTarget(null);
+      setLinkInput('');
+      load();
+    } catch (err) {
+      toast.error(apiError(err, 'Failed to link user'));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleUnlink = async (a: Affiliate) => {
+    if (!window.confirm(`Unlink @${a.linkedUsername} from ${a.campaignerName}? Their referrals will stop showing on this dashboard. Their own referral rewards are not affected.`)) return;
+    setBusyId(a.id);
+    try {
+      await affiliatesService.unlinkUser(a.id);
+      toast.success('User unlinked');
+      load();
+    } catch (err) {
+      toast.error(apiError(err, 'Failed to unlink user'));
     } finally {
       setBusyId(null);
     }
@@ -244,6 +281,20 @@ export function Affiliates() {
               <Input id="aff-code" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="Auto-generated" />
             </div>
             <div className="space-y-1.5 md:col-span-2">
+              <Label htmlFor="aff-link">Link existing user (optional)</Label>
+              <Input
+                id="aff-link"
+                value={linkUsername}
+                onChange={(e) => setLinkUsername(e.target.value)}
+                placeholder="Username, e.g. Dad"
+                autoComplete="off"
+              />
+              <p className="text-xs text-gray-500">
+                Activates an app user as this affiliate: everyone they referred with their username shows on the
+                dashboard, and their username becomes the code to share. Their referral rewards are unchanged.
+              </p>
+            </div>
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="aff-notes">Notes (optional)</Label>
               <Textarea id="aff-notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
             </div>
@@ -260,7 +311,7 @@ export function Affiliates() {
                 {created.affiliate.campaignerName}'s campaign is live. Copy these now - the password can't be shown again.
               </p>
               {[
-                { label: 'Code', value: created.affiliate.code },
+                { label: 'Code to share', value: created.affiliate.linkedUsername || created.affiliate.code },
                 { label: 'Dashboard link', value: dashboardUrl(created.affiliate.slug) },
                 { label: 'Password', value: created.password },
               ].map((row) => (
@@ -299,7 +350,7 @@ export function Affiliates() {
                 <thead>
                   <tr className="border-b bg-gray-50 text-gray-500 uppercase tracking-wide text-xs">
                     <th className="py-3 px-4 text-left">Campaigner</th>
-                    <th className="py-3 px-4 text-left">Code</th>
+                    <th className="py-3 px-4 text-left">Code to share</th>
                     <th className="py-3 px-4 text-left">Dashboard</th>
                     <th className="py-3 px-4 text-right">Sign-ups</th>
                     <th className="py-3 px-4 text-right">Funded</th>
@@ -319,12 +370,17 @@ export function Affiliates() {
                       <td className="py-3 px-4">
                         <button
                           type="button"
-                          onClick={() => copy(a.code, 'Code')}
+                          onClick={() => copy(a.shareCode || a.code, 'Code')}
                           className="font-mono text-gray-700 hover:text-blue-600 inline-flex items-center gap-1"
                           title="Copy code"
                         >
-                          {a.code} <Copy className="h-3.5 w-3.5" />
+                          {a.shareCode || a.code} <Copy className="h-3.5 w-3.5" />
                         </button>
+                        {a.linkedUsername && (
+                          <div className="text-xs text-gray-500 mt-0.5">
+                            Linked to @{a.linkedUsername} · campaign code {a.code}
+                          </div>
+                        )}
                       </td>
                       <td className="py-3 px-4">
                         <button
@@ -362,6 +418,23 @@ export function Affiliates() {
                           >
                             <KeyRound className="h-3.5 w-3.5 mr-1" /> Reset password
                           </Button>
+                          {a.linkedUsername ? (
+                            <Button size="sm" variant="outline" disabled={busyId === a.id} onClick={() => handleUnlink(a)}>
+                              <Unlink className="h-3.5 w-3.5 mr-1" /> Unlink
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={busyId === a.id}
+                              onClick={() => {
+                                setLinkTarget(a);
+                                setLinkInput('');
+                              }}
+                            >
+                              <Link2 className="h-3.5 w-3.5 mr-1" /> Link user
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             variant={a.status === 'active' ? 'destructive' : 'default'}
@@ -380,6 +453,35 @@ export function Affiliates() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={!!linkTarget} onOpenChange={(open) => !open && setLinkTarget(null)}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>Link a user to {linkTarget?.campaignerName}</DialogTitle>
+            <DialogDescription>
+              Everyone this user referred with their username will show on the {linkTarget?.slug} dashboard, and their
+              username becomes the code to share. Their own referral rewards are not affected, and the campaign code
+              {' '}{linkTarget?.code} keeps working.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-1.5">
+            <Label htmlFor="aff-link-username">Username</Label>
+            <Input
+              id="aff-link-username"
+              value={linkInput}
+              onChange={(e) => setLinkInput(e.target.value)}
+              placeholder="e.g. Dad"
+              autoComplete="off"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setLinkTarget(null)}>Cancel</Button>
+            <Button onClick={handleLinkUser} disabled={busyId === linkTarget?.id}>
+              Link user
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!resetTarget} onOpenChange={(open) => !open && setResetTarget(null)}>
         <DialogContent className="bg-white">

@@ -22,6 +22,10 @@ export interface Affiliate {
   signupCount: number;
   fundedCount: number;
   tradeVolumeUsd: number;
+  // The code the campaigner hands out: the linked user's referral code
+  // (their username) if the campaign is linked to a user, else `code`.
+  shareCode: string;
+  linkedUsername: string | null;
   dashboardPath: string;
   createdByEmail?: string;
   lastLoginAt?: string | null;
@@ -34,6 +38,9 @@ export interface CreateAffiliateInput {
   slug?: string;
   code?: string;
   notes?: string;
+  // Activate an existing app user as this affiliate: their username
+  // referrals count for the campaign too.
+  linkUsername?: string;
 }
 
 export interface CreatedAffiliate {
@@ -42,6 +49,7 @@ export interface CreatedAffiliate {
   slug: string;
   code: string;
   status: AffiliateStatus;
+  linkedUsername?: string | null;
   dashboardPath: string;
   createdAt: string;
 }
@@ -63,6 +71,14 @@ export const affiliatesService = {
 
   async setStatus(id: string, status: AffiliateStatus): Promise<void> {
     await axios.patch(`${BASE_URL}/admin/affiliates/${id}`, { status }, { headers: authHeaders() });
+  },
+
+  async linkUser(id: string, username: string): Promise<void> {
+    await axios.patch(`${BASE_URL}/admin/affiliates/${id}`, { linkUsername: username }, { headers: authHeaders() });
+  },
+
+  async unlinkUser(id: string): Promise<void> {
+    await axios.patch(`${BASE_URL}/admin/affiliates/${id}`, { unlink: true }, { headers: authHeaders() });
   },
 
   async resetPassword(id: string, password: string): Promise<void> {
