@@ -290,8 +290,8 @@ export function Affiliates() {
                 autoComplete="off"
               />
               <p className="text-xs text-gray-500">
-                Activates an app user as this affiliate: everyone they referred with their username shows on the
-                dashboard, and their username becomes the code to share. Their referral rewards are unchanged.
+                Activates an app user as this affiliate: everyone they referred shows on the dashboard, and their
+                referral code is the campaign's only code. Their referral rewards are unchanged.
               </p>
             </div>
             <div className="space-y-1.5 md:col-span-2">
@@ -311,7 +311,7 @@ export function Affiliates() {
                 {created.affiliate.campaignerName}'s campaign is live. Copy these now - the password can't be shown again.
               </p>
               {[
-                { label: 'Code to share', value: created.affiliate.linkedUsername || created.affiliate.code },
+                { label: 'Code to share', value: created.affiliate.shareCode || created.affiliate.code },
                 { label: 'Dashboard link', value: dashboardUrl(created.affiliate.slug) },
                 { label: 'Password', value: created.password },
               ].map((row) => (
@@ -377,9 +377,7 @@ export function Affiliates() {
                           {a.shareCode || a.code} <Copy className="h-3.5 w-3.5" />
                         </button>
                         {a.linkedUsername && (
-                          <div className="text-xs text-gray-500 mt-0.5">
-                            Linked to @{a.linkedUsername} · campaign code {a.code}
-                          </div>
+                          <div className="text-xs text-gray-500 mt-0.5">Linked to @{a.linkedUsername}</div>
                         )}
                       </td>
                       <td className="py-3 px-4">
@@ -459,9 +457,9 @@ export function Affiliates() {
           <DialogHeader>
             <DialogTitle>Link a user to {linkTarget?.campaignerName}</DialogTitle>
             <DialogDescription>
-              Everyone this user referred with their username will show on the {linkTarget?.slug} dashboard, and their
-              username becomes the code to share. Their own referral rewards are not affected, and the campaign code
-              {' '}{linkTarget?.code} keeps working.
+              Everyone this user referred will show on the {linkTarget?.slug} dashboard, and their referral code
+              becomes the campaign's only code - the generated code {linkTarget?.code} is retired (anyone who already
+              has it is counted as this user's referral). Their own referral rewards are not affected.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-1.5">

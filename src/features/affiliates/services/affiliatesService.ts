@@ -49,6 +49,7 @@ export interface CreatedAffiliate {
   slug: string;
   code: string;
   status: AffiliateStatus;
+  shareCode?: string;
   linkedUsername?: string | null;
   dashboardPath: string;
   createdAt: string;
