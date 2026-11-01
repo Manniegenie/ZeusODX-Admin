@@ -46,12 +46,13 @@ export async function resetUserPin(email: string) {
   return res.data;
 }
 
-export async function removePasswordPin(email: string) : Promise<RemovePasswordResponse> {
+export async function removePasswordPin(email: string, twoFAToken: string) : Promise<RemovePasswordResponse> {
   const token = localStorage.getItem('token');
   const res = await axios.patch(`${BASE_URL}/delete-pin/remove-passwordpin`, { email }, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: token ? `Bearer ${token}` : undefined,
+      'X-2FA-Token': twoFAToken,
     },
   });
   return res.data as RemovePasswordResponse;

@@ -10,6 +10,7 @@ import { disableTwoFa } from '@/features/users/services/twoFaService';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { SuccessModal } from '@/components/ui/SuccessModal';
+import { TwoFAModal } from '@/components/TwoFAModal';
 
 export function Disable2Fa() {
   const titleCtx = useContext(DashboardTitleContext);
@@ -19,6 +20,7 @@ export function Disable2Fa() {
   const stateUser = (location.state as any)?.user;
   const [emailValue, setEmailValue] = useState(stateUser?.email || '');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [twoFAOpen, setTwoFAOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
 
@@ -31,7 +33,12 @@ export function Disable2Fa() {
     ]);
   }, [titleCtx]);
 
-  const handleDisable = async () => {
+  const openTwoFA = () => {
+    setConfirmOpen(false);
+    setTwoFAOpen(true);
+  };
+
+  const handleDisable = async (twoFAToken: string) => {
     const email = emailValue.trim();
     if (!email) {
       toast.error('Please provide an email');
@@ -39,15 +46,15 @@ export function Disable2Fa() {
     }
     setLoading(true);
     try {
-      const resp = await disableTwoFa(email);
+      const resp = await disableTwoFa(email, twoFAToken);
       if (resp && resp.success) {
-        setConfirmOpen(false);
+        setTwoFAOpen(false);
         setSuccessOpen(true);
       } else {
         toast.error(resp?.message || 'Failed to disable 2FA');
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || err?.message || 'Disable 2FA failed');
+      toast.error(err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Disable 2FA failed');
     } finally {
       setLoading(false);
     }
@@ -100,12 +107,21 @@ export function Disable2Fa() {
             >
               Cancel
             </Button>
-            <Button onClick={handleDisable} className='bg-red-500 text-white' disabled={loading}>
-              {loading ? 'Disabling...' : 'Disable 2FA'}
+            <Button onClick={openTwoFA} className='bg-red-500 text-white' disabled={loading}>
+              Continue
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <TwoFAModal
+        open={twoFAOpen}
+        title="Confirm disable 2FA"
+        description={`Enter your 2FA code to disable two-factor authentication for ${emailValue.trim()}.`}
+        loading={loading}
+        onClose={() => setTwoFAOpen(false)}
+        onConfirm={handleDisable}
+      />
 
       <SuccessModal
         isOpen={successOpen}

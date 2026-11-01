@@ -9,6 +9,7 @@ import { removePasswordPin } from '@/features/users/services/usersService';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { SuccessModal } from '@/components/ui/SuccessModal';
+import { TwoFAModal } from '@/components/TwoFAModal';
 
 export function RemovePassword() {
   const titleCtx = useContext(DashboardTitleContext);
@@ -18,6 +19,7 @@ export function RemovePassword() {
   const stateUser = (location.state as any)?.user;
   const [emailValue, setEmailValue] = useState(stateUser?.email || '');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [twoFAOpen, setTwoFAOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
 
@@ -30,7 +32,12 @@ export function RemovePassword() {
     ]);
   }, [titleCtx]);
 
-  const handleRemove = async () => {
+  const openTwoFA = () => {
+    setConfirmOpen(false);
+    setTwoFAOpen(true);
+  };
+
+  const handleRemove = async (twoFAToken: string) => {
     const email = emailValue.trim();
     if (!email) {
       toast.error('Please provide an email');
@@ -38,15 +45,15 @@ export function RemovePassword() {
     }
     setLoading(true);
     try {
-      const resp = await removePasswordPin(email);
+      const resp = await removePasswordPin(email, twoFAToken);
       if (resp && resp.message) {
-        setConfirmOpen(false);
+        setTwoFAOpen(false);
         setSuccessOpen(true);
       } else {
         toast.error('Failed to remove password PIN');
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || err?.message || 'Failed to remove password PIN');
+      toast.error(err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Failed to remove password PIN');
     } finally {
       setLoading(false);
     }
@@ -98,12 +105,21 @@ export function RemovePassword() {
             >
               Cancel
             </Button>
-            <Button onClick={handleRemove} className='bg-red-500 text-white' disabled={loading}>
-              {loading ? 'Removing...' : 'Remove PIN'}
+            <Button onClick={openTwoFA} className='bg-red-500 text-white' disabled={loading}>
+              Continue
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <TwoFAModal
+        open={twoFAOpen}
+        title="Confirm remove password PIN"
+        description={`Enter your 2FA code to remove the password PIN for ${emailValue.trim()}.`}
+        loading={loading}
+        onClose={() => setTwoFAOpen(false)}
+        onConfirm={handleRemove}
+      />
 
       <SuccessModal
         isOpen={successOpen}
