@@ -10,6 +10,7 @@ import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { toast } from 'sonner';
 import { unlockUserPin } from '@/features/users/services/userService';
 import { SuccessModal } from '@/components/ui/SuccessModal';
+import { TwoFAModal } from '@/components/TwoFAModal';
 
 export function UnlockPin() {
   const titleCtx = useContext(DashboardTitleContext);
@@ -20,6 +21,7 @@ export function UnlockPin() {
   const [emailValue, setEmailValue] = useState(stateUser?.email || '');
   const [userId, setUserId] = useState(stateUser?._id || stateUser?.id || '');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [twoFAOpen, setTwoFAOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
 
@@ -28,16 +30,21 @@ export function UnlockPin() {
     titleCtx?.setBreadcrumb(['User Management', 'User Account', 'Unlock PIN']);
   }, [titleCtx]);
 
-  const handleUnlock = async () => {
+  const openTwoFA = () => {
+    setConfirmOpen(false);
+    setTwoFAOpen(true);
+  };
+
+  const handleUnlock = async (twoFAToken: string) => {
     if (!userId.trim()) {
       toast.error('User ID is required');
       return;
     }
     setLoading(true);
     try {
-      const resp = await unlockUserPin(userId.trim());
+      const resp = await unlockUserPin(userId.trim(), twoFAToken);
       if (resp?.success) {
-        setConfirmOpen(false);
+        setTwoFAOpen(false);
         setSuccessOpen(true);
       } else {
         toast.error(resp?.message || 'Failed to unlock account');
@@ -120,15 +127,24 @@ export function UnlockPin() {
               Cancel
             </Button>
             <Button
-              onClick={handleUnlock}
+              onClick={openTwoFA}
               disabled={loading}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
-              {loading ? 'Unlocking…' : 'Confirm Unlock'}
+              Continue
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <TwoFAModal
+        open={twoFAOpen}
+        title="Confirm PIN unlock"
+        description={`Enter your 2FA code to clear the PIN lock for ${emailValue.trim() || userId.trim()}.`}
+        loading={loading}
+        onClose={() => setTwoFAOpen(false)}
+        onConfirm={handleUnlock}
+      />
 
       <SuccessModal
         isOpen={successOpen}

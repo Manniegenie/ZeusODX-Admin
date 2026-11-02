@@ -79,20 +79,24 @@ class UserService {
 
 export const userService = new UserService();
 
-export async function unlockUserPin(userId: string) {
+export async function unlockUserPin(userId: string, twoFAToken: string) {
   try {
-    const response = await axios.post(`${BASE_URL}/usermanagement/users/${userId}/unlock-pin`);
+    const response = await axios.post(`${BASE_URL}/usermanagement/users/${userId}/unlock-pin`, {}, {
+      headers: { 'X-2FA-Token': twoFAToken },
+    });
     return response.data;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Failed to unlock PIN account');
+    throw new Error(error.response?.data?.message || error.response?.data?.error || 'Failed to unlock PIN account');
   }
 }
 
-export async function unlock2FALock(userId: string) {
+export async function unlock2FALock(userId: string, twoFAToken: string) {
   try {
-    const response = await axios.post(`${BASE_URL}/usermanagement/users/${userId}/unlock-2fa`);
+    const response = await axios.post(`${BASE_URL}/usermanagement/users/${userId}/unlock-2fa`, {}, {
+      headers: { 'X-2FA-Token': twoFAToken },
+    });
     return response.data;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Failed to unlock 2FA lock');
+    throw new Error(error.response?.data?.message || error.response?.data?.error || 'Failed to unlock 2FA lock');
   }
 }

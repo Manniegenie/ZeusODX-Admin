@@ -10,6 +10,7 @@ import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { toast } from 'sonner';
 import { resetUserPin } from '@/features/users/services/usersService';
 import { SuccessModal } from '@/components/ui/SuccessModal';
+import { TwoFAModal } from '@/components/TwoFAModal';
 
 export function ResetUserPin() {
   const titleCtx = useContext(DashboardTitleContext);
@@ -19,6 +20,7 @@ export function ResetUserPin() {
 
   const [emailValue, setEmailValue] = useState(stateUser?.email || '');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [twoFAOpen, setTwoFAOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
 
@@ -27,7 +29,12 @@ export function ResetUserPin() {
     titleCtx?.setBreadcrumb(['User Management', 'User Account', 'Reset PIN']);
   }, [titleCtx]);
 
-  const handleReset = async () => {
+  const openTwoFA = () => {
+    setConfirmOpen(false);
+    setTwoFAOpen(true);
+  };
+
+  const handleReset = async (twoFAToken: string) => {
     const email = emailValue.trim();
     if (!email) {
       toast.error('Please provide an email');
@@ -35,15 +42,15 @@ export function ResetUserPin() {
     }
     setLoading(true);
     try {
-      const resp = await resetUserPin(email);
+      const resp = await resetUserPin(email, twoFAToken);
       if (resp?.success) {
-        setConfirmOpen(false);
+        setTwoFAOpen(false);
         setSuccessOpen(true);
       } else {
         toast.error(resp?.message || 'Failed to reset PIN');
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || err?.message || 'Failed to reset PIN');
+      toast.error(err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Failed to reset PIN');
     } finally {
       setLoading(false);
     }
@@ -88,7 +95,7 @@ export function ResetUserPin() {
             <p>This will clear the PIN for:</p>
             <p className="font-semibold text-black">{emailValue}</p>
             <p className="text-gray-500">
-              The user will be prompted to set a new PIN the next time they open the app. Only do this after verifying the request with the account holder.
+              The user will be signed out on all devices and Face ID login will be turned off. They set a new PIN with Forgot PIN on the sign-in screen. Only do this after verifying the request with the account holder.
             </p>
           </div>
           <DialogFooter>
@@ -101,21 +108,30 @@ export function ResetUserPin() {
               Cancel
             </Button>
             <Button
-              onClick={handleReset}
+              onClick={openTwoFA}
               disabled={loading}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              {loading ? 'Resetting…' : 'Confirm Reset'}
+              Continue
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
+      <TwoFAModal
+        open={twoFAOpen}
+        title="Confirm PIN reset"
+        description={`Enter your 2FA code to reset the PIN for ${emailValue.trim()}.`}
+        loading={loading}
+        onClose={() => setTwoFAOpen(false)}
+        onConfirm={handleReset}
+      />
+
       <SuccessModal
         isOpen={successOpen}
         onClose={() => { setSuccessOpen(false); navigate(-1); }}
         title="PIN Reset Successful"
-        message="The user's PIN has been cleared. They will set a new PIN next time they log in."
+        message="The user's PIN has been cleared and they've been signed out. They set a new PIN with Forgot PIN on the sign-in screen."
         details={[{ label: 'User', value: emailValue }]}
         redirectTo={undefined}
         showRedirectButton={false}

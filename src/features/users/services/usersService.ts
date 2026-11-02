@@ -38,10 +38,10 @@ export async function deleteUser(email: string, twoFAToken?: string) : Promise<{
   return res.data;
 }
 
-export async function resetUserPin(email: string) {
+export async function resetUserPin(email: string, twoFAToken: string) {
   const token = localStorage.getItem('token');
   const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/usermanagement/users/reset-pin`, { email }, {
-    headers: { Authorization: token ? `Bearer ${token}` : undefined },
+    headers: { Authorization: token ? `Bearer ${token}` : undefined, 'X-2FA-Token': twoFAToken },
   });
   return res.data;
 }

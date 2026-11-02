@@ -10,6 +10,7 @@ import { DashboardTitleContext } from '@/layouts/DashboardTitleContext';
 import { toast } from 'sonner';
 import { unlock2FALock } from '@/features/users/services/userService';
 import { SuccessModal } from '@/components/ui/SuccessModal';
+import { TwoFAModal } from '@/components/TwoFAModal';
 
 export function Unlock2FA() {
   const titleCtx = useContext(DashboardTitleContext);
@@ -20,6 +21,7 @@ export function Unlock2FA() {
   const [emailValue, setEmailValue] = useState(stateUser?.email || '');
   const [userId, setUserId] = useState(stateUser?._id || stateUser?.id || '');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [twoFAOpen, setTwoFAOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
 
@@ -28,16 +30,21 @@ export function Unlock2FA() {
     titleCtx?.setBreadcrumb(['User Management', 'User Account', 'Unlock 2FA Lock']);
   }, [titleCtx]);
 
-  const handleUnlock = async () => {
+  const openTwoFA = () => {
+    setConfirmOpen(false);
+    setTwoFAOpen(true);
+  };
+
+  const handleUnlock = async (twoFAToken: string) => {
     if (!userId.trim()) {
       toast.error('User ID is required');
       return;
     }
     setLoading(true);
     try {
-      const resp = await unlock2FALock(userId.trim());
+      const resp = await unlock2FALock(userId.trim(), twoFAToken);
       if (resp?.success) {
-        setConfirmOpen(false);
+        setTwoFAOpen(false);
         setSuccessOpen(true);
       } else {
         toast.error(resp?.message || 'Failed to unlock 2FA lock');
@@ -118,15 +125,24 @@ export function Unlock2FA() {
               Cancel
             </Button>
             <Button
-              onClick={handleUnlock}
+              onClick={openTwoFA}
               disabled={loading}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {loading ? 'Unlocking…' : 'Confirm Unlock'}
+              Continue
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <TwoFAModal
+        open={twoFAOpen}
+        title="Confirm 2FA unlock"
+        description={`Enter your 2FA code to clear the 2FA lock for ${emailValue.trim() || userId.trim()}.`}
+        loading={loading}
+        onClose={() => setTwoFAOpen(false)}
+        onConfirm={handleUnlock}
+      />
 
       <SuccessModal
         isOpen={successOpen}
